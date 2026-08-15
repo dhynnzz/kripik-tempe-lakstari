@@ -152,12 +152,38 @@
 @media (max-width: 768px) {
   .dh-summary-grid {
     grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
   }
 }
 
-@media (max-width: 500px) {
+@media (max-width: 520px) {
   .dh-summary-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+  .dh-sum-card:last-child {
+    grid-column: span 2;
+  }
+  .dh-sum-card {
+    padding: 12px 10px;
+    min-height: 124px;
+    border-radius: 12px;
+  }
+  .dh-sum-value {
+    font-size: 22px;
+    margin: 8px 0;
+  }
+  .dh-sum-value.is-currency {
+    font-size: 17px;
+  }
+  .dh-sum-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+  }
+  .dh-sum-icon svg {
+    width: 16px;
+    height: 16px;
   }
 }
 
@@ -165,7 +191,7 @@
   background: #ffffff;
   border: 1px solid #E2E8F0;
   border-radius: 16px;
-  padding: 18px 20px;
+  padding: 16px 14px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -219,19 +245,28 @@
 .ic-green  { background: #F0FDF4; color: #16A34A; border: 1px solid #DCFCE7; }
 
 .dh-sum-value {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 800;
   color: #0F172A;
   letter-spacing: -0.5px;
   line-height: 1.2;
-  margin: 10px 0;
-  word-break: break-word;
+  margin: 12px 0;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dh-sum-value.is-currency {
+  font-size: 19px;
+  letter-spacing: -0.3px;
+  font-weight: 800;
 }
 
 .dh-sum-footer {
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
   padding-top: 10px;
   border-top: 1px solid #F1F5F9;
 }

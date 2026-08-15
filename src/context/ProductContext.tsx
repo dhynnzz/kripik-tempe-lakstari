@@ -48,19 +48,29 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     try {
       const rawProducts = await apiService.getProducts();
       // Map data backend ke format frontend
-      const formatted = rawProducts.map((p: any) => ({
-        id: p.id_product,
-        name: p.nama_product,
-        category: p.category ? p.category.nama_category : 'Lainnya',
-        flavor: p.nama_product,
-        priceNum: parseFloat(p.harga_product),
-        priceStr: `Rp ${parseFloat(p.harga_product).toLocaleString('id-ID')}`,
-        stock: p.stok_product,
-        weight: `${p.berat_product} gram`,
-        status: p.status_product,
-        desc: p.deskripsi_product,
-        image: (!p.foto_product || p.foto_product.startsWith('blob:')) ? '/flavor_original_1786524783436.png' : p.foto_product
-      }));
+      const formatted = rawProducts.map((p: any) => {
+        const stock = parseInt(p.stok_product, 10) || 0;
+        let computedStatus: 'aktif' | 'nonaktif' | 'habis' = p.status_product || 'aktif';
+        if (stock === 0) {
+          computedStatus = 'habis';
+        } else if (computedStatus === 'habis' && stock > 0) {
+          computedStatus = 'aktif';
+        }
+
+        return {
+          id: p.id_product,
+          name: p.nama_product,
+          category: p.category ? p.category.nama_category : 'Lainnya',
+          flavor: p.nama_product,
+          priceNum: parseFloat(p.harga_product),
+          priceStr: `Rp ${parseFloat(p.harga_product).toLocaleString('id-ID')}`,
+          stock: stock,
+          weight: `${p.berat_product} gram`,
+          status: computedStatus,
+          desc: p.deskripsi_product,
+          image: (!p.foto_product || p.foto_product.startsWith('blob:')) ? '/flavor_original_1786524783436.png' : p.foto_product
+        };
+      });
       setProducts(formatted);
     } catch (error) {
       console.error('Gagal mengambil data produk:', error);
@@ -105,7 +115,8 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
       }
       return p;
     }));
-    apiService.updateProductStock(id, finalStock);
+    await apiService.updateProductStock(id, finalStock);
+    fetchProducts();
   };
 
   const updateProductPrice = async (id: number, newPrice: number) => {
@@ -118,13 +129,18 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
   const toggleProductStatus = async (id: number) => {
     const p = products.find(prod => prod.id === id);
     if (!p) return;
-    const nextStatus = p.status === 'aktif' ? 'nonaktif' : 'aktif';
+    if (p.stock === 0) return; // Tidak bisa aktif jika stok 0
+    const currentSt = (p.status === 'habis' && p.stock > 0) ? 'aktif' : p.status;
+    const nextStatus = currentSt === 'aktif' ? 'nonaktif' : 'aktif';
     const success = await apiService.updateProduct(id, { ...p, status: nextStatus });
     if (success) fetchProducts();
   };
 
   const updateProduct = async (updated: ProductItem) => {
-    const success = await apiService.updateProduct(updated.id, updated);
+    const stock = Math.max(0, updated.stock);
+    const autoStatus = stock === 0 ? 'habis' : (updated.status === 'habis' ? 'aktif' : updated.status);
+    const payload = { ...updated, stock, status: autoStatus };
+    const success = await apiService.updateProduct(updated.id, payload);
     if (success) fetchProducts();
   };
 

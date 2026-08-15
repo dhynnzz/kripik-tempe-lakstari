@@ -318,12 +318,19 @@
   .admin-sidebar {
     width: 70px;
   }
+
   .admin-main {
     margin-left: 70px;
   }
-  .brand-title, .menu-text, .sidebar-section-title, .sidebar-banner, .profile-info {
+
+  .brand-title,
+  .menu-text,
+  .sidebar-section-title,
+  .sidebar-banner,
+  .profile-info {
     display: none;
   }
+
   .topbar-search {
     width: 180px;
   }
@@ -498,3 +505,155 @@
   color: var(--primary-dark);
   border-color: var(--primary-accent);
 }
+
+/* ════════════════════════════════════════
+   TOPBAR RESPONSIVE CLASSES
+════════════════════════════════════════ */
+.admin-header-date-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  color: #475569;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.admin-dark-mode .admin-header-date-pill {
+  background: #1E293B;
+  border-color: #334155;
+  color: #CBD5E1;
+}
+
+.admin-header-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(0, 0, 0, 0.08);
+}
+
+.admin-dark-mode .admin-header-divider {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ════════════════════════════════════════
+   RESPONSIVE SIDEBAR DRAWER (iPad, iOS, Android)
+════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .lakstari-sidebar-wrapper {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    bottom: 0 !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    z-index: 1000 !important;
+    pointer-events: none;
+  }
+
+  .lakstari-sidebar-wrapper.is-open {
+    pointer-events: auto;
+  }
+
+  .lakstari-sidebar-aside {
+    box-shadow: 4px 0 30px rgba(0, 0, 0, 0.35) !important;
+    max-width: 85vw;
+  }
+
+  .lakstari-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
+    animation: fadeInBackdrop 0.25s ease;
+  }
+}
+
+@keyframes fadeInBackdrop {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1024px) {
+  .admin-main-content {
+    padding: 20px 16px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-main-content {
+    padding: 16px 12px !important;
+  }
+
+  .admin-topbar {
+    padding: 0 14px !important;
+    height: 52px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .admin-header-date-pill {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .admin-header-user-text {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-header-date-pill span {
+    display: none;
+  }
+
+  .admin-header-date-pill {
+    padding: 6px 8px;
+  }
+
+  .admin-main-content {
+    padding: 12px 8px !important;
+  }
+}
+
+/* ════════════════════════════════════════
+   SIDEBAR CUSTOM SCROLLBAR (Sleek & Minimal)
+════════════════════════════════════════ */
+.lakstari-sidebar-nav::-webkit-scrollbar,
+.lakstari-sidebar-aside::-webkit-scrollbar {
+  width: 4px;
+}
+
+.lakstari-sidebar-nav::-webkit-scrollbar-track,
+.lakstari-sidebar-aside::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.lakstari-sidebar-nav::-webkit-scrollbar-thumb,
+.lakstari-sidebar-aside::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 10px;
+}
+
+.lakstari-sidebar-nav::-webkit-scrollbar-thumb:hover,
+.lakstari-sidebar-aside::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.lakstari-sidebar-nav,
+.lakstari-sidebar-aside {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+}

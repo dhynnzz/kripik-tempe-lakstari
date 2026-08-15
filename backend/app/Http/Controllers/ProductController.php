@@ -58,7 +58,17 @@ class ProductController extends Controller
             return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
         }
 
-        $product->update($request->all());
+        $data = $request->all();
+        if (isset($data['stok_product'])) {
+            $stock = (int)$data['stok_product'];
+            if ($stock == 0) {
+                $data['status_product'] = 'habis';
+            } elseif ($product->status_product == 'habis' && $stock > 0) {
+                $data['status_product'] = 'aktif';
+            }
+        }
+
+        $product->update($data);
 
         return response()->json(['success' => true, 'message' => 'Produk berhasil diupdate', 'data' => $product]);
     }

@@ -45,7 +45,7 @@ const ProductManager: React.FC = () => {
       p.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCategory = categoryFilter === 'all' || p.category.toLowerCase() === categoryFilter.toLowerCase();
 
-    const currentStatus = p.stock === 0 ? 'habis' : p.status;
+    const currentStatus = p.stock === 0 ? 'habis' : (p.status === 'habis' ? 'aktif' : p.status);
     const matchStatus = statusFilter === 'all' || currentStatus === statusFilter;
 
     return matchSearch && matchCategory && matchStatus;
@@ -104,7 +104,10 @@ const ProductManager: React.FC = () => {
       finalCatId = selectedCat ? selectedCat.id : 1;
     }
 
-    updateProduct({ ...editingProduct, categoryId: finalCatId });
+    const stockNum = Math.max(0, parseInt(editingProduct.stock as any, 10) || 0);
+    const autoStatus = stockNum === 0 ? 'habis' : (editingProduct.status === 'habis' ? 'aktif' : editingProduct.status);
+
+    updateProduct({ ...editingProduct, stock: stockNum, status: autoStatus, categoryId: finalCatId });
     setEditingProduct(null);
   };
 
@@ -199,7 +202,7 @@ const ProductManager: React.FC = () => {
                 </tr>
               ) : (
                 filteredProducts.map((product: ProductItem) => {
-                  const currentStatus = product.stock === 0 ? 'habis' : product.status;
+                  const currentStatus = product.stock === 0 ? 'habis' : (product.status === 'habis' ? 'aktif' : product.status);
                   return (
                     <tr key={product.id}>
                       {/* Produk (Foto + Nama + Rasa/Berat) */}
@@ -571,9 +574,14 @@ const ProductManager: React.FC = () => {
                 <h4>{detailProduct.name}</h4>
                 <div className="pm-detail-badge-group">
                   <span className="pm-category-badge">{detailProduct.category}</span>
-                  <span className={`pm-status-pill st-${detailProduct.stock === 0 ? 'habis' : detailProduct.status}`}>
-                    {detailProduct.stock === 0 ? 'Habis' : detailProduct.status === 'aktif' ? 'Aktif' : 'Nonaktif'}
-                  </span>
+                  {(() => {
+                    const currentDetailStatus = detailProduct.stock === 0 ? 'habis' : (detailProduct.status === 'habis' ? 'aktif' : detailProduct.status);
+                    return (
+                      <span className={`pm-status-pill st-${currentDetailStatus}`}>
+                        {currentDetailStatus === 'habis' ? 'Habis' : currentDetailStatus === 'aktif' ? 'Aktif' : 'Nonaktif'}
+                      </span>
+                    );
+                  })()}
                 </div>
 
                 <div className="pm-detail-grid">

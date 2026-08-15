@@ -210,245 +210,263 @@ export function Lakstari21stSidebar({
   const isOpen = onToggleSidebar ? isSidebarOpen : internalOpen;
   const toggleSidebar = onToggleSidebar ?? (() => setInternalOpen((v) => !v));
 
+  const handleMenuClick = (id: string) => {
+    onTabChange(id);
+    if (typeof window !== "undefined" && window.innerWidth <= 1024 && isOpen) {
+      toggleSidebar();
+    }
+  };
+
   return (
-    <div style={{ display: "flex", height: "100vh", position: "sticky", top: 0, zIndex: 100 }}>
-      {/* Sidebar Panel */}
-      <aside
-        style={{
-          width: isOpen ? "260px" : "0px",
-          minWidth: isOpen ? "260px" : "0px",
-          height: "100%",
-          backgroundColor: "#232B45",
-          display: "flex",
-          flexDirection: "column",
-          padding: isOpen ? "16px 12px" : "0",
-          boxSizing: "border-box",
-          borderRight: isOpen ? "1px solid rgba(255,255,255,0.07)" : "none",
-          overflow: "hidden",
-          transition: "width 0.3s ease, min-width 0.3s ease, padding 0.3s ease",
-        }}
-      >
-        {isOpen && (
-          <>
-            {/* Brand Header */}
-            <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-              <BrandLogo />
-              <button
-                onClick={toggleSidebar}
-                style={{
-                  background: "rgba(255,255,255,0.06)",
-                  border: "none",
-                  borderRadius: "6px",
-                  padding: "6px",
-                  cursor: "pointer",
-                  color: "#94A3B8",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  transition: "background 0.2s, color 0.2s",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.12)";
-                  (e.currentTarget as HTMLElement).style.color = "#ffffff";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)";
-                  (e.currentTarget as HTMLElement).style.color = "#94A3B8";
-                }}
-                title="Tutup Sidebar"
-              >
-                <IconPanelLeftClose />
-              </button>
-            </div>
-
-            {/* Search Input */}
-            <div style={{
-              display: "flex", alignItems: "center", gap: "8px",
-              background: "rgba(255,255,255,0.06)",
-              borderRadius: "8px",
-              padding: "8px 10px",
-              marginBottom: "16px",
-              border: "1px solid rgba(255,255,255,0.08)"
-            }}>
-              <span style={{ color: "#64748B", flexShrink: 0 }}><IconSearch /></span>
-              <input
-                type="text"
-                placeholder="Cari menu..."
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                style={{
-                  background: "transparent", border: "none", outline: "none",
-                  fontSize: "13px", color: "#E2E8F0", width: "100%",
-                }}
-              />
-            </div>
-
-            {/* Navigation Menu */}
-            <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "4px" }}>
-              {menuGroups.map((group, idx) => (
-                <div key={idx} style={{ marginBottom: "8px" }}>
-                  {group.heading && (
-                    <div style={{
-                      fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em",
-                      color: "rgba(148,163,184,0.5)", textTransform: "uppercase",
-                      padding: "0 10px", marginBottom: "4px"
-                    }}>
-                      {group.heading}
-                    </div>
-                  )}
-                  {group.items
-                    .filter(item => !searchValue || item.label.toLowerCase().includes(searchValue.toLowerCase()))
-                    .map((item) => {
-                      const isActive = activeTab === item.id;
-                      return (
-                        <button
-                          key={item.id}
-                          onClick={() => onTabChange(item.id)}
-                          style={{
-                            display: "flex", alignItems: "center", gap: "10px",
-                            width: "100%", padding: "7px 10px",
-                            borderRadius: "6px", border: "none",
-                            background: isActive ? "#FAAC30" : "transparent",
-                            color: isActive ? "#232B45" : "#94A3B8",
-                            fontSize: "13px", fontWeight: isActive ? 700 : 500,
-                            cursor: "pointer", textAlign: "left",
-                            transition: "all 0.15s ease",
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!isActive) {
-                              (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)";
-                              (e.currentTarget as HTMLElement).style.color = "#ffffff";
-                            }
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isActive) {
-                              (e.currentTarget as HTMLElement).style.background = "transparent";
-                              (e.currentTarget as HTMLElement).style.color = "#94A3B8";
-                            }
-                          }}
-                        >
-                          <span style={{ flexShrink: 0 }}><item.icon /></span>
-                          <span style={{ whiteSpace: "nowrap" }}>{item.label}</span>
-                        </button>
-                      );
-                    })}
-                </div>
-              ))}
-            </div>
-
-            {/* Bottom Section */}
-            <div style={{
-              paddingTop: "12px", marginTop: "8px",
-              borderTop: "1px solid rgba(255,255,255,0.07)",
-              display: "flex", flexDirection: "column", gap: "2px",
-            }}>
-              {bottomItems.map((item) => {
-                const isActive = activeTab === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => onTabChange(item.id)}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "10px",
-                      width: "100%", padding: "7px 10px",
-                      borderRadius: "6px", border: "none",
-                      background: isActive ? "#FAAC30" : "transparent",
-                      color: isActive ? "#232B45" : "#94A3B8",
-                      fontSize: "13px", fontWeight: isActive ? 700 : 500,
-                      cursor: "pointer", textAlign: "left",
-                      transition: "all 0.15s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      if (!isActive) {
-                        (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)";
-                        (e.currentTarget as HTMLElement).style.color = "#ffffff";
-                      }
-                    }}
-                    onMouseLeave={(e) => {
-                      if (!isActive) {
-                        (e.currentTarget as HTMLElement).style.background = "transparent";
-                        (e.currentTarget as HTMLElement).style.color = "#94A3B8";
-                      }
-                    }}
-                  >
-                    <span style={{ flexShrink: 0 }}><item.icon /></span>
-                    <span>{item.label}</span>
-                  </button>
-                );
-              })}
-
-              {/* Logout */}
-              <button
-                onClick={onLogout}
-                style={{
-                  display: "flex", alignItems: "center", gap: "10px",
-                  width: "100%", padding: "7px 10px",
-                  borderRadius: "6px", border: "none",
-                  background: "transparent",
-                  color: "#94A3B8",
-                  fontSize: "13px", fontWeight: 500,
-                  cursor: "pointer", textAlign: "left",
-                  transition: "all 0.15s ease",
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)";
-                  (e.currentTarget as HTMLElement).style.color = "#F87171";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = "transparent";
-                  (e.currentTarget as HTMLElement).style.color = "#94A3B8";
-                }}
-              >
-                <span style={{ flexShrink: 0 }}><IconLogOut /></span>
-                <span>Keluar</span>
-              </button>
-
-              {/* Profile */}
-              <div style={{
-                display: "flex", alignItems: "center", gap: "10px",
-                padding: "10px 10px 2px",
-                marginTop: "4px",
-              }}>
-                <div style={{
-                  width: "32px", height: "32px", borderRadius: "50%", flexShrink: 0,
-                  background: "rgba(250,172,48,0.15)", border: "1px solid rgba(250,172,48,0.4)",
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "13px", fontWeight: 800, color: "#FAAC30"
-                }}>A</div>
-                <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                  <span style={{ fontSize: "12px", fontWeight: 600, color: "#E2E8F0", lineHeight: 1.3 }}>Admin Lakstari</span>
-                  <span style={{ fontSize: "10px", color: "#64748B", lineHeight: 1.3 }}>Pemilik Toko</span>
-                </div>
-                <button style={{ background: "none", border: "none", color: "#64748B", cursor: "pointer", marginLeft: "auto", flexShrink: 0 }}>
-                  <IconChevronDown />
+    <>
+      {/* Backdrop hanya untuk mobile (layar kecil) saat sidebar terbuka sebagai overlay */}
+      {isOpen && typeof window !== 'undefined' && window.innerWidth <= 1024 && (
+        <div
+          className="lakstari-sidebar-backdrop"
+          onClick={toggleSidebar}
+          aria-hidden="true"
+        />
+      )}
+      <div className={`lakstari-sidebar-wrapper ${isOpen ? "is-open" : ""}`} style={{ display: "flex", height: "100vh", position: "sticky", top: 0, zIndex: 100 }}>
+        {/* Sidebar Panel */}
+        <aside
+          className="lakstari-sidebar-aside"
+          style={{
+            width: isOpen ? "260px" : "0px",
+            minWidth: isOpen ? "260px" : "0px",
+            height: "100%",
+            backgroundColor: "#232B45",
+            display: "flex",
+            flexDirection: "column",
+            padding: isOpen ? "16px 12px" : "0",
+            boxSizing: "border-box",
+            borderRight: isOpen ? "1px solid rgba(255,255,255,0.07)" : "none",
+            overflow: "hidden",
+            transition: "width 0.3s cubic-bezier(0.4, 0, 0.2, 1), min-width 0.3s cubic-bezier(0.4, 0, 0.2, 1), padding 0.3s ease",
+          }}
+        >
+          {isOpen && (
+            <>
+              {/* Brand Header */}
+              <div style={{ marginBottom: "20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <BrandLogo />
+                <button
+                  onClick={toggleSidebar}
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    border: "none",
+                    borderRadius: "6px",
+                    padding: "6px",
+                    cursor: "pointer",
+                    color: "#94A3B8",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transition: "background 0.2s, color 0.2s",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.12)";
+                    (e.currentTarget as HTMLElement).style.color = "#ffffff";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.06)";
+                    (e.currentTarget as HTMLElement).style.color = "#94A3B8";
+                  }}
+                  title="Tutup Sidebar"
+                >
+                  <IconPanelLeftClose />
                 </button>
               </div>
-            </div>
-          </>
-        )}
-      </aside>
 
-      {/* Floating Toggle Button when sidebar is closed */}
-      {!isOpen && (
-        <button
-          onClick={toggleSidebar}
-          style={{
-            position: "absolute", left: "8px", top: "16px",
-            background: "#232B45", border: "1px solid rgba(255,255,255,0.1)",
-            borderRadius: "8px", padding: "8px",
-            cursor: "pointer", color: "#94A3B8",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            zIndex: 110, boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-            transition: "color 0.2s",
-          }}
-          onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.color = "#FAAC30"}
-          onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.color = "#94A3B8"}
-          title="Buka Sidebar"
-        >
-          <IconPanelLeftOpen />
-        </button>
-      )}
-    </div>
+              {/* Search Input */}
+              <div style={{
+                display: "flex", alignItems: "center", gap: "8px",
+                background: "rgba(255,255,255,0.06)",
+                borderRadius: "8px",
+                padding: "8px 10px",
+                marginBottom: "16px",
+                border: "1px solid rgba(255,255,255,0.08)"
+              }}>
+                <span style={{ color: "#64748B", flexShrink: 0 }}><IconSearch /></span>
+                <input
+                  type="text"
+                  placeholder="Cari menu..."
+                  value={searchValue}
+                  onChange={(e) => setSearchValue(e.target.value)}
+                  style={{
+                    background: "transparent", border: "none", outline: "none",
+                    fontSize: "13px", color: "#E2E8F0", width: "100%",
+                  }}
+                />
+              </div>
+
+              {/* Navigation Menu */}
+              <div className="lakstari-sidebar-nav" style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "4px" }}>
+                {menuGroups.map((group, idx) => (
+                  <div key={idx} style={{ marginBottom: "8px" }}>
+                    {group.heading && (
+                      <div style={{
+                        fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em",
+                        color: "rgba(148,163,184,0.5)", textTransform: "uppercase",
+                        padding: "0 10px", marginBottom: "4px"
+                      }}>
+                        {group.heading}
+                      </div>
+                    )}
+                    {group.items
+                      .filter(item => !searchValue || item.label.toLowerCase().includes(searchValue.toLowerCase()))
+                      .map((item) => {
+                        const isActive = activeTab === item.id;
+                        return (
+                          <button
+                            key={item.id}
+                            onClick={() => handleMenuClick(item.id)}
+                            style={{
+                              display: "flex", alignItems: "center", gap: "10px",
+                              width: "100%", padding: "7px 10px",
+                              borderRadius: "6px", border: "none",
+                              background: isActive ? "#FAAC30" : "transparent",
+                              color: isActive ? "#232B45" : "#94A3B8",
+                              fontSize: "13px", fontWeight: isActive ? 700 : 500,
+                              cursor: "pointer", textAlign: "left",
+                              transition: "all 0.15s ease",
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isActive) {
+                                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)";
+                                (e.currentTarget as HTMLElement).style.color = "#ffffff";
+                              }
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isActive) {
+                                (e.currentTarget as HTMLElement).style.background = "transparent";
+                                (e.currentTarget as HTMLElement).style.color = "#94A3B8";
+                              }
+                            }}
+                          >
+                            <span style={{ flexShrink: 0 }}><item.icon /></span>
+                            <span style={{ whiteSpace: "nowrap" }}>{item.label}</span>
+                          </button>
+                        );
+                      })}
+                  </div>
+                ))}
+              </div>
+
+              {/* Bottom Section */}
+              <div style={{
+                paddingTop: "12px", marginTop: "8px",
+                borderTop: "1px solid rgba(255,255,255,0.07)",
+                display: "flex", flexDirection: "column", gap: "2px",
+              }}>
+                {bottomItems.map((item) => {
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleMenuClick(item.id)}
+                      style={{
+                        display: "flex", alignItems: "center", gap: "10px",
+                        width: "100%", padding: "7px 10px",
+                        borderRadius: "6px", border: "none",
+                        background: isActive ? "#FAAC30" : "transparent",
+                        color: isActive ? "#232B45" : "#94A3B8",
+                        fontSize: "13px", fontWeight: isActive ? 700 : 500,
+                        cursor: "pointer", textAlign: "left",
+                        transition: "all 0.15s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)";
+                          (e.currentTarget as HTMLElement).style.color = "#ffffff";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          (e.currentTarget as HTMLElement).style.background = "transparent";
+                          (e.currentTarget as HTMLElement).style.color = "#94A3B8";
+                        }
+                      }}
+                    >
+                      <span style={{ flexShrink: 0 }}><item.icon /></span>
+                      <span>{item.label}</span>
+                    </button>
+                  );
+                })}
+
+                {/* Logout */}
+                <button
+                  onClick={onLogout}
+                  style={{
+                    display: "flex", alignItems: "center", gap: "10px",
+                    width: "100%", padding: "7px 10px",
+                    borderRadius: "6px", border: "none",
+                    background: "transparent",
+                    color: "#94A3B8",
+                    fontSize: "13px", fontWeight: 500,
+                    cursor: "pointer", textAlign: "left",
+                    transition: "all 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)";
+                    (e.currentTarget as HTMLElement).style.color = "#F87171";
+                  }}
+                  onMouseLeave={(e) => {
+                    (e.currentTarget as HTMLElement).style.background = "transparent";
+                    (e.currentTarget as HTMLElement).style.color = "#94A3B8";
+                  }}
+                >
+                  <span style={{ flexShrink: 0 }}><IconLogOut /></span>
+                  <span>Keluar</span>
+                </button>
+
+                {/* Profile */}
+                <div style={{
+                  display: "flex", alignItems: "center", gap: "10px",
+                  padding: "10px 10px 2px",
+                  marginTop: "4px",
+                }}>
+                  <div style={{
+                    width: "32px", height: "32px", borderRadius: "50%", flexShrink: 0,
+                    background: "rgba(250,172,48,0.15)", border: "1px solid rgba(250,172,48,0.4)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "13px", fontWeight: 800, color: "#FAAC30"
+                  }}>A</div>
+                  <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                    <span style={{ fontSize: "12px", fontWeight: 600, color: "#E2E8F0", lineHeight: 1.3 }}>Admin Lakstari</span>
+                    <span style={{ fontSize: "10px", color: "#64748B", lineHeight: 1.3 }}>Pemilik Toko</span>
+                  </div>
+                  <button style={{ background: "none", border: "none", color: "#64748B", cursor: "pointer", marginLeft: "auto", flexShrink: 0 }}>
+                    <IconChevronDown />
+                  </button>
+                </div>
+              </div>
+            </>
+          )}
+        </aside>
+
+        {/* Floating Toggle Button when sidebar is closed */}
+        {!isOpen && (
+          <button
+            onClick={toggleSidebar}
+            style={{
+              position: "absolute", left: "8px", top: "16px",
+              background: "#232B45", border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "8px", padding: "8px",
+              cursor: "pointer", color: "#94A3B8",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              zIndex: 110, boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
+              transition: "color 0.2s",
+            }}
+            onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.color = "#FAAC30"}
+            onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.color = "#94A3B8"}
+            title="Buka Sidebar"
+          >
+            <IconPanelLeftOpen />
+          </button>
+        )}
+      </div>
+    </>
   );
 }
 

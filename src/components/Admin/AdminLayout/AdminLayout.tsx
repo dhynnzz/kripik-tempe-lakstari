@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './AdminLayout.css';
 import { Lakstari21stSidebar } from './sidebar-component';
 import DashboardHome from '../DashboardHome/DashboardHome';
@@ -51,12 +51,37 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
   >('dashboard');
 
   const [isDark, setIsDark] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return window.innerWidth > 1024;
+    }
+    return true;
+  });
+
+  // Otomatis sesuaikan sidebar saat ukuran layar berubah (Rotasi HP/iPad/Desktop)
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 1024) {
+        setIsSidebarOpen(false);
+      } else {
+        setIsSidebarOpen(true);
+      }
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleLogout = async () => {
     if (window.confirm('Apakah Anda yakin ingin keluar dari Portal Admin?')) {
       await apiService.logoutAdmin();
       setIsAuthenticated(false);
+    }
+  };
+
+  const handleTabSelect = (tab: string) => {
+    setActiveTab(tab as any);
+    if (typeof window !== 'undefined' && window.innerWidth <= 1024) {
+      setIsSidebarOpen(false);
     }
   };
 
@@ -76,7 +101,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
       {/* 21st.dev Style Sidebar */}
       <Lakstari21stSidebar
         activeTab={activeTab}
-        onTabChange={(tab) => setActiveTab(tab as any)}
+        onTabChange={handleTabSelect}
         onLogout={handleLogout}
         isSidebarOpen={isSidebarOpen}
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
@@ -86,57 +111,65 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
 
         {/* Top Navbar — 21st.dev style */}
-        <header style={{
+        <header className="admin-topbar" style={{
           height: '56px',
           background: isDark ? '#0F172A' : '#ffffff',
-          borderBottom: '1px solid rgba(0,0,0,0.06)',
+          borderBottom: isDark ? '1px solid #1E293B' : '1px solid rgba(0,0,0,0.06)',
           display: 'flex',
           alignItems: 'center',
-          padding: '0 20px',
           justifyContent: 'space-between',
           position: 'sticky',
           top: 0,
           zIndex: 90,
-          gap: '16px',
+          gap: '12px',
+          padding: '0 20px'
         }}>
           {/* Left: Toggle + Breadcrumb */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            {!isSidebarOpen && (
-              <button
-                onClick={() => setIsSidebarOpen(true)}
-                style={{
-                  background: 'transparent', border: 'none',
-                  borderRadius: '6px', padding: '6px',
-                  cursor: 'pointer', color: '#64748B',
-                  display: 'flex', alignItems: 'center',
-                  transition: 'color 0.2s, background 0.2s',
-                }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.05)';
-                  (e.currentTarget as HTMLElement).style.color = '#232B45';
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLElement).style.background = 'transparent';
-                  (e.currentTarget as HTMLElement).style.color = '#64748B';
-                }}
-              >
-                <PanelLeftOpenIcon />
-              </button>
-            )}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <button
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              style={{
+                background: 'transparent', border: 'none',
+                borderRadius: '6px', padding: '6px',
+                cursor: 'pointer', color: '#64748B',
+                display: 'flex', alignItems: 'center',
+                transition: 'color 0.2s, background 0.2s',
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.05)';
+                (e.currentTarget as HTMLElement).style.color = '#232B45';
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.background = 'transparent';
+                (e.currentTarget as HTMLElement).style.color = '#64748B';
+              }}
+              title="Toggle Menu Sidebar"
+            >
+              <PanelLeftOpenIcon />
+            </button>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
               <span style={{ color: '#94A3B8' }}>Lakstari</span>
               <span style={{ color: '#CBD5E1' }}>/</span>
-              <span style={{ color: '#232B45', fontWeight: 600 }}>{tabLabels[activeTab] || 'Dashboard'}</span>
+              <span style={{ color: isDark ? '#F1F5F9' : '#232B45', fontWeight: 600 }}>{tabLabels[activeTab] || 'Dashboard'}</span>
             </div>
           </div>
 
           {/* Right: Actions */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div className="admin-header-date-pill">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              <span>{new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}</span>
+            </div>
+
             <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} />
-            <div style={{
-              width: '1px', height: '24px',
-              background: 'rgba(0,0,0,0.08)',
-            }} />
+
+            <div className="admin-header-divider" />
+
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <div style={{
                 width: '32px', height: '32px', borderRadius: '50%',
@@ -144,9 +177,10 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
                 border: '1px solid rgba(250,172,48,0.3)',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: '12px', fontWeight: 800, color: '#FAAC30',
+                flexShrink: 0
               }}>A</div>
-              <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ fontSize: '12px', fontWeight: 700, color: '#1E293B', lineHeight: 1.3 }}>Admin Lakstari</span>
+              <div className="admin-header-user-text" style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={{ fontSize: '12px', fontWeight: 700, color: isDark ? '#F1F5F9' : '#1E293B', lineHeight: 1.3 }}>Admin Lakstari</span>
                 <span style={{ fontSize: '10px', color: '#94A3B8', lineHeight: 1.3 }}>Pemilik Toko</span>
               </div>
             </div>
@@ -154,7 +188,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
         </header>
 
         {/* Main Body */}
-        <main style={{ padding: '28px', flex: 1 }}>
+        <main className="admin-main-content" style={{ flex: 1, padding: '28px' }}>
           {activeTab === 'dashboard' && <DashboardHome />}
           {activeTab === 'products' && <ProductManager />}
           {activeTab === 'categories' && <CategoryManager />}
