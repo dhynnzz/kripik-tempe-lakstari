@@ -1,0 +1,60 @@
+.floating-cart-btn {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 60px;
+  height: 60px;
+  background-color: #22C55E; /* Green to match the image */
+  color: white;
+  border-radius: 50%;
+  border: none;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.4);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.floating-cart-btn:hover {
+  transform: scale(1.05) translateY(-2px);
+  box-shadow: 0 15px 30px rgba(34, 197, 94, 0.5);
+}
+
+.floating-cart-btn:active {
+  transform: scale(0.95);
+}
+
+.cart-icon-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -8px;
+  right: -12px;
+  background-color: #FAAC30; /* Diganti ke kuning-oranye dari merah */
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+@media (max-width: 768px) {
+  .floating-cart-btn {
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+  }
+}

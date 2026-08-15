@@ -1,0 +1,155 @@
+/* Footer */
+.footer {
+  background-color: var(--primary-dark);
+  color: white;
+  padding: 15px 0 10px;
+  /* Sangat ramping */
+  margin-top: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.footer-wave {
+  position: relative;
+  margin-top: auto;
+}
+
+.footer-wave::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 30px;
+  /* Diperkecil lagi */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 1440 30' preserveAspectRatio='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%23232B45' d='M0,30 C400,-5 800,40 1440,5 L1440,30 L0,30 Z' /%3E%3C/svg%3E");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* Dekorasi daun/leaf besar di kanan bawah */
+.footer::after {
+  content: "";
+  position: absolute;
+  bottom: 20px;
+  right: -20px;
+  width: 350px;
+  height: 350px;
+  background-image: url("data:image/svg+xml,%3Csvg width='350' height='350' viewBox='0 0 350 350' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cellipse cx='175' cy='175' rx='130' ry='60' transform='rotate(-30 175 175)' stroke='rgba(255,255,255,0.06)' stroke-width='1.5' fill='none'/%3E%3Cellipse cx='175' cy='175' rx='100' ry='45' transform='rotate(-30 175 175)' stroke='rgba(255,255,255,0.05)' stroke-width='1.5' fill='none'/%3E%3Cellipse cx='175' cy='175' rx='70' ry='30' transform='rotate(-30 175 175)' stroke='rgba(255,255,255,0.04)' stroke-width='1.5' fill='none'/%3E%3Cline x1='100' y1='250' x2='250' y2='100' stroke='rgba(255,255,255,0.05)' stroke-width='1.5'/%3E%3Ccircle cx='140' cy='140' r='3' fill='rgba(255,255,255,0.06)'/%3E%3Ccircle cx='210' cy='210' r='3' fill='rgba(255,255,255,0.06)'/%3E%3Ccircle cx='160' cy='220' r='3' fill='rgba(255,255,255,0.05)'/%3E%3Ccircle cx='220' cy='150' r='3' fill='rgba(255,255,255,0.05)'/%3E%3Ccircle cx='175' cy='175' r='4' fill='rgba(255,255,255,0.06)'/%3E%3Ccircle cx='130' cy='190' r='2.5' fill='rgba(255,255,255,0.04)'/%3E%3Ccircle cx='200' cy='160' r='2.5' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: 1fr 1.5fr 1fr;
+  /* margin dihapus agar border vertikal bisa menyentuh border horizontal bawah */
+  position: relative;
+  z-index: 1;
+}
+
+.footer-col {
+  padding: 0 40px 15px 40px;
+  border-left: 1px solid rgba(250, 172, 48, 0.3);
+}
+
+.footer-col:first-child {
+  padding-left: 20px;
+}
+
+.footer-col:last-child {
+  border-right: 1px solid rgba(250, 172, 48, 0.3);
+}
+
+.footer-col h4 {
+  color: var(--primary-accent);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  /* Lebih mepet ke teks list */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-col li {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  margin-bottom: 8px;
+  /* Sangat mepet antar list */
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  line-height: 1.5;
+}
+
+.footer-col a {
+  transition: color 0.3s;
+}
+
+.footer-col a:hover {
+  color: var(--primary-accent);
+}
+
+.icon {
+  color: rgba(255, 255, 255, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.icon svg {
+  stroke-width: 1.2;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: none;
+  padding-top: 10px;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 13px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Responsive Footer */
+@media (max-width: 768px) {
+  .footer-content {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .footer-col {
+    padding: 0;
+    border-left: none;
+    border-right: none;
+    padding-bottom: 0;
+  }
+
+  .footer-col:first-child {
+    padding-left: 0;
+  }
+
+  .footer-col:last-child {
+    border-right: none;
+  }
+
+  .border-col {
+    border-left: none;
+    border-top: 1px solid rgba(250, 172, 48, 0.3);
+    padding-top: 40px;
+  }
+
+  .footer::after {
+    width: 200px;
+    height: 200px;
+    bottom: 10px;
+    right: -30px;
+  }
+}

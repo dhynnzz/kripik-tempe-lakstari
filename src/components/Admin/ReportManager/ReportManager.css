@@ -1,0 +1,76 @@
+/* Report Manager Styles - PRD Lakstari */
+.report-manager-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.report-filter-card {
+  background-color: #ffffff;
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid #EAEFEF;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.report-filter-title h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin: 0 0 4px 0;
+}
+
+.report-filter-title p {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0;
+}
+
+.report-filter-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.report-filter-select {
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  border: 1px solid #CBD5E1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  outline: none;
+}
+
+.report-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.report-stat-card {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid #EAEFEF;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.report-stat-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
+.report-stat-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--primary-dark);
+}

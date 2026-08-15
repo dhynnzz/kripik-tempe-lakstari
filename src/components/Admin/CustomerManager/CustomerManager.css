@@ -1,0 +1,61 @@
+/* Customer Manager Styles - PRD Lakstari */
+.customer-manager-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.customer-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 20px 24px;
+  border-radius: 16px;
+  border: 1px solid #EAEFEF;
+}
+
+.customer-header-title h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--primary-dark);
+  margin: 0 0 4px 0;
+}
+
+.customer-header-title p {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0;
+}
+
+.customer-table-card {
+  background-color: #ffffff;
+  border-radius: 16px;
+  border: 1px solid #EAEFEF;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+.customer-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.customer-table th {
+  background-color: #F8FAFC;
+  padding: 14px 18px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #E2E8F0;
+}
+
+.customer-table td {
+  padding: 14px 18px;
+  font-size: 13px;
+  color: #334155;
+  border-bottom: 1px solid #F1F5F9;
+}

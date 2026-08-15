@@ -1,0 +1,25 @@
+/* App.css - Global Styles */
+
+/* Global container */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Global Button */
+.btn-primary {
+  background-color: var(--primary-accent);
+  color: var(--primary-dark);
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.3s ease;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-accent-hover);
+}

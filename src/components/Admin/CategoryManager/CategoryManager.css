@@ -1,0 +1,258 @@
+/* Category Manager Styles - Reference Match */
+.category-manager-container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Button Add */
+.btn-add-category {
+  background-color: var(--primary-accent);
+  color: var(--primary-dark);
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.2);
+}
+
+.btn-add-category:hover {
+  background-color: #E59B24;
+  transform: translateY(-1px);
+}
+
+/* Summary Cards */
+.cat-summary-cards {
+  display: flex;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F1F5F9;
+}
+
+.cat-summary-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+}
+
+.cat-summary-card:first-child {
+  padding-left: 0;
+}
+.cat-summary-card:last-child {
+  padding-right: 0;
+}
+
+.cat-icon-wrap {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cat-summary-info h3 {
+  margin: 0 0 4px 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+.cat-summary-info p {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748B;
+}
+
+.cat-summary-divider {
+  width: 1px;
+  height: 40px;
+  background-color: #E2E8F0;
+}
+
+/* Table Card */
+.cat-table-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+  border: 1px solid #F1F5F9;
+  overflow: hidden;
+}
+
+/* Toolbar */
+.cat-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 24px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.cat-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 0 16px;
+  height: 42px;
+  width: 320px;
+  transition: all 0.2s;
+}
+
+.cat-search-box:focus-within {
+  border-color: #CBD5E1;
+  box-shadow: 0 0 0 3px rgba(241, 245, 249, 0.5);
+}
+
+.cat-search-box svg {
+  color: #94A3B8;
+}
+
+.cat-search-box input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 13.5px;
+  color: #334155;
+}
+
+.cat-search-box input::placeholder {
+  color: #94A3B8;
+}
+
+.cat-status-filter {
+  height: 42px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  background: #ffffff;
+  color: #475569;
+  font-size: 13.5px;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D%2212%22%20height%3D%228%22%20viewBox%3D%220%200%2012%208%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M1%201.5L6%206.5L11%201.5%22%20stroke%3D%22%2364748B%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  padding-right: 40px;
+}
+
+/* Table */
+.cat-table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.cat-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.cat-table th {
+  padding: 16px 24px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #F1F5F9;
+  background: #ffffff;
+}
+
+.cat-table td {
+  padding: 14px 24px;
+  font-size: 13.5px;
+  color: #334155;
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+}
+
+.cat-table tr:last-child td {
+  border-bottom: none;
+}
+
+.cat-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.cat-table tbody tr:hover {
+  background-color: #F8FAFC;
+}
+
+.cat-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.cat-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cat-name-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cat-name-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.cat-name-desc {
+  font-size: 12px;
+  color: #94A3B8;
+  font-style: italic;
+}
+
+/* Status Pill */
+.cat-status-pill {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+  background-color: transparent;
+}
+
+.cat-status-pill.aktif {
+  background-color: #F0FDF4;
+  color: #16A34A;
+  border: 1px solid #BBF7D0;
+}
+
+.cat-status-pill.nonaktif {
+  background-color: #F8FAFC;
+  color: #64748B;
+  border: 1px solid #E2E8F0;
+}
+
+.cat-status-pill:hover {
+  opacity: 0.8;
+}
