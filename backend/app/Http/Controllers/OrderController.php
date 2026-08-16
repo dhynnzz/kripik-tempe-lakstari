@@ -27,7 +27,7 @@ class OrderController extends Controller
             'provinsi' => 'required|string',
             'kode_pos' => 'required|string',
             'items' => 'required|array',
-            'items.*.id_product' => 'required|exists:product,id_product',
+            'items.*.id_product' => 'required|exists:products,id_product',
             'items.*.qty' => 'required|integer|min:1',
             'biaya_pengiriman' => 'required|numeric',
         ]);
@@ -49,9 +49,10 @@ class OrderController extends Controller
             $alamat = AlamatPelanggan::create([
                 'id_pelanggan' => $pelanggan->id_pelanggan,
                 'label_alamat' => 'Utama',
-                'penerima' => $request->nama_pelanggan,
+                'nama_penerima' => $request->nama_pelanggan,
                 'no_hp_penerima' => $request->no_hp,
                 'alamat_lengkap' => $request->alamat_lengkap,
+                'kelurahan' => $request->kelurahan ?? '-',
                 'kecamatan' => $request->kecamatan,
                 'kota' => $request->kota,
                 'provinsi' => $request->provinsi,
@@ -73,8 +74,8 @@ class OrderController extends Controller
                 'diskon' => 0,
                 'total_pembayaran' => 0,
                 'metode_pembayaran' => 'Transfer Bank',
-                'status_pembayaran' => 'Pending',
-                'status_transaksi' => 'Menunggu Pembayaran',
+                'status_pembayaran' => 'pending',
+                'status_transaksi' => 'menunggu_pembayaran',
             ]);
 
             // 4. Buat Detail Transaksi & Kurangi Stok
@@ -93,8 +94,10 @@ class OrderController extends Controller
                 DetailTransaksi::create([
                     'id_transaksi' => $transaksi->id_transaksi,
                     'id_product' => $product->id_product,
-                    'qty' => $item['qty'],
-                    'harga_satuan' => $harga,
+                    'nama_product' => $product->nama_product,
+                    'harga_product' => $harga,
+                    'berat_product' => $product->berat_product,
+                    'jumlah' => $item['qty'],
                     'subtotal' => $subtotal_item,
                 ]);
 
@@ -114,9 +117,11 @@ class OrderController extends Controller
             // 5. Buat Pengiriman (Draft)
             Pengiriman::create([
                 'id_transaksi' => $transaksi->id_transaksi,
+                'id_pelanggan' => $pelanggan->id_pelanggan,
+                'id_alamat' => $alamat->id_alamat,
                 'kurir' => 'J&T Express', // Default atau dari request
-                'layanan' => 'REG',
-                'status_pengiriman' => 'Menunggu Pickup',
+                'layanan_kurir' => 'REG',
+                'status_pengiriman' => 'menunggu_pickup',
                 'biaya_pengiriman' => $request->biaya_pengiriman,
                 'berat_total' => 1000 // Simulasi 1kg
             ]);
