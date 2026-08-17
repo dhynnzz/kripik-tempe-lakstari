@@ -30,9 +30,14 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ imageSrc, onCropC
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
 
-      // Kunci ukuran menjadi 1:1, misal 500x500
-      canvas.width = 500;
-      canvas.height = 500;
+      // Kunci resolusi HD 1:1 (800x800 px) agar gambar sangat tajam di desktop & layar Retina
+      const targetSize = 800;
+      canvas.width = targetSize;
+      canvas.height = targetSize;
+
+      // Kualitas rendering tinggi dan halus (anti-aliasing)
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
 
       ctx.drawImage(
         image,
@@ -42,15 +47,20 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ imageSrc, onCropC
         croppedAreaPixels.height,
         0,
         0,
-        500,
-        500
+        targetSize,
+        targetSize
       );
 
-      const base64Image = canvas.toDataURL('image/jpeg', 0.85);
+      // Kompresi WebP HD jernih & tajam (~45-60 KB) dengan fallback JPEG
+      let base64Image = canvas.toDataURL('image/webp', 0.85);
+      if (!base64Image.startsWith('data:image/webp')) {
+        base64Image = canvas.toDataURL('image/jpeg', 0.85);
+      }
+
       onCropComplete(base64Image);
     } catch (e) {
       console.error(e);
-      alert('Gagal memotong gambar.');
+      alert('Gagal memproses & mengompres gambar.');
       onCancel();
     }
   };
@@ -59,7 +69,7 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ imageSrc, onCropC
     <div className="crop-modal-overlay">
       <div className="crop-modal-box">
         <h3>Sesuaikan Posisi & Ukuran Foto</h3>
-        <p>Silakan geser atau perbesar (zoom) gambar agar ukurannya seragam (1:1).</p>
+        <p>Silakan geser atau perbesar gambar. Foto otomatis dioptimasi & dikompresi (WebP) agar ringan.</p>
         
         <div className="crop-container">
           <Cropper

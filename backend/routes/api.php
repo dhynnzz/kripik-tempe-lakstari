@@ -18,6 +18,8 @@ Route::post('/admin/login', [AuthController::class, 'login']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/checkout', [\App\Http\Controllers\OrderController::class, 'checkout']);
+Route::get('/wilayah/districts/{regencyId}', [\App\Http\Controllers\WilayahController::class, 'getDistricts']);
+Route::get('/wilayah/villages/{districtId}', [\App\Http\Controllers\WilayahController::class, 'getVillages']);
 
 // Protected Routes (Sanctum)
 Route::middleware('auth:sanctum')->group(function () {

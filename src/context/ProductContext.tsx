@@ -61,6 +61,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
           id: p.id_product,
           name: p.nama_product,
           category: p.category ? p.category.nama_category : 'Lainnya',
+          categoryId: p.id_category,
           flavor: p.nama_product,
           priceNum: parseFloat(p.harga_product),
           priceStr: `Rp ${parseFloat(p.harga_product).toLocaleString('id-ID')}`,
@@ -116,14 +117,13 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
       return p;
     }));
     await apiService.updateProductStock(id, finalStock);
-    fetchProducts();
   };
 
   const updateProductPrice = async (id: number, newPrice: number) => {
     const p = products.find(prod => prod.id === id);
     if (!p) return;
-    const success = await apiService.updateProduct(id, { ...p, priceNum: newPrice });
-    if (success) fetchProducts();
+    setProducts(prev => prev.map(item => item.id === id ? { ...item, priceNum: newPrice, priceStr: `Rp ${newPrice.toLocaleString('id-ID')}` } : item));
+    await apiService.updateProduct(id, { harga_product: newPrice });
   };
 
   const toggleProductStatus = async (id: number) => {
@@ -132,8 +132,15 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     if (p.stock === 0) return; // Tidak bisa aktif jika stok 0
     const currentSt = (p.status === 'habis' && p.stock > 0) ? 'aktif' : p.status;
     const nextStatus = currentSt === 'aktif' ? 'nonaktif' : 'aktif';
-    const success = await apiService.updateProduct(id, { ...p, status: nextStatus });
-    if (success) fetchProducts();
+    
+    // ⚡ Optimistic UI Update: langsung update state tanpa flicker
+    setProducts(prev => prev.map(item => item.id === id ? { ...item, status: nextStatus } : item));
+
+    const success = await apiService.updateProduct(id, { status_product: nextStatus });
+    if (!success) {
+      // Revert jika gagal ke server
+      setProducts(prev => prev.map(item => item.id === id ? { ...item, status: currentSt } : item));
+    }
   };
 
   const updateProduct = async (updated: ProductItem) => {

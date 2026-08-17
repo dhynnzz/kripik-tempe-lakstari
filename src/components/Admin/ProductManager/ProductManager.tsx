@@ -75,7 +75,7 @@ const ProductManager: React.FC = () => {
       status: stockNum === 0 ? 'habis' : 'aktif',
       label: 'Baru',
       image: (!newProductImage || newProductImage.startsWith('blob:')) ? '/flavor_original_1786524783436.png' : newProductImage,
-      desc: newProductDesc || 'Produk olahan kripik tempe Lakstari lezat & berkualitas.'
+      desc: newProductDesc || 'Produk olahan Kripik tempe Lakstari lezat & berkualitas.'
     });
 
     setIsAddModalOpen(false);
@@ -324,7 +324,7 @@ const ProductManager: React.FC = () => {
                   <label>Nama Produk</label>
                   <input
                     type="text"
-                    placeholder="Contoh: Keripik Tempe Original"
+                    placeholder="Contoh: Kripik Tempe Original"
                     required
                     value={newProductName}
                     onChange={(e) => setNewProductName(e.target.value)}

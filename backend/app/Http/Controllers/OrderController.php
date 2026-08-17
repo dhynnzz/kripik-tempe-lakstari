@@ -27,7 +27,7 @@ class OrderController extends Controller
             'provinsi' => 'required|string',
             'kode_pos' => 'required|string',
             'items' => 'required|array',
-            'items.*.id_product' => 'required|exists:product,id_product',
+            'items.*.id_product' => 'required|exists:products,id_product',
             'items.*.qty' => 'required|integer|min:1',
             'biaya_pengiriman' => 'required|numeric',
         ]);

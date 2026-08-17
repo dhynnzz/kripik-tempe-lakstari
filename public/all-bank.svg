@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 32" fill="none">
+  <!-- Minimalist Clean Bank Transfer Mark -->
+  <g transform="translate(2, 4)">
+    <path d="M12 2L2 7V9H22V7L12 2Z" fill="#2E3053"/>
+    <rect x="4.5" y="10.5" width="2.5" height="7.5" fill="#2E3053"/>
+    <rect x="10.75" y="10.5" width="2.5" height="7.5" fill="#2E3053"/>
+    <rect x="17" y="10.5" width="2.5" height="7.5" fill="#2E3053"/>
+    <rect x="2" y="19.5" width="20" height="2.5" rx="0.5" fill="#2E3053"/>
+  </g>
+  
+  <text x="32" y="15" fill="#2E3053" font-family="'Outfit', 'Nunito', sans-serif" font-size="12" font-weight="800" letter-spacing="0.5">TRANSFER</text>
+  <text x="32" y="27" fill="#2E3053" font-family="'Nunito', sans-serif" font-size="10" font-weight="700" letter-spacing="0.3">SEMUA BANK</text>
+</svg>

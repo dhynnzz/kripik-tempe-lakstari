@@ -22,6 +22,9 @@ const Spiral = ({ style }: { style: React.CSSProperties }) => (
 const ProductList = () => {
   const { products: allProducts } = useProducts();
 
+  // Hanya sembunyikan produk yang statusnya 'nonaktif' (produk dengan stok 0 / status 'habis' tetap tampil)
+  const displayProducts = allProducts.filter(p => p.status !== 'nonaktif');
+
   const [selectedVariants, setSelectedVariants] = useState<Record<string, number>>({});
 
   const handleVariantChange = (category: string, id: number) => {
@@ -63,19 +66,19 @@ const ProductList = () => {
         <Spiral style={{ top: '95%', left: '15%', transform: 'rotate(-25deg) scale(1.7)' }} />
 
         <div className="products-grid-2x2">
-          {allProducts.length === 0 ? (
+          {displayProducts.length === 0 ? (
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px', background: '#fff', borderRadius: '16px' }}>
-              <h3>Belum Ada Produk</h3>
-              <p style={{ color: '#64748B' }}>Saat ini belum ada produk yang ditambahkan dari panel Admin.</p>
+              <h3>Belum Ada Produk Tersedia</h3>
+              <p style={{ color: '#64748B' }}>Saat ini belum ada produk aktif yang siap dipesan.</p>
             </div>
           ) : (
             Object.entries(
-              allProducts.reduce((acc, curr) => {
+              displayProducts.reduce((acc, curr) => {
                 const cat = curr.category || 'Lainnya';
                 if (!acc[cat]) acc[cat] = [];
                 acc[cat].push(curr);
                 return acc;
-              }, {} as Record<string, typeof allProducts>)
+              }, {} as Record<string, typeof displayProducts>)
             ).map(([categoryName, items]) => {
               const selectedId = selectedVariants[categoryName] || items[0]?.id;
               const activeItem = items.find(p => p.id === selectedId) || items[0];
@@ -96,20 +99,30 @@ const ProductList = () => {
                       <p className="product-desc-min">{activeItem.weight} | {activeItem.desc}</p>
 
                       <div className="product-stock-tag">
-                        <span className={`stock-indicator-dot ${activeItem.stock < 50 ? 'dot-low' : 'dot-available'}`}></span>
-                        Stok Siap Kirim: <strong>{activeItem.stock} item</strong>
+                        <span className={`stock-indicator-dot ${activeItem.stock === 0 ? 'dot-out' : (activeItem.stock < 50 ? 'dot-low' : 'dot-available')}`}></span>
+                        {activeItem.stock === 0 ? (
+                          <span style={{ color: '#EF4444', fontWeight: 700 }}>Stok 0 </span>
+                        ) : (
+                          <>Stok Siap Kirim: <strong>{activeItem.stock} item</strong></>
+                        )}
                       </div>
 
                       <div className="variant-selector">
                         {items.length > 1 ? (
                           <CustomSelect
-                            options={items.map(p => ({ value: p.id as number, label: p.name }))}
+                            options={items.map(p => ({
+                              value: p.id as number,
+                              label: p.name
+                            }))}
                             value={activeItem.id as number}
                             onChange={(val) => handleVariantChange(categoryName, val as number)}
                           />
                         ) : (
                           <CustomSelect
-                            options={[{ value: activeItem.id as number, label: activeItem.name }]}
+                            options={[{
+                              value: activeItem.id as number,
+                              label: activeItem.name
+                            }]}
                             value={activeItem.id as number}
                             onChange={() => { }}
                             disabled
@@ -120,9 +133,11 @@ const ProductList = () => {
                       <button
                         className="btn-add btn-add-full"
                         onClick={() => addToCart({
+                          productId: activeItem.id,
                           productName: categoryName,
                           variant: activeItem.name,
                           priceStr: activeItem.priceStr || 'Rp 0',
+                          weight: activeItem.weight,
                           image: activeItem.image
                         })}
                         disabled={activeItem.stock === 0}

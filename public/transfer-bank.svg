@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 40" fill="none">
+  <!-- Background Badge Capsule -->
+  <rect x="1" y="2" width="158" height="36" rx="8" fill="#1E293B" stroke="#334155" stroke-width="1.5"/>
+  
+  <!-- Bank Icon (Building with Pillars) -->
+  <g transform="translate(10, 8)" fill="#FAAC30">
+    <path d="M12 2L2 7V9H22V7L12 2Z" fill="#FAAC30"/>
+    <rect x="4" y="11" width="3" height="8" rx="0.5" fill="#FAAC30"/>
+    <rect x="10.5" y="11" width="3" height="8" rx="0.5" fill="#FAAC30"/>
+    <rect x="17" y="11" width="3" height="8" rx="0.5" fill="#FAAC30"/>
+    <rect x="2" y="21" width="20" height="2.5" rx="0.5" fill="#FAAC30"/>
+  </g>
+  
+  <!-- Text Label -->
+  <text x="40" y="18" fill="#FFFFFF" font-family="'Outfit', 'Nunito', sans-serif" font-size="11" font-weight="800" letter-spacing="0.8">TRANSFER BANK</text>
+  <text x="40" y="29" fill="#94A3B8" font-family="'Nunito', sans-serif" font-size="9" font-weight="700" letter-spacing="0.3">Semua Bank</text>
+</svg>

@@ -153,20 +153,23 @@ export const apiService = {
   // 5. Admin Mengupdate Produk Penuh
   updateProduct: async (id: number, product: any): Promise<boolean> => {
     try {
-      const payload = {
-         id_category: product.category === 'Lainnya' ? 2 : 1,
-         nama_product: product.name,
-         deskripsi_product: product.desc || 'Deskripsi Produk',
-         harga_product: product.priceNum,
-         stok_product: product.stock,
-         berat_product: parseInt(product.weight) || 100,
-         foto_product: product.image || '/flavor_original_1786524783436.png',
-         status_product: product.status || 'aktif'
-      };
-
-      if (product.categoryId) {
-          payload.id_category = product.categoryId;
-      }
+      const payload: any = {};
+      if (product.categoryId) payload.id_category = product.categoryId;
+      if (product.id_category) payload.id_category = product.id_category;
+      if (product.name !== undefined) payload.nama_product = product.name;
+      if (product.nama_product !== undefined) payload.nama_product = product.nama_product;
+      if (product.desc !== undefined) payload.deskripsi_product = product.desc;
+      if (product.deskripsi_product !== undefined) payload.deskripsi_product = product.deskripsi_product;
+      if (product.priceNum !== undefined) payload.harga_product = product.priceNum;
+      if (product.harga_product !== undefined) payload.harga_product = product.harga_product;
+      if (product.stock !== undefined) payload.stok_product = product.stock;
+      if (product.stok_product !== undefined) payload.stok_product = product.stok_product;
+      if (product.weight !== undefined) payload.berat_product = parseInt(product.weight) || 100;
+      if (product.berat_product !== undefined) payload.berat_product = product.berat_product;
+      if (product.image !== undefined) payload.foto_product = product.image;
+      if (product.foto_product !== undefined) payload.foto_product = product.foto_product;
+      if (product.status !== undefined) payload.status_product = product.status;
+      if (product.status_product !== undefined) payload.status_product = product.status_product;
 
       const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
         method: 'PUT',

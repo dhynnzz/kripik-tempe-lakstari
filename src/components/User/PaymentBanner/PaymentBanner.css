@@ -25,10 +25,24 @@
   color: var(--primary-dark);
 }
 
+.payment-supported-text {
+  font-family: var(--font-heading);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
 .payment-logo {
-  height: 20px;
+  height: 22px;
   object-fit: contain;
-  max-width: 80px;
+  max-width: 85px;
+}
+
+.payment-bank-logo {
+  max-width: 130px;
+  height: 24px;
 }
 
 /* Responsive Payment Banner */
