@@ -333,3 +333,125 @@
   background: #FEF2F2;
 }
 
+/* Modal Tambah / Edit Kategori (Matching ProductManager Dark Header) */
+.cat-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+}
+
+.cat-modal-box {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+  border: 1px solid rgba(250, 172, 48, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.cat-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #232B45 0%, #1A2035 100%);
+  padding: 16px 20px;
+  color: #ffffff;
+}
+
+.cat-modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+  color: #ffffff;
+}
+
+.cat-modal-close-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 22px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  transition: opacity 0.2s;
+  padding: 0;
+}
+
+.cat-modal-close-btn:hover {
+  opacity: 0.8;
+}
+
+.cat-modal-form {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cat-modal-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cat-modal-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.cat-modal-group input {
+  width: 100%;
+  height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid #CBD5E1;
+  outline: none;
+  font-size: 14px;
+  color: #0F172A;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  background: #ffffff;
+}
+
+.cat-modal-group input:focus {
+  border-color: #1D4ED8;
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.1);
+}
+
+.cat-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.cat-modal-submit-btn {
+  width: 100%;
+  height: 44px;
+  border-radius: 10px;
+  border: none;
+  background: var(--primary-accent, #F59E0B);
+  color: #FFFFFF;
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(245, 158, 11, 0.2);
+  transition: all 0.2s;
+}
+
+.cat-modal-submit-btn:hover {
+  background: #D97706;
+  transform: translateY(-1px);
+}
+
+

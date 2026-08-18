@@ -243,85 +243,34 @@ const CategoryManager: React.FC = () => {
 
       {/* Modal Tambah/Edit Kategori */}
       {isModalOpen && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.4)', zIndex: 1000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', backdropFilter: 'blur(4px)'
-        }}>
-          <div style={{
-            background: '#fff', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px',
-            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', color: '#0F172A', fontWeight: 800 }}>
-                {editingId ? 'Edit Kategori' : 'Tambah Kategori Baru'}
-              </h3>
+        <div className="cat-modal-overlay" onClick={() => setIsModalOpen(false)}>
+          <div className="cat-modal-box" onClick={(e) => e.stopPropagation()}>
+            <div className="cat-modal-header">
+              <h3>{editingId ? 'Edit Kategori' : 'Tambah Kategori Baru'}</h3>
               <button
                 type="button"
+                className="cat-modal-close-btn"
                 onClick={() => setIsModalOpen(false)}
                 title="Tutup"
-                style={{
-                  background: '#F1F5F9',
-                  border: 'none',
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: '20px',
-                  color: '#64748B',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s',
-                  lineHeight: 1
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = '#E2E8F0';
-                  e.currentTarget.style.color = '#0F172A';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = '#F1F5F9';
-                  e.currentTarget.style.color = '#64748B';
-                }}
               >
                 &times;
               </button>
             </div>
-            <form onSubmit={handleSaveCategory}>
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '8px' }}>Nama Kategori</label>
+
+            <form onSubmit={handleSaveCategory} className="cat-modal-form">
+              <div className="cat-modal-group">
+                <label>Nama Kategori</label>
                 <input
                   type="text"
                   required
                   placeholder="Contoh: Kripik Tempe Pedas"
                   value={catName}
                   onChange={(e) => setCatName(e.target.value)}
-                  style={{
-                    width: '100%', height: '44px', padding: '0 16px', borderRadius: '10px',
-                    border: '1px solid #CBD5E1', outline: 'none', fontSize: '14px', color: '#0F172A',
-                    transition: 'border-color 0.2s'
-                  }}
-                  onFocus={(e) => e.target.style.borderColor = '#1D4ED8'}
-                  onBlur={(e) => e.target.style.borderColor = '#CBD5E1'}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
-                <button
-                  type="submit"
-                  style={{
-                    width: '100%',
-                    height: '44px',
-                    borderRadius: '10px',
-                    border: 'none',
-                    background: 'var(--primary-accent, #F59E0B)',
-                    color: '#FFFFFF',
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    fontSize: '14px',
-                    boxShadow: '0 4px 10px rgba(245, 158, 11, 0.2)',
-                    transition: 'all 0.2s'
-                  }}
-                >
+              <div className="cat-modal-actions">
+                <button type="submit" className="cat-modal-submit-btn">
                   {editingId ? 'Simpan Perubahan' : 'Simpan Kategori'}
                 </button>
               </div>
