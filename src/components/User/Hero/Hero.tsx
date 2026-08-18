@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Hero.css';
+import { useStoreSettings } from '../../../context/StoreSettingsContext';
 
 const images = [
   '/hero_tempeh.png',
@@ -23,6 +24,7 @@ const Spiral = ({ style }: { style: React.CSSProperties }) => (
 );
 
 const Hero = () => {
+  const { settings } = useStoreSettings();
   const [currentIdx, setCurrentIdx] = useState(0);
 
   useEffect(() => {
@@ -56,8 +58,8 @@ const Hero = () => {
           </div>
         </div>
         <span className="hero-badge">PREMIUM QUALITY SNACK</span>
-        <h1>Kripik Tempe<br />Lakstari</h1>
-        <p>Renyah, Gurih, Nagih. Camilan tradisional kualitas premium yang diolah dengan resep rahasia keluarga.</p>
+        <h1>{settings.name || 'Kripik Tempe Lakstari'}</h1>
+        <p>{settings.tagline || settings.description || 'Renyah, Gurih, Nagih. Camilan tradisional kualitas premium yang diolah dengan resep rahasia keluarga.'}</p>
       </div>
       <div className="hero-image-wrapper">
         {images.map((src, idx) => (

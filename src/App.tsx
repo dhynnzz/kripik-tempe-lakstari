@@ -5,6 +5,7 @@ import { AdminLayout } from './components/Admin';
 import { CartProvider } from './context/CartContext';
 import { ProductProvider } from './context/ProductContext';
 import { CategoryProvider } from './context/CategoryContext';
+import { StoreSettingsProvider } from './context/StoreSettingsContext';
 import { NotifProvider, NotifContainer } from '@/components/ui/notif';
 
 function App() {
@@ -25,39 +26,41 @@ function App() {
   };
 
   return (
-    <NotifProvider>
-      <CategoryProvider>
-        <ProductProvider>
-          <CartProvider>
-            <NotifContainer />
-            {role === 'admin' ? (
-              <AdminLayout onSwitchToUser={handleSwitchToUser} />
-            ) : (
-              <div className="app-container">
-                <Header 
-                  onSwitchToAdmin={handleSwitchToAdmin} 
-                  onNavigate={(view) => setCurrentView(view)} 
-                  currentView={currentView}
-                />
-                {currentView === 'home' ? (
-                  <>
-                    <Hero />
-                    <PaymentBanner />
-                    <ProductList />
-                    <Footer />
-                    
-                    <FloatingCart />
-                    <CartDrawer onNavigateToTracking={() => setCurrentView('track-order')} />
-                  </>
-                ) : (
-                  <OrderTracking onBack={() => setCurrentView('home')} />
-                )}
-              </div>
-            )}
-          </CartProvider>
-        </ProductProvider>
-      </CategoryProvider>
-    </NotifProvider>
+    <StoreSettingsProvider>
+      <NotifProvider>
+        <CategoryProvider>
+          <ProductProvider>
+            <CartProvider>
+              <NotifContainer />
+              {role === 'admin' ? (
+                <AdminLayout onSwitchToUser={handleSwitchToUser} />
+              ) : (
+                <div className="app-container">
+                  <Header 
+                    onSwitchToAdmin={handleSwitchToAdmin} 
+                    onNavigate={(view) => setCurrentView(view)} 
+                    currentView={currentView}
+                  />
+                  {currentView === 'home' ? (
+                    <>
+                      <Hero />
+                      <PaymentBanner />
+                      <ProductList />
+                      <Footer />
+                      
+                      <FloatingCart />
+                      <CartDrawer onNavigateToTracking={() => setCurrentView('track-order')} />
+                    </>
+                  ) : (
+                    <OrderTracking onBack={() => setCurrentView('home')} />
+                  )}
+                </div>
+              )}
+            </CartProvider>
+          </ProductProvider>
+        </CategoryProvider>
+      </NotifProvider>
+    </StoreSettingsProvider>
   );
 }
 

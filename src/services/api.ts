@@ -439,5 +439,37 @@ export const apiService = {
       console.error('Error update admin status:', error);
       return false;
     }
+  },
+
+  // ================= STORE SETTINGS API =================
+
+  getStoreSettings: async (): Promise<any> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/settings`);
+      const json = await response.json();
+      return json.success ? json.data : null;
+    } catch (error) {
+      console.error('Error get store settings:', error);
+      return null;
+    }
+  },
+
+  updateStoreSettings: async (settings: any): Promise<boolean> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/admin/settings`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': getAdminToken()
+        },
+        body: JSON.stringify(settings)
+      });
+      const json = await response.json();
+      return json.success;
+    } catch (error) {
+      console.error('Error update store settings:', error);
+      return false;
+    }
   }
 };

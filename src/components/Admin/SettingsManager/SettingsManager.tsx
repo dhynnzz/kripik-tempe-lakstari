@@ -1,118 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './SettingsManager.css';
-
-interface StoreSettings {
-  // Profil Toko
-  name: string;
-  tagline: string;
-  description: string;
-  cityOrigin: string;
-  address: string;
-
-  // Kontak & Sosmed
-  whatsapp: string;
-  email: string;
-  operatingHours: string;
-  instagram: string;
-  tiktok: string;
-  facebook: string;
-
-  // Stok & Inventori
-  lowStockThreshold: number;
-  outOfStockAction: 'hide' | 'badge';
-
-  // Pengiriman
-  couriers: {
-    jne: boolean;
-    jnt: boolean;
-    sicepat: boolean;
-    pos: boolean;
-  };
-  freeShippingEnabled: boolean;
-  freeShippingMinAmount: number;
-  packingDays: number;
-
-  // Pembayaran
-  paymentMethods: {
-    qris: boolean;
-    bca: boolean;
-    bni: boolean;
-    bri: boolean;
-  };
-  paymentExpiryHours: number;
-  midtransEnvironment: 'sandbox' | 'production';
-}
-
-const defaultSettings: StoreSettings = {
-  name: 'Kripik Tempe Lakstari',
-  tagline: 'Renyah, Gurih & Asli Tradisional Malang',
-  description: 'Produsen dan penjual kripik tempe aneka rasa berkualitas terbaik dengan bahan kedelai pilihan dari Malang, Jawa Timur.',
-  cityOrigin: 'Kota Malang, Jawa Timur (65145)',
-  address: 'Jl. Raya Kripik Tempe No. 88, Sanan, Kota Malang, Jawa Timur 65125',
-
-  whatsapp: '628123456789',
-  email: 'kontak@kripiktempelakstari.id',
-  operatingHours: 'Senin - Sabtu: 08.00 - 17.00 WIB',
-  instagram: 'kripiktempe.lakstari',
-  tiktok: 'lakstari_official',
-  facebook: 'Kripik Tempe Lakstari',
-
-  lowStockThreshold: 10,
-  outOfStockAction: 'badge',
-
-  couriers: {
-    jne: true,
-    jnt: true,
-    sicepat: true,
-    pos: true,
-  },
-  freeShippingEnabled: true,
-  freeShippingMinAmount: 100000,
-  packingDays: 1,
-
-  paymentMethods: {
-    qris: true,
-    bca: true,
-    bni: true,
-    bri: true,
-  },
-  paymentExpiryHours: 24,
-  midtransEnvironment: 'sandbox',
-};
+import { useStoreSettings, type StoreSettings } from '../../../context/StoreSettingsContext';
 
 type SettingsTab = 'general' | 'contact' | 'inventory' | 'shipping' | 'payment';
 
 const SettingsManager: React.FC = () => {
+  const { settings: globalSettings, updateSettings } = useStoreSettings();
   const [activeTab, setActiveTab] = useState<SettingsTab>('general');
-  const [settings, setSettings] = useState<StoreSettings>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('lakstari_store_settings');
-      if (saved) {
-        try {
-          return { ...defaultSettings, ...JSON.parse(saved) };
-        } catch {
-          return defaultSettings;
-        }
-      }
-    }
-    return defaultSettings;
-  });
+  const [settings, setSettings] = useState<StoreSettings>(globalSettings);
+
+  useEffect(() => {
+    setSettings(globalSettings);
+  }, [globalSettings]);
 
   const [savedMessage, setSavedMessage] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSaving(true);
-
-    setTimeout(() => {
-      if (typeof window !== 'undefined') {
-        localStorage.setItem('lakstari_store_settings', JSON.stringify(settings));
-      }
-      setIsSaving(false);
-      setSavedMessage(true);
-      setTimeout(() => setSavedMessage(false), 3000);
-    }, 400);
+    await updateSettings(settings);
+    setIsSaving(false);
+    setSavedMessage(true);
+    setTimeout(() => setSavedMessage(false), 3000);
   };
 
   const handleCourierToggle = (key: keyof StoreSettings['couriers']) => {
