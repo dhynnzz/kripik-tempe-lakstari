@@ -3,8 +3,11 @@
   display: flex;
   flex-direction: column;
   gap: 20px;
+  max-width: 1400px;
+  width: 100%;
 }
 
+/* Header Banner */
 .settings-header-bar {
   display: flex;
   align-items: center;
@@ -34,31 +37,105 @@
   font-weight: 600;
 }
 
+/* Tab Navigation */
+.settings-tabs-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.settings-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid #E2E8F0;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.settings-tab-btn:hover {
+  background: #F8FAFC;
+  color: #1E293B;
+  border-color: #CBD5E1;
+}
+
+.settings-tab-btn.active {
+  background: #FAAC30;
+  color: #232B45;
+  border-color: #FAAC30;
+  box-shadow: 0 4px 14px rgba(250, 172, 48, 0.3);
+}
+
+.settings-tab-btn svg {
+  flex-shrink: 0;
+}
+
+/* Settings Form Card */
 .settings-card {
   background-color: #ffffff;
-  padding: 24px;
+  padding: 28px;
   border-radius: 16px;
-  border: 1px solid #EAEFEF;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
 }
 
-.settings-card h3 {
+/* Toast Success Alert */
+.settings-toast-success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #DCFCE7;
+  color: #166534;
+  border: 1px solid #BBF7D0;
+  padding: 14px 18px;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 13.5px;
+  margin-bottom: 24px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Section Header */
+.settings-section-header {
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.settings-section-header h3 {
   font-size: 18px;
   font-weight: 800;
-  color: var(--primary-dark);
-  margin: 0 0 6px 0;
+  color: #1E293B;
+  margin: 0 0 4px 0;
 }
 
-.settings-card p {
+.settings-section-header p {
   font-size: 13px;
   color: #64748B;
-  margin: 0 0 20px 0;
+  margin: 0;
 }
 
+/* Form Grid */
 .settings-form-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
 }
 
 .settings-field {
@@ -69,34 +146,291 @@
 
 .settings-field label {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   color: #334155;
 }
 
+.settings-field label .req {
+  color: #EF4444;
+}
+
 .settings-field input,
+.settings-field select,
 .settings-field textarea {
-  height: 42px;
+  height: 44px;
   padding: 0 14px;
   border-radius: 10px;
   border: 1px solid #CBD5E1;
-  font-size: 14px;
+  font-size: 13.5px;
+  color: #1E293B;
+  background-color: #ffffff;
   outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+
+.settings-field input:focus,
+.settings-field select:focus,
+.settings-field textarea:focus {
+  border-color: #FAAC30;
+  box-shadow: 0 0 0 3px rgba(250, 172, 48, 0.15);
 }
 
 .settings-field textarea {
-  height: 90px;
-  padding: 10px 14px;
+  height: 96px;
+  padding: 12px 14px;
   resize: vertical;
 }
 
+.field-hint {
+  font-size: 11.5px;
+  color: #64748B;
+  line-height: 1.4;
+  margin-top: 2px;
+}
+
+/* Input with Prefix */
+.input-with-prefix {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748B;
+  pointer-events: none;
+}
+
+.input-with-prefix input {
+  padding-left: 36px;
+  width: 100%;
+}
+
+.input-suffix {
+  position: absolute;
+  right: 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+  pointer-events: none;
+}
+
+/* Couriers / Payment Selection Grid */
+.settings-field-group {
+  margin-bottom: 20px;
+}
+
+.group-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 10px;
+}
+
+.courier-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.courier-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+}
+
+.courier-card:hover {
+  background: #F1F5F9;
+  border-color: #CBD5E1;
+}
+
+.courier-card.is-selected {
+  background: #FFFBEB;
+  border-color: #FAAC30;
+  box-shadow: 0 2px 8px rgba(250, 172, 48, 0.15);
+}
+
+.courier-card input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: #FAAC30;
+  cursor: pointer;
+}
+
+.courier-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.courier-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.courier-desc {
+  font-size: 11px;
+  color: #64748B;
+}
+
+/* Actions */
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #F1F5F9;
+}
+
 .btn-save-settings {
-  background: var(--primary-accent);
-  color: var(--primary-dark);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #FAAC30;
+  color: #232B45;
   border: none;
   padding: 12px 24px;
   border-radius: 10px;
   font-weight: 800;
   font-size: 14px;
   cursor: pointer;
-  margin-top: 16px;
+  box-shadow: 0 4px 14px rgba(250, 172, 48, 0.3);
+  transition: all 0.2s ease;
+}
+
+.btn-save-settings:hover:not(:disabled) {
+  background: #e59b26;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(250, 172, 48, 0.4);
+}
+
+.btn-save-settings:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner-mini {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #232B45;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ════════════════════════════════════════
+   SETTINGS MANAGER DARK MODE STYLES
+════════════════════════════════════════ */
+.admin-dark .settings-tab-btn,
+[data-theme="dark"] .settings-tab-btn {
+  background: #1E293B;
+  border-color: #334155;
+  color: #94A3B8;
+}
+
+.admin-dark .settings-tab-btn:hover,
+[data-theme="dark"] .settings-tab-btn:hover {
+  background: #2D3D58;
+  color: #F8FAFC;
+}
+
+.admin-dark .settings-tab-btn.active,
+[data-theme="dark"] .settings-tab-btn.active {
+  background: #FAAC30;
+  color: #232B45;
+  border-color: #FAAC30;
+}
+
+.admin-dark .settings-card,
+[data-theme="dark"] .settings-card {
+  background: #131B2E;
+  border-color: #23304A;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.admin-dark .settings-section-header,
+[data-theme="dark"] .settings-section-header,
+.admin-dark .settings-actions,
+[data-theme="dark"] .settings-actions {
+  border-color: #23304A;
+}
+
+.admin-dark .settings-section-header h3,
+[data-theme="dark"] .settings-section-header h3 {
+  color: #F8FAFC;
+}
+
+.admin-dark .settings-section-header p,
+[data-theme="dark"] .settings-section-header p,
+.admin-dark .field-hint,
+[data-theme="dark"] .field-hint {
+  color: #94A3B8;
+}
+
+.admin-dark .settings-field label,
+.admin-dark .group-label,
+[data-theme="dark"] .settings-field label,
+[data-theme="dark"] .group-label {
+  color: #E2E8F0;
+}
+
+.admin-dark .settings-field input,
+.admin-dark .settings-field select,
+.admin-dark .settings-field textarea,
+[data-theme="dark"] .settings-field input,
+[data-theme="dark"] .settings-field select,
+[data-theme="dark"] .settings-field textarea {
+  background: #1E293B;
+  border-color: #334155;
+  color: #F8FAFC;
+}
+
+.admin-dark .courier-card,
+[data-theme="dark"] .courier-card {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+.admin-dark .courier-card:hover,
+[data-theme="dark"] .courier-card:hover {
+  background: #283548;
+}
+
+.admin-dark .courier-card.is-selected,
+[data-theme="dark"] .courier-card.is-selected {
+  background: rgba(250, 172, 48, 0.12);
+  border-color: #FAAC30;
+}
+
+.admin-dark .courier-name,
+[data-theme="dark"] .courier-name {
+  color: #F8FAFC;
+}
+
+.admin-dark .courier-desc,
+[data-theme="dark"] .courier-desc {
+  color: #94A3B8;
+}
+
+@media (max-width: 768px) {
+  .settings-form-grid {
+    grid-template-columns: 1fr;
+  }
 }
