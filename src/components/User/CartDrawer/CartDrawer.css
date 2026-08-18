@@ -862,22 +862,22 @@
 .ewallet-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
+  gap: 8px;
 }
 
 .ewallet-btn-card {
   border: 1.5px solid #E2E8F0;
   background: #FFFFFF;
-  border-radius: 14px;
-  padding: 16px 8px;
+  border-radius: 12px;
+  padding: 10px 6px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 5px;
   cursor: pointer;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .ewallet-btn-card:hover {
@@ -897,13 +897,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 40px;
+  height: 28px;
   width: 100%;
 }
 
 .payment-logo-img {
-  max-height: 36px;
-  max-width: 90%;
+  max-height: 24px;
+  max-width: 88%;
   width: auto;
   object-fit: contain;
   display: block;
@@ -919,24 +919,25 @@
 }
 
 .payment-sub-text {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 500;
-  color: #64748B;
+  color: #94A3B8;
   text-align: center;
+  line-height: 1.2;
 }
 
 .payment-selected-hint {
   background: #FFFDF5;
   border: 1px solid #FEF3C7;
-  border-radius: 10px;
-  padding: 10px 14px;
-  font-size: 12.5px;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 12px;
   color: #92400E;
   line-height: 1.45;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 @media (max-width: 600px) {
