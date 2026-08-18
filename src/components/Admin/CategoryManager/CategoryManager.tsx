@@ -251,9 +251,41 @@ const CategoryManager: React.FC = () => {
             background: '#fff', padding: '24px', borderRadius: '16px', width: '100%', maxWidth: '400px',
             boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)'
           }}>
-            <h3 style={{ margin: '0 0 20px 0', fontSize: '18px', color: '#0F172A', fontWeight: 800 }}>
-              {editingId ? 'Edit Kategori' : 'Tambah Kategori Baru'}
-            </h3>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <h3 style={{ margin: 0, fontSize: '18px', color: '#0F172A', fontWeight: 800 }}>
+                {editingId ? 'Edit Kategori' : 'Tambah Kategori Baru'}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsModalOpen(false)}
+                title="Tutup"
+                style={{
+                  background: '#F1F5F9',
+                  border: 'none',
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '20px',
+                  color: '#64748B',
+                  cursor: 'pointer',
+                  transition: 'all 0.2s',
+                  lineHeight: 1
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = '#E2E8F0';
+                  e.currentTarget.style.color = '#0F172A';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = '#F1F5F9';
+                  e.currentTarget.style.color = '#64748B';
+                }}
+              >
+                &times;
+              </button>
+            </div>
             <form onSubmit={handleSaveCategory}>
               <div style={{ marginBottom: '24px' }}>
                 <label style={{ display: 'block', fontSize: '13px', fontWeight: 700, color: '#334155', marginBottom: '8px' }}>Nama Kategori</label>
@@ -273,39 +305,21 @@ const CategoryManager: React.FC = () => {
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', alignItems: 'center' }}>
-                {editingId && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (window.confirm('Yakin ingin menghapus kategori ini?')) {
-                        deleteCategory(editingId);
-                        setIsModalOpen(false);
-                      }
-                    }}
-                    style={{
-                      padding: '10px 20px', borderRadius: '10px', border: 'none', background: '#EF4444',
-                      color: '#FFFFFF', fontWeight: 700, cursor: 'pointer', fontSize: '13.5px', marginRight: 'auto'
-                    }}
-                  >
-                    Hapus
-                  </button>
-                )}
-                <button
-                  type="button"
-                  onClick={() => setIsModalOpen(false)}
-                  style={{
-                    padding: '10px 20px', borderRadius: '10px', border: 'none', background: '#F1F5F9',
-                    color: '#475569', fontWeight: 700, cursor: 'pointer', fontSize: '13.5px'
-                  }}
-                >
-                  Batal
-                </button>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '8px' }}>
                 <button
                   type="submit"
                   style={{
-                    padding: '10px 20px', borderRadius: '10px', border: 'none', background: '#F59E0B',
-                    color: '#FFFFFF', fontWeight: 700, cursor: 'pointer', fontSize: '13.5px'
+                    width: '100%',
+                    height: '44px',
+                    borderRadius: '10px',
+                    border: 'none',
+                    background: 'var(--primary-accent, #F59E0B)',
+                    color: '#FFFFFF',
+                    fontWeight: 700,
+                    cursor: 'pointer',
+                    fontSize: '14px',
+                    boxShadow: '0 4px 10px rgba(245, 158, 11, 0.2)',
+                    transition: 'all 0.2s'
                   }}
                 >
                   {editingId ? 'Simpan Perubahan' : 'Simpan Kategori'}
