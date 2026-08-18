@@ -31,13 +31,16 @@ git checkout perbaikan-ui-admin
 ---
 
 ## 🎨 Langkah 2: Setup Frontend (React + Vite)
-Jalankan perintah berikut di folder utama projek (`kripik-tempe-lakstari`):
+Buka terminal dan masuk ke folder `frontend`:
 
 ```bash
-# 1. Install seluruh package/library frontend
+# 1. Masuk ke folder frontend
+cd frontend
+
+# 2. Install seluruh package/library frontend
 npm install
 
-# 2. Jalankan server pengembang frontend
+# 3. Jalankan server pengembang frontend
 npm run dev
 ```
 *Frontend akan berjalan pada: `http://localhost:5173/` (atau `http://localhost:5174/`)*
