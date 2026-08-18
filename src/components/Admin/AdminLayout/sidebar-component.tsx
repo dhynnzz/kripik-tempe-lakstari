@@ -105,13 +105,6 @@ function IconPanelLeftOpen() {
     </svg>
   );
 }
-function IconSearch() {
-  return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
-    </svg>
-  );
-}
 function IconChevronDown() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -204,7 +197,6 @@ export function Lakstari21stSidebar({
   isSidebarOpen = true,
   onToggleSidebar,
 }: LakstariSidebarProps) {
-  const [searchValue, setSearchValue] = useState("");
   const [internalOpen, setInternalOpen] = useState(true);
 
   const isOpen = onToggleSidebar ? isSidebarOpen : internalOpen;
@@ -278,28 +270,6 @@ export function Lakstari21stSidebar({
                 </button>
               </div>
 
-              {/* Search Input */}
-              <div style={{
-                display: "flex", alignItems: "center", gap: "8px",
-                background: "rgba(255,255,255,0.06)",
-                borderRadius: "8px",
-                padding: "8px 10px",
-                marginBottom: "16px",
-                border: "1px solid rgba(255,255,255,0.08)"
-              }}>
-                <span style={{ color: "#64748B", flexShrink: 0 }}><IconSearch /></span>
-                <input
-                  type="text"
-                  placeholder="Cari menu..."
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value)}
-                  style={{
-                    background: "transparent", border: "none", outline: "none",
-                    fontSize: "13px", color: "#E2E8F0", width: "100%",
-                  }}
-                />
-              </div>
-
               {/* Navigation Menu */}
               <div className="lakstari-sidebar-nav" style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "4px" }}>
                 {menuGroups.map((group, idx) => (
@@ -313,9 +283,7 @@ export function Lakstari21stSidebar({
                         {group.heading}
                       </div>
                     )}
-                    {group.items
-                      .filter(item => !searchValue || item.label.toLowerCase().includes(searchValue.toLowerCase()))
-                      .map((item) => {
+                    {group.items.map((item) => {
                         const isActive = activeTab === item.id;
                         return (
                           <button
