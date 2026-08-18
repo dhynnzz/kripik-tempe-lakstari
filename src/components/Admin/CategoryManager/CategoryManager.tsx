@@ -10,6 +10,7 @@ const CategoryManager: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [catName, setCatName] = useState('');
+  const [activeMenuId, setActiveMenuId] = useState<number | null>(null);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('Semua Status');
@@ -24,6 +25,12 @@ const CategoryManager: React.FC = () => {
     setEditingId(id);
     setCatName(currentName);
     setIsModalOpen(true);
+  };
+
+  const handleDeleteCategory = (id: number, name: string) => {
+    if (window.confirm(`Yakin ingin menghapus kategori "${name}"?`)) {
+      deleteCategory(id);
+    }
   };
 
   const handleSaveCategory = (e: React.FormEvent) => {
@@ -156,7 +163,7 @@ const CategoryManager: React.FC = () => {
                 <th>NAMA KATEGORI</th>
                 <th>JUMLAH PRODUK</th>
                 <th>STATUS</th>
-                <th>AKSI</th>
+                <th style={{ textAlign: 'center' }}>AKSI</th>
               </tr>
             </thead>
             <tbody>
@@ -183,29 +190,40 @@ const CategoryManager: React.FC = () => {
                         {cat.status === 'aktif' ? 'Aktif' : 'Nonaktif'}
                       </button>
                     </td>
-                    <td>
+                    <td style={{ textAlign: 'center', position: 'relative' }}>
                       <button
-                        onClick={() => cat.id !== undefined && openEditModal(cat.id, cat.name)}
-                        title="Edit Kategori"
-                        style={{
-                          background: 'transparent',
-                          color: '#64748B',
-                          border: 'none',
-                          width: '32px',
-                          height: '32px',
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          cursor: 'pointer',
-                          transition: '0.2s'
-                        }}
+                        className="cat-dots-btn"
+                        onClick={() => setActiveMenuId(activeMenuId === cat.id ? null : (cat.id ?? null))}
+                        title="Pilihan Aksi"
                       >
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="1" />
-                          <circle cx="19" cy="12" r="1" />
-                          <circle cx="5" cy="12" r="1" />
-                        </svg>
+                        ⋮
                       </button>
+
+                      {activeMenuId === cat.id && (
+                        <React.Fragment>
+                          <div className="cat-dropdown-overlay" onClick={() => setActiveMenuId(null)}></div>
+                          <div className="cat-action-dropdown">
+                            <button
+                              onClick={() => {
+                                if (cat.id !== undefined) openEditModal(cat.id, cat.name);
+                                setActiveMenuId(null);
+                              }}
+                            >
+                              Edit Kategori
+                            </button>
+
+                            <button
+                              className="danger"
+                              onClick={() => {
+                                if (cat.id !== undefined) handleDeleteCategory(cat.id, cat.name);
+                                setActiveMenuId(null);
+                              }}
+                            >
+                              Hapus Kategori
+                            </button>
+                          </div>
+                        </React.Fragment>
+                      )}
                     </td>
                   </tr>
                 );
