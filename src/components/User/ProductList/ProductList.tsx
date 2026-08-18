@@ -140,7 +140,7 @@ const ProductList = () => {
                               label: p.name
                             }))}
                             value={activeItem.id as number}
-                            onChange={(val) => handleVariantChange(categoryName, val as number)}
+                            onChange={(val) => handleVariantChange(categoryName, val)}
                           />
                         ) : (
                           <CustomSelect

@@ -3,6 +3,7 @@ import { useCart } from '../../../context/CartContext';
 import './CartDrawer.css';
 import { apiService } from '../../../services/api';
 import { regionService, formatRegionName, type RegionItem } from '../../../services/regionService';
+import CustomSelect from '../CustomSelect/CustomSelect';
 
 declare global {
   interface Window {
@@ -425,55 +426,29 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                       <div className="form-item-3col">
                         <div className="form-item">
                           <label>Provinsi</label>
-                          <div className="custom-select-box">
-                            <select 
-                              required 
-                              value={selectedProvId} 
-                              onChange={e => handleProvinceChange(e.target.value)}
-                              className="styled-select"
-                            >
-                              <option value="" disabled>Pilih Provinsi</option>
-                              {provinces.map(prov => (
-                                <option key={prov.id} value={prov.id}>
-                                  {formatRegionName(prov.name)}
-                                </option>
-                              ))}
-                            </select>
-                            <span className="select-chevron">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                              </svg>
-                            </span>
-                          </div>
+                          <CustomSelect
+                            options={provinces.map(prov => ({
+                              value: prov.id,
+                              label: formatRegionName(prov.name)
+                            }))}
+                            value={selectedProvId}
+                            onChange={val => handleProvinceChange(val)}
+                            placeholder="Pilih Provinsi"
+                          />
                         </div>
 
                         <div className="form-item">
                           <label>Kota/Kabupaten</label>
-                          <div className="custom-select-box">
-                            <select 
-                              required 
-                              value={selectedRegencyId} 
-                              onChange={e => handleCityChange(e.target.value)}
-                              className="styled-select"
-                              disabled={!selectedProvId || isLoadingCities}
-                            >
-                              <option value="" disabled>
-                                {!selectedProvId 
-                                  ? 'Pilih Provinsi' 
-                                  : (isLoadingCities ? 'Memuat kota...' : 'Pilih Kota')}
-                              </option>
-                              {cities.map(city => (
-                                <option key={city.id} value={city.id}>
-                                  {formatRegionName(city.name)}
-                                </option>
-                              ))}
-                            </select>
-                            <span className="select-chevron">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                              </svg>
-                            </span>
-                          </div>
+                          <CustomSelect
+                            options={cities.map(city => ({
+                              value: city.id,
+                              label: formatRegionName(city.name)
+                            }))}
+                            value={selectedRegencyId}
+                            onChange={val => handleCityChange(val)}
+                            placeholder={!selectedProvId ? 'Pilih Provinsi' : (isLoadingCities ? 'Memuat kota...' : 'Pilih Kota')}
+                            disabled={!selectedProvId || isLoadingCities}
+                          />
                         </div>
 
                         <div className="form-item">
@@ -492,60 +467,30 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                       <div className="form-item-2col">
                         <div className="form-item">
                           <label>Kecamatan</label>
-                          <div className="custom-select-box">
-                            <select 
-                              required 
-                              value={selectedDistrictId} 
-                              onChange={e => handleDistrictChange(e.target.value)}
-                              className="styled-select"
-                              disabled={!selectedRegencyId || isLoadingDistricts}
-                            >
-                              <option value="" disabled>
-                                {!selectedRegencyId 
-                                  ? 'Pilih Kota dulu' 
-                                  : (isLoadingDistricts ? 'Memuat kecamatan...' : 'Pilih Kecamatan')}
-                              </option>
-                              {districts.map(dist => (
-                                <option key={dist.id} value={dist.id}>
-                                  {formatRegionName(dist.name)}
-                                </option>
-                              ))}
-                            </select>
-                            <span className="select-chevron">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                              </svg>
-                            </span>
-                          </div>
+                          <CustomSelect
+                            options={districts.map(dist => ({
+                              value: dist.id,
+                              label: formatRegionName(dist.name)
+                            }))}
+                            value={selectedDistrictId}
+                            onChange={val => handleDistrictChange(val)}
+                            placeholder={!selectedRegencyId ? 'Pilih Kota dulu' : (isLoadingDistricts ? 'Memuat kecamatan...' : 'Pilih Kecamatan')}
+                            disabled={!selectedRegencyId || isLoadingDistricts}
+                          />
                         </div>
 
                         <div className="form-item">
                           <label>Desa / Kelurahan</label>
-                          <div className="custom-select-box">
-                            <select 
-                              required 
-                              value={selectedVillageId} 
-                              onChange={e => handleVillageChange(e.target.value)}
-                              className="styled-select"
-                              disabled={!selectedDistrictId || isLoadingVillages}
-                            >
-                              <option value="" disabled>
-                                {!selectedDistrictId 
-                                  ? 'Pilih Kecamatan dulu' 
-                                  : (isLoadingVillages ? 'Memuat kelurahan...' : 'Pilih Desa / Kelurahan')}
-                              </option>
-                              {villages.map(vill => (
-                                <option key={vill.id} value={vill.id}>
-                                  {formatRegionName(vill.name)}
-                                </option>
-                              ))}
-                            </select>
-                            <span className="select-chevron">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748B" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                                <polyline points="6 9 12 15 18 9"></polyline>
-                              </svg>
-                            </span>
-                          </div>
+                          <CustomSelect
+                            options={villages.map(vill => ({
+                              value: vill.id,
+                              label: formatRegionName(vill.name)
+                            }))}
+                            value={selectedVillageId}
+                            onChange={val => handleVillageChange(val)}
+                            placeholder={!selectedDistrictId ? 'Pilih Kecamatan dulu' : (isLoadingVillages ? 'Memuat kelurahan...' : 'Pilih Desa / Kelurahan')}
+                            disabled={!selectedDistrictId || isLoadingVillages}
+                          />
                         </div>
                       </div>
 
