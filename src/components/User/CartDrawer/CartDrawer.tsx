@@ -53,7 +53,8 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
     catatan: '',
   });
 
-  const [paymentMethod, setPaymentMethod] = useState('bca_va');
+  const [paymentMethod, setPaymentMethod] = useState('qris');
+  const [selectedEwallet, setSelectedEwallet] = useState('gopay');
 
   // Ambil data seluruh provinsi saat awal load
   useEffect(() => {
@@ -560,57 +561,148 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                         />
                       </div>
 
-                      {/* Metode Pembayaran */}
-                      <div className="form-item payment-section-wrapper" style={{ marginTop: '6px' }}>
-                        <label style={{ fontSize: '13.5px', fontWeight: 800, color: '#1E293B' }}>Metode Pembayaran</label>
-                        <div className="payment-methods-list">
-                          <label className={`payment-option-card ${paymentMethod === 'bca_va' ? 'selected' : ''}`}>
-                            <div className="payment-radio-wrap">
-                              <input 
-                                type="radio" 
-                                name="payment" 
-                                value="bca_va" 
-                                checked={paymentMethod === 'bca_va'}
-                                onChange={(e) => setPaymentMethod(e.target.value)} 
-                              />
-                            </div>
-                            <div className="payment-info-text">
-                              <span className="payment-name">BCA Virtual Account</span>
-                              <span className="payment-desc">Transfer otomatis</span>
-                            </div>
-                          </label>
-                          
-                          <label className={`payment-option-card ${paymentMethod === 'mandiri_va' ? 'selected' : ''}`}>
-                            <div className="payment-radio-wrap">
-                              <input 
-                                type="radio" 
-                                name="payment" 
-                                value="mandiri_va" 
-                                checked={paymentMethod === 'mandiri_va'}
-                                onChange={(e) => setPaymentMethod(e.target.value)} 
-                              />
-                            </div>
-                            <div className="payment-info-text">
-                              <span className="payment-name">Mandiri VA</span>
-                              <span className="payment-desc">Transfer otomatis</span>
-                            </div>
-                          </label>
+                    </div>
+                  </div>
 
-                          <label className={`payment-option-card ${paymentMethod === 'qris' ? 'selected' : ''}`}>
-                            <div className="payment-radio-wrap">
-                              <input 
-                                type="radio" 
-                                name="payment" 
-                                value="qris" 
-                                checked={paymentMethod === 'qris'}
-                                onChange={(e) => setPaymentMethod(e.target.value)} 
-                              />
-                            </div>
-                            <div className="payment-info-text">
-                              <span className="payment-name">QRIS</span>
-                              <span className="payment-desc">GoPay, ShopeePay, dll</span>
-                            </div>
-                          </label>
+                  {/* CARD 2: Metode Pembayaran (Beda Card Sesuai Gambar) */}
+                  <div className="checkout-card-box payment-method-card">
+                    <div className="card-box-header">
+                      <span className="box-icon-wrap" style={{ background: '#FEF3C7' }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                          <circle cx="12" cy="12" r="2"></circle>
+                          <path d="M6 12h.01M18 12h.01"></path>
+                        </svg>
+                      </span>
+                      <h3>Metode Pembayaran</h3>
+                    </div>
+
+                    <div className="payment-card-content">
+                      
+                      {/* Sub-header E-Wallet / QRIS */}
+                      <div className="payment-category-header">
+                        <span className="payment-category-title">E-Wallet / QRIS</span>
+                        <span className="badge-disarankan">Disarankan</span>
+                      </div>
+
+                      {/* 4 E-Wallet Grid Buttons Sesuai Gambar */}
+                      <div className="ewallet-grid">
+                        
+                        {/* GoPay */}
+                        <div 
+                          className={`ewallet-btn-card ${paymentMethod === 'qris' && selectedEwallet === 'gopay' ? 'selected' : ''}`}
+                          onClick={() => {
+                            setPaymentMethod('qris');
+                            setSelectedEwallet('gopay');
+                          }}
+                        >
+                          <div className="ewallet-icon-box">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00AED6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+                              <line x1="2" y1="10" x2="22" y2="10"></line>
+                              <circle cx="17" cy="15" r="1" fill="#00AED6"></circle>
+                            </svg>
+                          </div>
+                          <span className="ewallet-label">GoPay</span>
+                        </div>
+
+                        {/* OVO */}
+                        <div 
+                          className={`ewallet-btn-card ${paymentMethod === 'qris' && selectedEwallet === 'ovo' ? 'selected' : ''}`}
+                          onClick={() => {
+                            setPaymentMethod('qris');
+                            setSelectedEwallet('ovo');
+                          }}
+                        >
+                          <div className="ewallet-icon-box">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#7C3AED" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+                              <line x1="2" y1="10" x2="22" y2="10"></line>
+                              <circle cx="17" cy="15" r="1" fill="#7C3AED"></circle>
+                            </svg>
+                          </div>
+                          <span className="ewallet-label">OVO</span>
+                        </div>
+
+                        {/* DANA */}
+                        <div 
+                          className={`ewallet-btn-card ${paymentMethod === 'qris' && selectedEwallet === 'dana' ? 'selected' : ''}`}
+                          onClick={() => {
+                            setPaymentMethod('qris');
+                            setSelectedEwallet('dana');
+                          }}
+                        >
+                          <div className="ewallet-icon-box">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#108EE9" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="2" y="5" width="20" height="14" rx="3"></rect>
+                              <line x1="2" y1="10" x2="22" y2="10"></line>
+                              <circle cx="17" cy="15" r="1" fill="#108EE9"></circle>
+                            </svg>
+                          </div>
+                          <span className="ewallet-label">DANA</span>
+                        </div>
+
+                        {/* ShopeePay */}
+                        <div 
+                          className={`ewallet-btn-card ${paymentMethod === 'qris' && selectedEwallet === 'shopeepay' ? 'selected' : ''}`}
+                          onClick={() => {
+                            setPaymentMethod('qris');
+                            setSelectedEwallet('shopeepay');
+                          }}
+                        >
+                          <div className="ewallet-icon-box">
+                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#EE4D2D" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                              <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                              <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                              <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                            </svg>
+                          </div>
+                          <span className="ewallet-label">ShopeePay</span>
+                        </div>
+
+                      </div>
+
+                      {/* Divider Faint Line */}
+                      <hr className="payment-sub-divider" />
+
+                      {/* Sub-header Transfer Bank / Virtual Account */}
+                      <div className="payment-category-header" style={{ marginTop: '4px' }}>
+                        <span className="payment-category-title">Virtual Account (Transfer Bank)</span>
+                      </div>
+
+                      {/* Virtual Account Options */}
+                      <div className="va-options-grid">
+                        <div 
+                          className={`va-card ${paymentMethod === 'bca_va' ? 'selected' : ''}`}
+                          onClick={() => {
+                            setPaymentMethod('bca_va');
+                            setSelectedEwallet('');
+                          }}
+                        >
+                          <div className={`custom-radio-dot ${paymentMethod === 'bca_va' ? 'active' : ''}`}>
+                            {paymentMethod === 'bca_va' && <div className="inner-dot"></div>}
+                          </div>
+                          <div className="va-info-text">
+                            <span className="va-name">BCA Virtual Account</span>
+                            <span className="va-desc">Transfer otomatis (Cek otomatis 24 Jam)</span>
+                          </div>
+                        </div>
+
+                        <div 
+                          className={`va-card ${paymentMethod === 'mandiri_va' ? 'selected' : ''}`}
+                          onClick={() => {
+                            setPaymentMethod('mandiri_va');
+                            setSelectedEwallet('');
+                          }}
+                        >
+                          <div className={`custom-radio-dot ${paymentMethod === 'mandiri_va' ? 'active' : ''}`}>
+                            {paymentMethod === 'mandiri_va' && <div className="inner-dot"></div>}
+                          </div>
+                          <div className="va-info-text">
+                            <span className="va-name">Mandiri Virtual Account</span>
+                            <span className="va-desc">Transfer otomatis (Cek otomatis 24 Jam)</span>
+                          </div>
                         </div>
                       </div>
 
