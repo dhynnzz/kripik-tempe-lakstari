@@ -18,6 +18,9 @@ Route::post('/admin/login', [AuthController::class, 'login']);
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);
 Route::post('/checkout', [\App\Http\Controllers\OrderController::class, 'checkout']);
+Route::post('/payment/notification', [\App\Http\Controllers\OrderController::class, 'paymentNotification']);
+Route::post('/payment/success-fallback', [\App\Http\Controllers\OrderController::class, 'paymentSuccessFallback']);
+Route::post('/track-order', [\App\Http\Controllers\OrderController::class, 'trackOrder']);
 Route::get('/wilayah/districts/{regencyId}', [\App\Http\Controllers\WilayahController::class, 'getDistricts']);
 Route::get('/wilayah/villages/{districtId}', [\App\Http\Controllers\WilayahController::class, 'getVillages']);
 
@@ -36,8 +39,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/admin/products', [ProductController::class, 'store']);
     Route::put('/admin/products/{id}', [ProductController::class, 'update']);
     Route::put('/admin/products/{id}/stock', [ProductController::class, 'updateStock']);
-    Route::delete('/admin/products/{id}', [ProductController::class, 'destroy']);
-    
     // Admin Orders Management
     Route::get('/admin/orders', [\App\Http\Controllers\OrderController::class, 'index']);
     Route::put('/admin/orders/{id}', [\App\Http\Controllers\OrderController::class, 'updateStatus']);

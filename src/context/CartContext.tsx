@@ -24,6 +24,7 @@ interface CartContextType {
   toggleCart: (isOpen?: boolean) => void;
   totalItems: number;
   totalPrice: number;
+  clearCart: () => void;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -47,6 +48,10 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const toggleCart = (isOpen?: boolean) => {
     setIsCartOpen((prev) => (isOpen !== undefined ? isOpen : !prev));
+  };
+
+  const clearCart = () => {
+    setCartItems([]);
   };
 
   const addToCart = (item: Omit<CartItem, 'id' | 'quantity' | 'priceRaw'>): boolean => {
@@ -154,6 +159,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         updateQuantity,
         removeFromCart,
         toggleCart,
+        clearCart,
         totalItems,
         totalPrice,
       }}

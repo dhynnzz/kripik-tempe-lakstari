@@ -4,6 +4,12 @@ import './CartDrawer.css';
 import { apiService } from '../../../services/api';
 import { regionService, formatRegionName, type RegionItem } from '../../../services/regionService';
 
+declare global {
+  interface Window {
+    snap: any;
+  }
+}
+
 export interface ShippingOption {
   id: string;
   name: string;
@@ -48,12 +54,19 @@ export const shippingOptions: ShippingOption[] = [
   }
 ];
 
-const CartDrawer: React.FC = () => {
-  const { isCartOpen, toggleCart, cartItems, updateQuantity, removeFromCart, totalPrice } = useCart();
-  const [checkoutStep, setCheckoutStep] = useState(0);
+interface CartDrawerProps {
+  onNavigateToTracking?: () => void;
+}
+
+const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
+  const { isCartOpen, toggleCart, cartItems, updateQuantity, removeFromCart, clearCart, totalPrice } = useCart();
+  const [checkoutStep, setCheckoutStep] = useState(0); // 0 = Cart, 1 = Form, 2 = Success/Payment Instructions
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(true);
   const [selectedShippingId, setSelectedShippingId] = useState<string>('reguler');
+
+  // Data pesanan setelah berhasil checkout
+  const [successData, setSuccessData] = useState<{invoice: string, payment_type: string, payment_code: string} | null>(null);
 
   // State data wilayah
   const [provinces, setProvinces] = useState<RegionItem[]>([]);
@@ -84,6 +97,8 @@ const CartDrawer: React.FC = () => {
     kode_pos: '',
     catatan: '',
   });
+
+  const [paymentMethod, setPaymentMethod] = useState('bca_va');
 
   // Ambil data seluruh provinsi saat awal load
   useEffect(() => {
@@ -198,7 +213,7 @@ const CartDrawer: React.FC = () => {
     const payload = {
       nama_pelanggan: formData.nama_pelanggan,
       no_hp: formData.no_hp,
-      email: formData.email ? formData.email.trim() : null,
+      email: formData.email ? formData.email.trim() : undefined,
       alamat_lengkap: fullAlamat,
       kecamatan: formData.kecamatan,
       kota: formData.kota,
@@ -208,16 +223,50 @@ const CartDrawer: React.FC = () => {
       biaya_pengiriman: selectedShipping.cost
     };
 
-    const res = await apiService.checkout(payload);
-    setIsSubmitting(false);
+    try {
+      const res = await apiService.checkout({
+        ...payload,
+        payment_method: paymentMethod
+      });
+      
+      setIsSubmitting(false);
 
-    if (res && res.invoice) {
-      alert('Pesanan Berhasil Dibuat! Invoice: ' + res.invoice);
-      setCheckoutStep(0);
-      toggleCart(false);
-      window.location.reload();
-    } else {
-      alert('Gagal melakukan checkout: ' + (res?.message || 'Error'));
+      if (res && res.success && res.snap_token) {
+        window.snap.pay(res.snap_token, {
+          onSuccess: function(_result: any) {
+            localStorage.setItem('last_invoice', res.invoice);
+            setSuccessData({
+              invoice: res.invoice,
+              payment_type: res.payment_type || paymentMethod,
+              payment_code: ''
+            });
+            clearCart();
+            setCheckoutStep(2);
+          },
+          onPending: function(_result: any) {
+            localStorage.setItem('last_invoice', res.invoice);
+            setSuccessData({
+              invoice: res.invoice,
+              payment_type: res.payment_type || paymentMethod,
+              payment_code: ''
+            });
+            clearCart();
+            setCheckoutStep(2);
+          },
+          onError: function(_result: any) {
+            alert('Pembayaran gagal atau terjadi kesalahan.');
+          },
+          onClose: function() {
+            // User closes popup without finishing
+          }
+        });
+      } else {
+        alert("Gagal memproses pesanan: " + (res?.message || "Kesalahan server"));
+      }
+    } catch (err: any) {
+      setIsSubmitting(false);
+      console.error(err);
+      alert("Terjadi kesalahan sistem di frontend: " + err.toString());
     }
   };
 
@@ -407,7 +456,7 @@ const CartDrawer: React.FC = () => {
                       <span className="box-icon-wrap truck-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                           <rect x="1" y="3" width="15" height="13"></rect>
-                          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+                          <polygon points="16 8 20 8 23 11 23 16 16 16 16 16 8"></polygon>
                           <circle cx="5.5" cy="18.5" r="2.5"></circle>
                           <circle cx="18.5" cy="18.5" r="2.5"></circle>
                         </svg>
@@ -657,6 +706,55 @@ const CartDrawer: React.FC = () => {
 
                 {/* SISI KANAN: Ringkasan Pesanan */}
                 <div className="checkout-right-section">
+
+                  {/* Pilih Metode Pembayaran */}
+                  <div className="checkout-summary-card-box" style={{ marginBottom: '20px' }}>
+                    <h3 className="summary-title">Metode Pembayaran</h3>
+                    <div className="payment-methods">
+                      <label className={`payment-option ${paymentMethod === 'bca_va' ? 'selected' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="payment" 
+                          value="bca_va" 
+                          checked={paymentMethod === 'bca_va'}
+                          onChange={(e) => setPaymentMethod(e.target.value)} 
+                        />
+                        <div className="payment-label">
+                          <strong>BCA Virtual Account</strong>
+                          <span>Transfer otomatis</span>
+                        </div>
+                      </label>
+                      
+                      <label className={`payment-option ${paymentMethod === 'mandiri_va' ? 'selected' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="payment" 
+                          value="mandiri_va" 
+                          checked={paymentMethod === 'mandiri_va'}
+                          onChange={(e) => setPaymentMethod(e.target.value)} 
+                        />
+                        <div className="payment-label">
+                          <strong>Mandiri VA</strong>
+                          <span>Transfer otomatis</span>
+                        </div>
+                      </label>
+
+                      <label className={`payment-option ${paymentMethod === 'qris' ? 'selected' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="payment" 
+                          value="qris" 
+                          checked={paymentMethod === 'qris'}
+                          onChange={(e) => setPaymentMethod(e.target.value)} 
+                        />
+                        <div className="payment-label">
+                          <strong>QRIS</strong>
+                          <span>GoPay, ShopeePay, dll</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
                   <div className="checkout-summary-card-box">
                     <h3 className="summary-title">Ringkasan Pesanan</h3>
 
@@ -739,6 +837,58 @@ const CartDrawer: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* 3. MODAL SUKSES & INSTRUKSI PEMBAYARAN (Step 2) */}
+      {isCartOpen && checkoutStep === 2 && successData && (
+        <div className="checkout-page-overlay open">
+          <div className="checkout-page-card" style={{ maxWidth: '600px', textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ width: '60px', height: '60px', background: '#4CAF50', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            
+            <h2 style={{ color: '#1E293B', marginBottom: '10px' }}>Pesanan Berhasil Dibuat!</h2>
+            <p style={{ color: '#64748B', marginBottom: '30px' }}>Nomor Invoice: <strong>{successData.invoice}</strong></p>
+
+            <div style={{ background: '#F8FAFC', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '30px', textAlign: 'left' }}>
+              <p style={{ color: '#334155', lineHeight: '1.6' }}>
+                Terima kasih! Pesanan Anda telah berhasil tercatat di sistem kami.
+                Silakan simpan nomor invoice di atas untuk mengecek status pesanan Anda.
+              </p>
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+              {onNavigateToTracking && (
+                <button 
+                  className="btn-sidebar-checkout"
+                  style={{ background: '#10B981', flex: 1 }}
+                  onClick={() => {
+                    setCheckoutStep(0);
+                    toggleCart(false);
+                    onNavigateToTracking();
+                  }}
+                >
+                  Lacak Pesanan
+                </button>
+              )}
+              <button 
+                className="btn-selesaikan-pesanan"
+                style={{ flex: 1 }}
+                onClick={() => {
+                  setCheckoutStep(0);
+                  toggleCart(false);
+                }}
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </>
   );
 };

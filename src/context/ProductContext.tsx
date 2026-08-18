@@ -147,8 +147,10 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     const stock = Math.max(0, updated.stock);
     const autoStatus = stock === 0 ? 'habis' : (updated.status === 'habis' ? 'aktif' : updated.status);
     const payload = { ...updated, stock, status: autoStatus };
-    const success = await apiService.updateProduct(updated.id, payload);
-    if (success) fetchProducts();
+    if (updated.id !== undefined) {
+      const success = await apiService.updateProduct(updated.id, payload);
+      if (success) fetchProducts();
+    }
   };
 
   const addProduct = async (productData: Omit<ProductItem, 'id'>) => {

@@ -58,7 +58,7 @@ const CategoryManager: React.FC = () => {
       (statusFilter === 'Aktif' && cat.status === 'aktif') ||
       (statusFilter === 'Nonaktif' && cat.status === 'nonaktif');
     return matchesSearch && matchesStatus;
-  }).sort((a, b) => a.id - b.id);
+  }).sort((a, b) => (a.id ?? 0) - (b.id ?? 0));
 
 
 
@@ -177,7 +177,7 @@ const CategoryManager: React.FC = () => {
                     <td>
                       <button
                         className={`cat-status-pill ${cat.status === 'aktif' ? 'aktif' : 'nonaktif'}`}
-                        onClick={() => toggleCategoryStatus(cat.id)}
+                        onClick={() => cat.id !== undefined && toggleCategoryStatus(cat.id)}
                         title="Klik untuk mengubah status"
                       >
                         {cat.status === 'aktif' ? 'Aktif' : 'Nonaktif'}
@@ -185,7 +185,7 @@ const CategoryManager: React.FC = () => {
                     </td>
                     <td>
                       <button
-                        onClick={() => openEditModal(cat.id, cat.name)}
+                        onClick={() => cat.id !== undefined && openEditModal(cat.id, cat.name)}
                         title="Edit Kategori"
                         style={{
                           background: 'transparent',

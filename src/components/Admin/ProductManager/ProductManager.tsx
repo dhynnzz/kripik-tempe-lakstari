@@ -41,7 +41,7 @@ const ProductManager: React.FC = () => {
   // Filtered product list
   const filteredProducts = products.filter(p => {
     const matchSearch = p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      p.flavor.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (p.flavor ? p.flavor.toLowerCase().includes(searchTerm.toLowerCase()) : false) ||
       p.category.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCategory = categoryFilter === 'all' || p.category.toLowerCase() === categoryFilter.toLowerCase();
 
@@ -230,7 +230,7 @@ const ProductManager: React.FC = () => {
                               }}
                               autoFocus
                             />
-                            <button className="pm-save-mini" onClick={() => handleSavePriceEdit(product.id)}>Simpan</button>
+                            <button className="pm-save-mini" onClick={() => product.id !== undefined && handleSavePriceEdit(product.id)}>Simpan</button>
                           </div>
                         ) : (
                           <span className="pm-compact-price">{product.priceStr}</span>
@@ -251,7 +251,7 @@ const ProductManager: React.FC = () => {
                               autoFocus
                             />
                             <span style={{ fontSize: '13px', fontWeight: 600, color: '#64748B' }}>pcs</span>
-                            <button className="pm-save-mini" onClick={() => handleSaveStockEdit(product.id)}>Simpan</button>
+                            <button className="pm-save-mini" onClick={() => product.id !== undefined && handleSaveStockEdit(product.id)}>Simpan</button>
                           </div>
                         ) : (
                           <span className="pm-compact-stock">{product.stock} pcs</span>
@@ -267,7 +267,7 @@ const ProductManager: React.FC = () => {
                             <input
                               type="checkbox"
                               checked={currentStatus === 'aktif'}
-                              onChange={() => toggleProductStatus(product.id)}
+                              onChange={() => product.id !== undefined && toggleProductStatus(product.id)}
                             />
                             <span className="pm-toggle-slider"></span>
                             <span className="pm-toggle-label">{currentStatus === 'aktif' ? 'Aktif' : 'Nonaktif'}</span>
@@ -279,7 +279,7 @@ const ProductManager: React.FC = () => {
                       <td style={{ textAlign: 'center', position: 'relative' }}>
                         <button
                           className="pm-dots-btn"
-                          onClick={() => setActiveMenuId(activeMenuId === product.id ? null : product.id)}
+                          onClick={() => setActiveMenuId(activeMenuId === product.id ? null : (product.id ?? null))}
                         >
                           ⋮
                         </button>
@@ -293,7 +293,7 @@ const ProductManager: React.FC = () => {
                                 Edit Produk
                               </button>
 
-                              <button className="danger" onClick={() => { handleDeleteProduct(product.id, product.name); setActiveMenuId(null); }}>
+                              <button className="danger" onClick={() => { if (product.id !== undefined) handleDeleteProduct(product.id, product.name); setActiveMenuId(null); }}>
                                 Hapus Produk
                               </button>
                             </div>

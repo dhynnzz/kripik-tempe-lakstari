@@ -28,6 +28,9 @@ class Transaksi extends Model
         'midtrans_transaction_id',
         'midtrans_payment_type',
         'midtrans_transaction_status',
+        'snap_token',
+        'payment_type',
+        'payment_code',
         'paid_at',
         'expired_at',
     ];

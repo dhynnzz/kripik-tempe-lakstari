@@ -2,17 +2,19 @@ import './Header.css';
 
 interface HeaderProps {
   onSwitchToAdmin?: () => void;
+  onNavigate?: (view: 'home' | 'track-order') => void;
+  currentView?: 'home' | 'track-order';
 }
 
-const Header: React.FC<HeaderProps> = ({ onSwitchToAdmin }) => {
+const Header: React.FC<HeaderProps> = ({ onSwitchToAdmin, onNavigate, currentView = 'home' }) => {
   return (
     <header className="header">
       <div className="container header-content">
-        <div className="logo">Kripik Tempe Lakstari</div>
+        <div className="logo" onClick={() => onNavigate?.('home')} style={{cursor: 'pointer'}}>Kripik Tempe Lakstari</div>
         <nav className="nav">
-          <a href="#">Beranda</a>
-          <a href="#">Tentang Kami</a>
-          <a href="#">Produk</a>
+          <a href="#" className={currentView === 'home' ? 'active' : ''} onClick={(e) => { e.preventDefault(); onNavigate?.('home'); }}>Beranda</a>
+          <a href="#" className={currentView === 'track-order' ? 'active' : ''} onClick={(e) => { e.preventDefault(); onNavigate?.('track-order'); }}>Cek Pesanan</a>
+          <a href="#" onClick={(e) => { if(currentView !== 'home') { e.preventDefault(); onNavigate?.('home'); }}}>Produk</a>
           {onSwitchToAdmin && (
             <button className="admin-nav-btn" onClick={onSwitchToAdmin}>
               🔐 Portal Admin
