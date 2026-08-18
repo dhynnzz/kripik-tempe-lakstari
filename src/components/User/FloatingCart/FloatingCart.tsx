@@ -143,7 +143,7 @@ const FloatingCart: React.FC = () => {
   return (
     <button
       ref={buttonRef}
-      className={`floating-cart-btn ${isDragging ? 'is-dragging' : ''} ${totalItems > 0 ? 'has-items' : ''}`}
+      className={`floating-cart-btn ${isDragging ? 'is-dragging' : ''}`}
       style={style}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
