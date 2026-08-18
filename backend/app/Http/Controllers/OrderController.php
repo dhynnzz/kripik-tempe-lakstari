@@ -33,7 +33,7 @@ class OrderController extends Controller
             'items.*.id_product' => 'required|exists:products,id_product',
             'items.*.qty' => 'required|integer|min:1',
             'biaya_pengiriman' => 'required|numeric',
-            'payment_method' => 'required|string|in:bca_va,mandiri_va,qris',
+            'payment_method' => 'required|string|in:bca_va,bni_va,bri_va,mandiri_va,qris',
         ]);
 
         if ($validator->fails()) {
@@ -174,6 +174,10 @@ class OrderController extends Controller
             $enabledPayments = [];
             if ($request->payment_method === 'bca_va') {
                 $enabledPayments = ['bca_va'];
+            } elseif ($request->payment_method === 'bni_va') {
+                $enabledPayments = ['bni_va'];
+            } elseif ($request->payment_method === 'bri_va') {
+                $enabledPayments = ['bri_va'];
             } elseif ($request->payment_method === 'mandiri_va') {
                 $enabledPayments = ['echannel'];
             } elseif ($request->payment_method === 'qris') {
