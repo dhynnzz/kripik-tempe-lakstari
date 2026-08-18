@@ -26,12 +26,29 @@ const ProductList = () => {
   const displayProducts = allProducts.filter(p => p.status !== 'nonaktif');
 
   const [selectedVariants, setSelectedVariants] = useState<Record<string, number>>({});
+  const [addedCategories, setAddedCategories] = useState<Record<string, boolean>>({});
 
   const handleVariantChange = (category: string, id: number) => {
     setSelectedVariants(prev => ({ ...prev, [category]: id }));
   };
 
   const { addToCart } = useCart();
+
+  const handleAddToCart = (activeItem: any, categoryName: string) => {
+    addToCart({
+      productId: activeItem.id,
+      productName: categoryName,
+      variant: activeItem.name,
+      priceStr: activeItem.priceStr || 'Rp 0',
+      weight: activeItem.weight,
+      image: activeItem.image
+    });
+
+    setAddedCategories(prev => ({ ...prev, [categoryName]: true }));
+    setTimeout(() => {
+      setAddedCategories(prev => ({ ...prev, [categoryName]: false }));
+    }, 1500); // Reset animation after 1.5 seconds
+  };
 
   const CartIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -40,6 +57,12 @@ const ProductList = () => {
       <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
       <line x1="16" y1="8" x2="16" y2="14"></line>
       <line x1="13" y1="11" x2="19" y2="11"></line>
+    </svg>
+  );
+
+  const CheckIcon = () => (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="check-icon-anim">
+      <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
   );
 
@@ -131,18 +154,17 @@ const ProductList = () => {
                       </div>
 
                       <button
-                        className="btn-add btn-add-full"
-                        onClick={() => addToCart({
-                          productId: activeItem.id,
-                          productName: categoryName,
-                          variant: activeItem.name,
-                          priceStr: activeItem.priceStr || 'Rp 0',
-                          weight: activeItem.weight,
-                          image: activeItem.image
-                        })}
-                        disabled={activeItem.stock === 0}
+                        className={`btn-add btn-add-full ${addedCategories[categoryName] ? 'added' : ''}`}
+                        onClick={() => handleAddToCart(activeItem, categoryName)}
+                        disabled={activeItem.stock === 0 || addedCategories[categoryName]}
                       >
-                        {activeItem.stock === 0 ? 'Stok Habis' : <>Tambah ke Keranjang <CartIcon /></>}
+                        {activeItem.stock === 0 ? 'Stok Habis' : (
+                          addedCategories[categoryName] ? (
+                            <>Tersimpan di Keranjang <CheckIcon /></>
+                          ) : (
+                            <>Tambah ke Keranjang <CartIcon /></>
+                          )
+                        )}
                       </button>
                     </div>
                   </div>

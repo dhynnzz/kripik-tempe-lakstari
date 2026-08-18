@@ -15,9 +15,11 @@ const OrderManager: React.FC = () => {
     fetchOrders();
   }, []);
 
-  const filteredOrders = orders.filter((o: any) =>
-    statusFilter === 'Semua' ? true : o.status_transaksi === statusFilter
-  );
+  const filteredOrders = orders.filter((o: any) => {
+    if (statusFilter === 'Semua') return true;
+    const normalizedFilter = statusFilter.toLowerCase().replace(/ /g, '_');
+    return o.status_transaksi === normalizedFilter;
+  });
 
   const handleStatusChange = async (id: number, newStatus: string) => {
     const success = await apiService.updateOrderStatus(id, { status_transaksi: newStatus });
@@ -35,7 +37,7 @@ const OrderManager: React.FC = () => {
 
       {/* Filter Tabs */}
       <div className="om-filter-tabs">
-        {['Semua', 'Baru', 'Diproses', 'Dikirim', 'Selesai'].map((status) => (
+        {['Semua', 'Menunggu Pembayaran', 'Diproses', 'Dikemas', 'Siap Dikirim', 'Dikirim', 'Selesai', 'Dibatalkan'].map((status) => (
           <button
             key={status}
             className={`filter-tab-btn ${statusFilter === status ? 'active' : ''}`}
@@ -57,6 +59,7 @@ const OrderManager: React.FC = () => {
                 <th>Detail Barang</th>
                 <th>Total Bayar</th>
                 <th>Tanggal Order</th>
+                <th>Pembayaran (Midtrans)</th>
                 <th>Status Transaksi</th>
                 <th>Ubah Status</th>
               </tr>
@@ -77,8 +80,21 @@ const OrderManager: React.FC = () => {
                   <td className="font-bold">Rp {order.total_pembayaran?.toLocaleString('id-ID')}</td>
                   <td><span className="date-text">{new Date(order.tanggal_transaksi).toLocaleDateString('id-ID')}</span></td>
                   <td>
-                    <span className={`status-badge status-${order.status_transaksi?.toLowerCase().replace(' ', '-')}`}>
-                      {order.status_transaksi}
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <span style={{ fontSize: '0.85rem', fontWeight: 600, color: '#334155' }}>
+                        {order.midtrans_payment_type ? order.midtrans_payment_type.replace(/_/g, ' ').toUpperCase() : (order.payment_type ? order.payment_type.toUpperCase() : '-')}
+                      </span>
+                      <span style={{ fontSize: '0.8rem', color: order.midtrans_transaction_status === 'settlement' ? '#16A34A' : (order.midtrans_transaction_status === 'pending' ? '#D97706' : '#DC2626') }}>
+                        {order.midtrans_transaction_status ? order.midtrans_transaction_status.toUpperCase() : 'BELUM BAYAR'}
+                      </span>
+                      <span style={{ fontSize: '0.7rem', color: '#94A3B8' }}>
+                        ID: {order.midtrans_transaction_id || '-'}
+                      </span>
+                    </div>
+                  </td>
+                  <td>
+                    <span className={`status-badge status-${order.status_transaksi}`}>
+                      {order.status_transaksi?.split('_').map((w: string) => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
                     </span>
                   </td>
                   <td>
@@ -87,13 +103,13 @@ const OrderManager: React.FC = () => {
                       value={order.status_transaksi}
                       onChange={(e) => handleStatusChange(order.id_transaksi, e.target.value)}
                     >
-                      <option value="Menunggu Pembayaran">Menunggu Pembayaran</option>
-                      <option value="Diproses">Diproses</option>
-                      <option value="Dikemas">Dikemas</option>
-                      <option value="Siap Dikirim">Siap Dikirim</option>
-                      <option value="Dikirim">Dikirim</option>
-                      <option value="Selesai">Selesai</option>
-                      <option value="Dibatalkan">Dibatalkan</option>
+                      <option value="menunggu_pembayaran">Menunggu Pembayaran</option>
+                      <option value="diproses">Diproses</option>
+                      <option value="dikemas">Dikemas</option>
+                      <option value="siap_dikirim">Siap Dikirim</option>
+                      <option value="dikirim">Dikirim</option>
+                      <option value="selesai">Selesai</option>
+                      <option value="dibatalkan">Dibatalkan</option>
                     </select>
                   </td>
                 </tr>

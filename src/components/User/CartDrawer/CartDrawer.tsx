@@ -4,11 +4,24 @@ import './CartDrawer.css';
 import { apiService } from '../../../services/api';
 import { regionService, formatRegionName, type RegionItem } from '../../../services/regionService';
 
-const CartDrawer: React.FC = () => {
-  const { isCartOpen, toggleCart, cartItems, updateQuantity, removeFromCart, totalPrice } = useCart();
-  const [checkoutStep, setCheckoutStep] = useState(0);
+declare global {
+  interface Window {
+    snap: any;
+  }
+}
+
+interface CartDrawerProps {
+  onNavigateToTracking?: () => void;
+}
+
+const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
+  const { isCartOpen, toggleCart, cartItems, updateQuantity, removeFromCart, clearCart, totalPrice } = useCart();
+  const [checkoutStep, setCheckoutStep] = useState(0); // 0 = Cart, 1 = Form, 2 = Success/Payment Instructions
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(true);
+
+  // Data pesanan setelah berhasil checkout
+  const [successData, setSuccessData] = useState<{invoice: string, payment_type: string, payment_code: string} | null>(null);
 
   // State data wilayah
   const [provinces, setProvinces] = useState<RegionItem[]>([]);
@@ -39,6 +52,8 @@ const CartDrawer: React.FC = () => {
     kode_pos: '',
     catatan: '',
   });
+
+  const [paymentMethod, setPaymentMethod] = useState('bca_va');
 
   // Ambil data seluruh provinsi saat awal load
   useEffect(() => {
@@ -163,16 +178,51 @@ const CartDrawer: React.FC = () => {
       biaya_pengiriman: 20000
     };
 
-    const res = await apiService.checkout(payload);
-    setIsSubmitting(false);
+    try {
+      const res = await apiService.checkout({
+        ...payload,
+        payment_method: paymentMethod
+      });
+      
+      setIsSubmitting(false);
 
-    if (res && res.success) {
-      alert("Pesanan Berhasil Dibuat! Invoice: " + res.invoice);
-      setCheckoutStep(0);
-      toggleCart(false);
-      window.location.reload();
-    } else {
-      alert("Gagal melakukan checkout: " + (res?.message || 'Error'));
+      if (res && res.success && res.snap_token) {
+        window.snap.pay(res.snap_token, {
+          onSuccess: function(result: any) {
+            // Simpan ke local storage
+            localStorage.setItem('last_invoice', res.invoice);
+            setSuccessData({
+              invoice: res.invoice,
+              payment_type: res.payment_type || paymentMethod,
+              payment_code: ''
+            });
+            clearCart();
+            setCheckoutStep(2);
+          },
+          onPending: function(result: any) {
+            localStorage.setItem('last_invoice', res.invoice);
+            setSuccessData({
+              invoice: res.invoice,
+              payment_type: res.payment_type || paymentMethod,
+              payment_code: ''
+            });
+            clearCart();
+            setCheckoutStep(2);
+          },
+          onError: function(result: any) {
+            alert('Pembayaran gagal atau terjadi kesalahan.');
+          },
+          onClose: function() {
+            // User closes popup without finishing
+          }
+        });
+      } else {
+        alert("Gagal memproses pesanan: " + (res?.message || "Kesalahan server"));
+      }
+    } catch (err: any) {
+      setIsSubmitting(false);
+      console.error(err);
+      alert("Terjadi kesalahan sistem di frontend: " + err.toString());
     }
   };
 
@@ -253,6 +303,8 @@ const CartDrawer: React.FC = () => {
               ))}
             </div>
           )}
+
+
 
           {cartItems.length > 0 && (
             <div className="cart-summary-card">
@@ -515,6 +567,55 @@ const CartDrawer: React.FC = () => {
 
                 {/* SISI KANAN: Ringkasan Pesanan */}
                 <div className="checkout-right-section">
+
+                  {/* Pilih Metode Pembayaran */}
+                  <div className="checkout-summary-card-box" style={{ marginBottom: '20px' }}>
+                    <h3 className="summary-title">Metode Pembayaran</h3>
+                    <div className="payment-methods">
+                      <label className={`payment-option ${paymentMethod === 'bca_va' ? 'selected' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="payment" 
+                          value="bca_va" 
+                          checked={paymentMethod === 'bca_va'}
+                          onChange={(e) => setPaymentMethod(e.target.value)} 
+                        />
+                        <div className="payment-label">
+                          <strong>BCA Virtual Account</strong>
+                          <span>Transfer otomatis</span>
+                        </div>
+                      </label>
+                      
+                      <label className={`payment-option ${paymentMethod === 'mandiri_va' ? 'selected' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="payment" 
+                          value="mandiri_va" 
+                          checked={paymentMethod === 'mandiri_va'}
+                          onChange={(e) => setPaymentMethod(e.target.value)} 
+                        />
+                        <div className="payment-label">
+                          <strong>Mandiri VA</strong>
+                          <span>Transfer otomatis</span>
+                        </div>
+                      </label>
+
+                      <label className={`payment-option ${paymentMethod === 'qris' ? 'selected' : ''}`}>
+                        <input 
+                          type="radio" 
+                          name="payment" 
+                          value="qris" 
+                          checked={paymentMethod === 'qris'}
+                          onChange={(e) => setPaymentMethod(e.target.value)} 
+                        />
+                        <div className="payment-label">
+                          <strong>QRIS</strong>
+                          <span>GoPay, ShopeePay, dll</span>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
                   <div className="checkout-summary-card-box">
                     <h3 className="summary-title">Ringkasan Pesanan</h3>
 
@@ -597,6 +698,42 @@ const CartDrawer: React.FC = () => {
           </div>
         </div>
       )}
+
+      {/* 3. MODAL SUKSES & INSTRUKSI PEMBAYARAN (Step 2) */}
+      {isCartOpen && checkoutStep === 2 && successData && (
+        <div className="checkout-page-overlay">
+          <div className="checkout-page-card" style={{ maxWidth: '600px', textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{ marginBottom: '20px' }}>
+              <div style={{ width: '60px', height: '60px', background: '#4CAF50', borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+              </div>
+            </div>
+            
+            <h2 style={{ color: '#1E293B', marginBottom: '10px' }}>Pesanan Berhasil Dibuat!</h2>
+            <p style={{ color: '#64748B', marginBottom: '30px' }}>Nomor Invoice: <strong>{successData.invoice}</strong></p>
+
+            <div style={{ background: '#F8FAFC', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '30px', textAlign: 'left' }}>
+              <p style={{ color: '#334155', lineHeight: '1.6' }}>
+                Terima kasih! Pesanan Anda telah berhasil tercatat di sistem kami.
+                Silakan simpan nomor invoice di atas untuk mengecek status pesanan Anda.
+              </p>
+            </div>
+
+            <button 
+              className="btn-selesaikan-pesanan"
+              onClick={() => {
+                setCheckoutStep(0);
+                toggleCart(false);
+              }}
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
+      )}
+
     </>
   );
 };

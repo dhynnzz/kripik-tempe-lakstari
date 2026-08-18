@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './App.css';
-import { Header, Hero, PaymentBanner, ProductList, Footer, FloatingCart, CartDrawer } from './components/User';
+import { Header, Hero, PaymentBanner, ProductList, Footer, FloatingCart, CartDrawer, OrderTracking } from './components/User';
 import { AdminLayout } from './components/Admin';
 import { CartProvider } from './context/CartContext';
 import { ProductProvider } from './context/ProductContext';
@@ -10,6 +10,8 @@ function App() {
   const [role, setRole] = useState<'user' | 'admin'>(() => {
     return window.location.pathname.startsWith('/admin') ? 'admin' : 'user';
   });
+  
+  const [currentView, setCurrentView] = useState<'home' | 'track-order'>('home');
 
   const handleSwitchToAdmin = () => {
     setRole('admin');
@@ -29,14 +31,23 @@ function App() {
           <AdminLayout onSwitchToUser={handleSwitchToUser} />
         ) : (
           <div className="app-container">
-            <Header onSwitchToAdmin={handleSwitchToAdmin} />
-            <Hero />
-            <PaymentBanner />
-            <ProductList />
-            <Footer />
-            
-            <FloatingCart />
-            <CartDrawer />
+            <Header 
+              onSwitchToAdmin={handleSwitchToAdmin} 
+              onNavigate={(view) => setCurrentView(view)} 
+              currentView={currentView}
+            />
+            {currentView === 'home' ? (
+              <>
+                <Hero />
+                <PaymentBanner />
+                <ProductList />
+                <Footer />
+                <FloatingCart />
+                <CartDrawer onNavigateToTracking={() => setCurrentView('track-order')} />
+              </>
+            ) : (
+              <OrderTracking onBack={() => setCurrentView('home')} />
+            )}
           </div>
         )}
         </CartProvider>

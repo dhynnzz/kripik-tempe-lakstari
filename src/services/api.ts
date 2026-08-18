@@ -247,7 +247,19 @@ export const apiService = {
 
   // ================= ORDER / CHECKOUT API =================
 
-  checkout: async (checkoutData: any): Promise<any> => {
+  checkout: async (orderData: {
+    nama_pelanggan: string;
+    no_hp: string;
+    email?: string;
+    alamat_lengkap: string;
+    kecamatan: string;
+    kota: string;
+    provinsi: string;
+    kode_pos: string;
+    items: { id_product: number; qty: number }[];
+    biaya_pengiriman: number;
+    payment_method: string;
+  }): Promise<any> => {
     try {
       const response = await fetch(`${API_BASE_URL}/checkout`, {
         method: 'POST',
@@ -255,11 +267,28 @@ export const apiService = {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
-        body: JSON.stringify(checkoutData)
+        body: JSON.stringify(orderData)
       });
       return await response.json();
     } catch (error) {
       console.error('Error checkout:', error);
+      return { success: false, message: 'Gagal terhubung ke server.' };
+    }
+  },
+
+  trackOrder: async (nomor_invoice: string, no_hp: string): Promise<any> => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/track-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ nomor_invoice, no_hp })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error track order:', error);
       return { success: false, message: 'Gagal terhubung ke server.' };
     }
   },

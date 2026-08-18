@@ -193,11 +193,11 @@
 .btn-add {
   background-color: var(--primary-accent);
   color: #2E3053;
-  padding: 12px;
+  padding: 14px;
   border-radius: 20px;
-  font-weight: 700;
+  font-weight: 800;
   font-size: 14px;
-  transition: opacity 0.3s ease, background-color 0.2s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   width: 100%;
   border: none;
   cursor: pointer;
@@ -205,10 +205,18 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
+  position: relative;
+  overflow: hidden;
+  transform: scale(1);
 }
 
 .btn-add:hover:not(:disabled) {
-  opacity: 0.9;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(250, 172, 48, 0.3);
+}
+
+.btn-add:active:not(:disabled) {
+  transform: scale(0.96);
 }
 
 .btn-add:disabled {
@@ -219,7 +227,25 @@
 }
 
 .btn-add-full {
-  margin-top: 5px;
+  margin-top: 10px;
+}
+
+/* Success State Animation */
+.btn-add.added {
+  background-color: #10B981 !important;
+  color: white !important;
+  transform: scale(1.02);
+  box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.4);
+}
+
+.check-icon-anim {
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: drawCheck 0.4s ease forwards;
+}
+
+@keyframes drawCheck {
+  to { stroke-dashoffset: 0; }
 }
 
 /* Responsive Product Section */
