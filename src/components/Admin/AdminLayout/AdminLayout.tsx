@@ -50,7 +50,24 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
     'dashboard' | 'products' | 'categories' | 'orders' | 'shipments' | 'customers' | 'reports' | 'admins' | 'settings'
   >('dashboard');
 
-  const [isDark, setIsDark] = useState(false);
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('admin_theme');
+      if (saved) return saved === 'dark';
+    }
+    return false;
+  });
+
+  const handleToggleTheme = () => {
+    setIsDark((prev) => {
+      const next = !prev;
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('admin_theme', next ? 'dark' : 'light');
+      }
+      return next;
+    });
+  };
+
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
     if (typeof window !== 'undefined') {
       return window.innerWidth > 1024;
@@ -91,11 +108,14 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
 
   return (
     <div
+      className={`admin-layout-root ${isDark ? 'admin-dark' : 'admin-light'}`}
+      data-theme={isDark ? 'dark' : 'light'}
       style={{
         display: 'flex',
         width: '100%',
         minHeight: '100vh',
         background: isDark ? '#090D16' : '#F1F5F9',
+        color: isDark ? '#F1F5F9' : '#1E293B',
       }}
     >
       {/* 21st.dev Style Sidebar */}
@@ -166,7 +186,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
               <span>{new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}</span>
             </div>
 
-            <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} />
+            <ThemeToggle isDark={isDark} onToggle={handleToggleTheme} />
 
             <div className="admin-header-divider" />
 

@@ -1014,3 +1014,202 @@
   z-index: 2000;
   animation: dhFadeIn 0.2s ease-out;
 }
+
+/* ═══════════════════════════════════════════
+   DASHBOARD DARK MODE STYLES
+═══════════════════════════════════════════ */
+.admin-dark .dh-page-header,
+[data-theme="dark"] .dh-page-header {
+  background: #131B2E;
+  border-color: #23304A;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.admin-dark .dh-page-header h1,
+[data-theme="dark"] .dh-page-header h1 {
+  color: #F8FAFC;
+}
+
+.admin-dark .dh-page-header p,
+[data-theme="dark"] .dh-page-header p {
+  color: #94A3B8;
+}
+
+.admin-dark .dh-header-badge,
+[data-theme="dark"] .dh-header-badge {
+  background: #1E293B;
+  border-color: #334155;
+  color: #CBD5E1;
+}
+
+.admin-dark .dh-date-pill,
+[data-theme="dark"] .dh-date-pill {
+  background: #1E293B;
+  border-color: #334155;
+  color: #CBD5E1;
+}
+
+.admin-dark .dh-sum-card,
+[data-theme="dark"] .dh-sum-card {
+  background: #131B2E;
+  border-color: #23304A;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.admin-dark .dh-sum-card:hover,
+[data-theme="dark"] .dh-sum-card:hover {
+  border-color: #3B82F6;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.admin-dark .dh-sum-label,
+[data-theme="dark"] .dh-sum-label {
+  color: #94A3B8;
+}
+
+.admin-dark .dh-sum-value,
+[data-theme="dark"] .dh-sum-value {
+  color: #F8FAFC;
+}
+
+.admin-dark .dh-sum-subtext,
+[data-theme="dark"] .dh-sum-subtext {
+  color: #64748B;
+}
+
+.admin-dark .dh-card,
+[data-theme="dark"] .dh-card {
+  background: #131B2E;
+  border-color: #23304A;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.admin-dark .dh-card-header,
+[data-theme="dark"] .dh-card-header {
+  border-bottom-color: #23304A;
+}
+
+.admin-dark .dh-card-header h2,
+[data-theme="dark"] .dh-card-header h2 {
+  color: #F8FAFC;
+}
+
+.admin-dark .dh-card-header p,
+[data-theme="dark"] .dh-card-header p {
+  color: #94A3B8;
+}
+
+.admin-dark .dh-table th,
+[data-theme="dark"] .dh-table th {
+  background: #18233C;
+  color: #94A3B8;
+  border-bottom-color: #23304A;
+}
+
+.admin-dark .dh-table td,
+[data-theme="dark"] .dh-table td {
+  color: #E2E8F0;
+  border-bottom-color: #1E2A42;
+}
+
+.admin-dark .dh-table tbody tr:hover,
+[data-theme="dark"] .dh-table tbody tr:hover {
+  background: #1A253D;
+}
+
+.admin-dark .dh-filter-tab,
+[data-theme="dark"] .dh-filter-tab {
+  background: #1E293B;
+  border-color: #334155;
+  color: #94A3B8;
+}
+
+.admin-dark .dh-filter-tab.active,
+[data-theme="dark"] .dh-filter-tab.active {
+  background: #FAAC30;
+  color: #232B45;
+  border-color: #FAAC30;
+}
+
+.admin-dark .dh-search-box,
+[data-theme="dark"] .dh-search-box {
+  background: #1E293B;
+  border-color: #334155;
+}
+
+.admin-dark .dh-search-box input,
+[data-theme="dark"] .dh-search-box input {
+  color: #F8FAFC;
+}
+
+.admin-dark .dh-search-box input::placeholder,
+[data-theme="dark"] .dh-search-box input::placeholder {
+  color: #64748B;
+}
+
+.admin-dark .dh-activity-item,
+[data-theme="dark"] .dh-activity-item {
+  border-bottom-color: #1E2A42;
+}
+
+.admin-dark .dh-activity-item:hover,
+[data-theme="dark"] .dh-activity-item:hover {
+  background: #1A253D;
+}
+
+.admin-dark .dh-activity-title,
+[data-theme="dark"] .dh-activity-title {
+  color: #F8FAFC;
+}
+
+.admin-dark .dh-activity-sub,
+[data-theme="dark"] .dh-activity-sub {
+  color: #94A3B8;
+}
+
+.admin-dark .dh-row-menu,
+[data-theme="dark"] .dh-row-menu {
+  background: #1E293B;
+  border-color: #334155;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+.admin-dark .dh-row-menu button,
+[data-theme="dark"] .dh-row-menu button {
+  color: #E2E8F0;
+}
+
+.admin-dark .dh-row-menu button:hover,
+[data-theme="dark"] .dh-row-menu button:hover {
+  background: #2D3D58;
+  color: #F8FAFC;
+}
+
+.admin-dark .dh-modal-card,
+[data-theme="dark"] .dh-modal-card {
+  background: #131B2E;
+  border-color: #334155;
+}
+
+.admin-dark .dh-modal-body,
+[data-theme="dark"] .dh-modal-body {
+  color: #E2E8F0;
+}
+
+.admin-dark .dh-modal-row,
+[data-theme="dark"] .dh-modal-row {
+  color: #94A3B8;
+  border-bottom-color: #23304A;
+}
+
+.admin-dark .dh-modal-row.highlight,
+[data-theme="dark"] .dh-modal-row.highlight {
+  background: #1E293B;
+  color: #F8FAFC;
+}
+
+.admin-dark .dh-modal-footer,
+[data-theme="dark"] .dh-modal-footer {
+  background: #18233C;
+  border-top-color: #23304A;
+}

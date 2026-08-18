@@ -59,3 +59,48 @@
   color: #334155;
   border-bottom: 1px solid #F1F5F9;
 }
+
+/* ════════════════════════════════════════
+   CUSTOMER MANAGER DARK MODE STYLES
+════════════════════════════════════════ */
+.admin-dark .customer-header-bar,
+[data-theme="dark"] .customer-header-bar {
+  background: #131B2E;
+  border-color: #23304A;
+}
+
+.admin-dark .customer-header-title h2,
+[data-theme="dark"] .customer-header-title h2 {
+  color: #F8FAFC;
+}
+
+.admin-dark .customer-header-title p,
+[data-theme="dark"] .customer-header-title p {
+  color: #94A3B8;
+}
+
+.admin-dark .customer-table-card,
+[data-theme="dark"] .customer-table-card {
+  background: #131B2E;
+  border-color: #23304A;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.admin-dark .customer-table th,
+[data-theme="dark"] .customer-table th {
+  background: #18233C;
+  color: #94A3B8;
+  border-bottom-color: #23304A;
+}
+
+.admin-dark .customer-table td,
+[data-theme="dark"] .customer-table td {
+  color: #E2E8F0;
+  border-bottom-color: #1E2A42;
+}
+
+.admin-dark .customer-table tbody tr:hover,
+[data-theme="dark"] .customer-table tbody tr:hover {
+  background: #1A253D;
+}
+

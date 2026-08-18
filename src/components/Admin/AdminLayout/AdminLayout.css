@@ -525,7 +525,9 @@
   white-space: nowrap;
 }
 
-.admin-dark-mode .admin-header-date-pill {
+.admin-dark-mode .admin-header-date-pill,
+.admin-dark .admin-header-date-pill,
+[data-theme="dark"] .admin-header-date-pill {
   background: #1E293B;
   border-color: #334155;
   color: #CBD5E1;
@@ -537,7 +539,9 @@
   background: rgba(0, 0, 0, 0.08);
 }
 
-.admin-dark-mode .admin-header-divider {
+.admin-dark-mode .admin-header-divider,
+.admin-dark .admin-header-divider,
+[data-theme="dark"] .admin-header-divider {
   background: rgba(255, 255, 255, 0.1);
 }
 
