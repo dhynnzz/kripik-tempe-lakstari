@@ -23,7 +23,6 @@ Route::post('/payment/success-fallback', [\App\Http\Controllers\OrderController:
 Route::post('/track-order', [\App\Http\Controllers\OrderController::class, 'trackOrder']);
 Route::get('/wilayah/districts/{regencyId}', [\App\Http\Controllers\WilayahController::class, 'getDistricts']);
 Route::get('/wilayah/villages/{districtId}', [\App\Http\Controllers\WilayahController::class, 'getVillages']);
-Route::get('/settings', [\App\Http\Controllers\SettingController::class, 'index']);
 
 // Protected Routes (Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
@@ -59,10 +58,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/admin/accounts', [\App\Http\Controllers\AdminAccountController::class, 'index']);
     Route::post('/admin/accounts', [\App\Http\Controllers\AdminAccountController::class, 'store']);
     Route::put('/admin/accounts/{id}', [\App\Http\Controllers\AdminAccountController::class, 'updateStatus']);
-
-    // Admin Store Settings Management
-    Route::get('/admin/settings', [\App\Http\Controllers\SettingController::class, 'index']);
-    Route::put('/admin/settings', [\App\Http\Controllers\SettingController::class, 'update']);
 
     // User route for sanctum
     Route::get('/user', function (Request $request) {

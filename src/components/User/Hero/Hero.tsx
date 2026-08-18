@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import './Hero.css';
-import { useStoreSettings } from '../../../context/StoreSettingsContext';
 
 const images = [
   '/hero_tempeh.png',
@@ -24,7 +23,6 @@ const Spiral = ({ style }: { style: React.CSSProperties }) => (
 );
 
 const Hero = () => {
-  const { settings } = useStoreSettings();
   const [currentIdx, setCurrentIdx] = useState(0);
 
   useEffect(() => {
@@ -49,7 +47,12 @@ const Hero = () => {
       <Spiral style={{ top: '5%', left: '45%', transform: 'rotate(10deg) scale(1.3)' }} />
 
       <div className="hero-text">
-        <div className="hero-certifications">
+        <span className="hero-badge">PREMIUM QUALITY SNACK</span>
+        <h1>Kripik Tempe<br />Lakstari</h1>
+        <p>Renyah, Gurih, Nagih. Camilan tradisional kualitas premium yang diolah dengan resep rahasia keluarga.</p>
+      </div>
+      <div className="hero-image-wrapper">
+        <div className="hero-certifications hero-cert-right">
           <div className="cert-logo">
             <img src="/PIRT.png" alt="PIRT" />
           </div>
@@ -57,11 +60,6 @@ const Hero = () => {
             <img src="/halal.png" alt="Halal Indonesia" />
           </div>
         </div>
-        <span className="hero-badge">PREMIUM QUALITY SNACK</span>
-        <h1>{settings.name || 'Kripik Tempe Lakstari'}</h1>
-        <p>{settings.tagline || settings.description || 'Renyah, Gurih, Nagih. Camilan tradisional kualitas premium yang diolah dengan resep rahasia keluarga.'}</p>
-      </div>
-      <div className="hero-image-wrapper">
         {images.map((src, idx) => (
           <img
             key={src}

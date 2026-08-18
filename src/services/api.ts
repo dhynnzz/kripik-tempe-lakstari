@@ -31,7 +31,7 @@ export const apiService = {
       if (!response.ok) {
         throw new Error(json.message || 'Login gagal, pastikan kredensial benar.');
       }
-      
+
       if (json.success && json.token) {
         sessionStorage.setItem('admin_token', json.token);
         sessionStorage.setItem('admin_user', JSON.stringify(json.user));
@@ -100,19 +100,19 @@ export const apiService = {
     try {
       // Mapping ke field backend Laravel
       const payload = {
-         id_category: product.category === 'Lainnya' ? 2 : 1, // fallback default jika tidak ada
-         nama_product: product.name,
-         deskripsi_product: product.desc || 'Deskripsi Produk',
-         harga_product: product.priceNum,
-         stok_product: product.stock,
-         berat_product: parseInt(product.weight) || 100,
-         foto_product: product.image || '/flavor_original_1786524783436.png',
-         status_product: product.status || 'aktif'
+        id_category: product.category === 'Lainnya' ? 2 : 1, // fallback default jika tidak ada
+        nama_product: product.name,
+        deskripsi_product: product.desc || 'Deskripsi Produk',
+        harga_product: product.priceNum,
+        stok_product: product.stock,
+        berat_product: parseInt(product.weight) || 100,
+        foto_product: product.image || '/flavor_original_1786524783436.png',
+        status_product: product.status || 'aktif'
       };
 
       // Idealnya mencari id_category berdasarkan nama category yang di passing
       if (product.categoryId) {
-          payload.id_category = product.categoryId;
+        payload.id_category = product.categoryId;
       }
 
       const response = await fetch(`${API_BASE_URL}/admin/products`, {
@@ -437,38 +437,6 @@ export const apiService = {
       return json.success;
     } catch (error) {
       console.error('Error update admin status:', error);
-      return false;
-    }
-  },
-
-  // ================= STORE SETTINGS API =================
-
-  getStoreSettings: async (): Promise<any> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/settings`);
-      const json = await response.json();
-      return json.success ? json.data : null;
-    } catch (error) {
-      console.error('Error get store settings:', error);
-      return null;
-    }
-  },
-
-  updateStoreSettings: async (settings: any): Promise<boolean> => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/admin/settings`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': getAdminToken()
-        },
-        body: JSON.stringify(settings)
-      });
-      const json = await response.json();
-      return json.success;
-    } catch (error) {
-      console.error('Error update store settings:', error);
       return false;
     }
   }
