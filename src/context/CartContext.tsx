@@ -2,11 +2,13 @@ import React, { createContext, useContext, useState } from 'react';
 import type { ReactNode } from 'react';
 export interface CartItem {
   id: string; // Unique ID for cart item (productName + variant)
+  productId?: number;
   productName: string;
   variant: string;
   priceStr: string;
   priceRaw: number;
   quantity: number;
+  weight?: string;
   image?: string;
 }
 

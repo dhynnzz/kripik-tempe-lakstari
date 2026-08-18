@@ -321,3 +321,506 @@
     padding-right: 20px;
   }
 }
+
+/* =========================================================
+   CHECKOUT PAGE MODAL (Desain Sesuai Mockup 'Pembayaran')
+   ========================================================= */
+
+.checkout-page-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(15, 23, 42, 0.65);
+  backdrop-filter: blur(6px);
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+  animation: fadeInModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.checkout-page-card {
+  background: #F8FAFC;
+  border-radius: 24px;
+  width: 100%;
+  max-width: 1040px;
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  animation: scaleUpModal 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.checkout-page-top {
+  padding: 24px 35px 16px 35px;
+  background: #FFFFFF;
+  border-bottom: 1px solid #E2E8F0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.checkout-main-title {
+  margin: 0;
+  font-size: 28px;
+  font-family: 'Outfit', 'Nunito', serif, sans-serif;
+  color: #1E293B;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.checkout-close-circle {
+  background: #F1F5F9;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.checkout-close-circle:hover {
+  background: #E2E8F0;
+  color: #0F172A;
+  transform: rotate(90deg);
+}
+
+.checkout-page-body {
+  overflow-y: auto;
+  padding: 28px 35px 35px 35px;
+}
+
+.checkout-main-grid {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 28px;
+  align-items: start;
+}
+
+/* Sisi Kiri */
+.checkout-left-section {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.checkout-card-box {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+}
+
+.card-box-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.box-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #FEF3C7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-box-header h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: #1E293B;
+  font-family: var(--font-heading);
+}
+
+.box-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-item-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.form-item-3col {
+  display: grid;
+  grid-template-columns: 1.15fr 1.15fr 0.85fr;
+  gap: 12px;
+}
+
+.custom-select-box {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.styled-select {
+  width: 100%;
+  padding: 12px 34px 12px 14px;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+  background-color: #FAFAFA;
+  font-size: 13.5px;
+  color: #0F172A;
+  font-family: var(--font-body);
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.styled-select:focus {
+  border-color: #F59E0B;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+.styled-select:disabled {
+  background-color: #F1F5F9;
+  color: #94A3B8;
+  cursor: not-allowed;
+}
+
+.select-chevron {
+  position: absolute;
+  right: 12px;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-item label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.form-item input,
+.form-item textarea {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1.5px solid #E2E8F0;
+  background-color: #FAFAFA;
+  font-size: 13.5px;
+  color: #0F172A;
+  font-family: var(--font-body);
+  outline: none;
+  transition: all 0.2s;
+  box-sizing: border-box;
+}
+
+.form-item textarea {
+  resize: vertical;
+  min-height: 65px;
+}
+
+.form-item input:focus,
+.form-item textarea:focus {
+  border-color: #F59E0B;
+  background-color: #FFFFFF;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+/* Pilihan Pengiriman Box */
+.shipping-option-box {
+  border: 1.5px solid #F59E0B;
+  background-color: #FFFDF5;
+  border-radius: 14px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.shipping-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.custom-radio-dot {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid #F59E0B;
+  background: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inner-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #F59E0B;
+}
+
+.shipping-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.shipping-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+.shipping-courier {
+  font-size: 12px;
+  color: #64748B;
+}
+
+.shipping-price {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+/* Sisi Kanan: Summary Card */
+.checkout-summary-card-box {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.summary-title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: #1E293B;
+  font-family: var(--font-heading);
+}
+
+.order-items-scroll {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.order-item-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.order-item-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.order-item-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 10px;
+  object-fit: cover;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+}
+
+.order-item-meta {
+  display: flex;
+  flex-direction: column;
+}
+
+.order-product-name {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.order-product-qty {
+  font-size: 12px;
+  color: #64748B;
+}
+
+.order-item-price {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1E293B;
+  white-space: nowrap;
+}
+
+.order-divider {
+  border: none;
+  border-top: 1px dashed #E2E8F0;
+  margin: 2px 0;
+}
+
+.order-calc-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  color: #475569;
+}
+
+.order-total-highlight {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-top: 4px;
+}
+
+.total-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #1E293B;
+}
+
+.total-value-amber {
+  font-size: 26px;
+  font-weight: 800;
+  color: #D97706;
+  font-family: 'Outfit', 'Nunito', serif, sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.terms-checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 12px;
+  color: #64748B;
+  line-height: 1.4;
+  cursor: pointer;
+  margin-top: 4px;
+}
+
+.terms-checkbox-label input[type="checkbox"] {
+  margin-top: 2px;
+  accent-color: #F59E0B;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.terms-checkbox-label a {
+  color: #0284C7;
+  text-decoration: underline;
+}
+
+.btn-selesaikan-pesanan {
+  width: 100%;
+  height: 48px;
+  background: #F59E0B;
+  color: #1E293B;
+  border: none;
+  border-radius: 30px;
+  font-size: 15px;
+  font-weight: 800;
+  font-family: var(--font-heading);
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 14px rgba(245, 158, 11, 0.35);
+}
+
+.btn-selesaikan-pesanan:hover:not(:disabled) {
+  background: #D97706;
+  color: #FFFFFF;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(217, 119, 6, 0.4);
+}
+
+.btn-selesaikan-pesanan:disabled {
+  background: #CBD5E1;
+  color: #94A3B8;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.order-security-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 12px;
+  color: #64748B;
+  margin-top: -4px;
+}
+
+.btn-back-to-cart {
+  background: none;
+  border: none;
+  color: #64748B;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.btn-back-to-cart:hover {
+  color: #1E293B;
+}
+
+/* Responsivitas Pembayaran */
+@media (max-width: 900px) {
+  .checkout-page-card {
+    max-height: 96vh;
+    border-radius: 20px;
+  }
+
+  .checkout-main-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .checkout-page-top,
+  .checkout-page-body {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .form-item-2col,
+  .form-item-3col {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+}
+
+

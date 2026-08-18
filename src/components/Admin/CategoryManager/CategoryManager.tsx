@@ -242,7 +242,7 @@ const CategoryManager: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="Contoh: Keripik Tempe Pedas"
+                  placeholder="Contoh: Kripik Tempe Pedas"
                   value={catName}
                   onChange={(e) => setCatName(e.target.value)}
                   style={{

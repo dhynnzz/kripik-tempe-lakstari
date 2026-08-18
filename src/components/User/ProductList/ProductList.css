@@ -147,6 +147,11 @@
   box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
 }
 
+.dot-out {
+  background-color: #EF4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+}
+
 /* Variant Selector (Dropdown) */
 .variant-selector {
   margin-bottom: 15px;
@@ -192,7 +197,7 @@
   border-radius: 20px;
   font-weight: 700;
   font-size: 14px;
-  transition: opacity 0.3s ease;
+  transition: opacity 0.3s ease, background-color 0.2s ease;
   width: 100%;
   border: none;
   cursor: pointer;
@@ -202,8 +207,15 @@
   gap: 8px;
 }
 
-.btn-add:hover {
+.btn-add:hover:not(:disabled) {
   opacity: 0.9;
+}
+
+.btn-add:disabled {
+  background-color: #E2E8F0;
+  color: #94A3B8;
+  cursor: not-allowed;
+  opacity: 0.85;
 }
 
 .btn-add-full {

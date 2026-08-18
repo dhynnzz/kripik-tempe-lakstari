@@ -4,14 +4,14 @@ use App\Models\Category;
 use App\Models\Product;
 
 // Pastikan kategori default ada
-$cat1 = Category::firstOrCreate(['id_category' => 1], ['nama_category' => 'Keripik', 'status_category' => 'aktif']);
+$cat1 = Category::firstOrCreate(['id_category' => 1], ['nama_category' => 'Kripik', 'status_category' => 'aktif']);
 $cat2 = Category::firstOrCreate(['id_category' => 2], ['nama_category' => 'Lainnya', 'status_category' => 'aktif']);
 
 $products = [
     [
         'id_category' => 1,
-        'nama_product' => 'Keripik Tempe Original',
-        'deskripsi_product' => 'Keripik tempe renyah dengan bumbu bawang putih dan garam laut asli. Gurih dan cocok untuk camilan keluarga.',
+        'nama_product' => 'Kripik Tempe Original',
+        'deskripsi_product' => 'Kripik tempe renyah dengan bumbu bawang putih dan garam laut asli. Gurih dan cocok untuk camilan keluarga.',
         'harga_product' => 15000,
         'stok_product' => 120,
         'berat_product' => 150,
@@ -20,7 +20,7 @@ $products = [
     ],
     [
         'id_category' => 1,
-        'nama_product' => 'Keripik Tempe Pedas Manis',
+        'nama_product' => 'Kripik Tempe Pedas Manis',
         'deskripsi_product' => 'Paduan rasa pedas dari cabai pilihan dan manisnya gula aren, menciptakan sensasi nagih di setiap gigitan.',
         'harga_product' => 16500,
         'stok_product' => 80,
@@ -30,7 +30,7 @@ $products = [
     ],
     [
         'id_category' => 1,
-        'nama_product' => 'Keripik Tempe Balado',
+        'nama_product' => 'Kripik Tempe Balado',
         'deskripsi_product' => 'Bumbu balado khas Padang yang kaya rempah. Tingkat kepedasannya pas untuk pecinta rasa otentik Nusantara.',
         'harga_product' => 16500,
         'stok_product' => 50,
@@ -40,7 +40,7 @@ $products = [
     ],
     [
         'id_category' => 1,
-        'nama_product' => 'Keripik Tempe Sapi Panggang',
+        'nama_product' => 'Kripik Tempe Sapi Panggang',
         'deskripsi_product' => 'Aroma sapi panggang BBQ yang kuat berpadu dengan gurihnya tempe kedelai murni. Camilan modern nan lezat.',
         'harga_product' => 17000,
         'stok_product' => 95,
@@ -50,7 +50,7 @@ $products = [
     ],
     [
         'id_category' => 1,
-        'nama_product' => 'Keripik Tempe Keju Supreme',
+        'nama_product' => 'Kripik Tempe Keju Supreme',
         'deskripsi_product' => 'Taburan keju melimpah yang meleleh di mulut. Kombinasi unik cita rasa barat dan camilan tradisional.',
         'harga_product' => 18000,
         'stok_product' => 40,
@@ -60,7 +60,7 @@ $products = [
     ],
     [
         'id_category' => 1,
-        'nama_product' => 'Keripik Tempe Jagung Bakar',
+        'nama_product' => 'Kripik Tempe Jagung Bakar',
         'deskripsi_product' => 'Rasa manis jagung bakar dan aroma asap (smokey) bikin nostalgia jajanan masa kecil.',
         'harga_product' => 16000,
         'stok_product' => 110,
@@ -70,7 +70,7 @@ $products = [
     ],
     [
         'id_category' => 1,
-        'nama_product' => 'Keripik Tempe Daun Jeruk',
+        'nama_product' => 'Kripik Tempe Daun Jeruk',
         'deskripsi_product' => 'Sangat harum! Irisan daun jeruk asli yang digoreng kering bersama bumbu gurih. Best seller kami.',
         'harga_product' => 17000,
         'stok_product' => 200,
@@ -100,7 +100,7 @@ $products = [
     ],
     [
         'id_category' => 1,
-        'nama_product' => 'Keripik Tempe Super Pedas (Level 10)',
+        'nama_product' => 'Kripik Tempe Super Pedas (Level 10)',
         'deskripsi_product' => 'Khusus pecinta pedas ekstrem! Dibuat dengan ekstrak cabai setan murni. Tantang nyalimu!',
         'harga_product' => 18000,
         'stok_product' => 60,
