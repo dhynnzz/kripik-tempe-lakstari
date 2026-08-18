@@ -79,11 +79,11 @@ const CategoryManager: React.FC = () => {
         </button>
       </div>
 
-      {/* Summary Cards */}
+      {/* Summary Cards (Separate Individual Cards) */}
       <div className="cat-summary-cards">
         <div className="cat-summary-card">
-          <div className="cat-icon-wrap" style={{ color: '#0EA5E9' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="cat-icon-wrap" style={{ color: '#0EA5E9', background: '#F0F9FF' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
               <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
             </svg>
@@ -94,11 +94,9 @@ const CategoryManager: React.FC = () => {
           </div>
         </div>
 
-        <div className="cat-summary-divider"></div>
-
         <div className="cat-summary-card">
-          <div className="cat-icon-wrap" style={{ color: '#4F46E5' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="cat-icon-wrap" style={{ color: '#6366F1', background: '#EEF2FF' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="m7.5 4.27 9 5.15" />
               <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
               <path d="m3.3 7 8.7 5 8.7-5" />
@@ -111,11 +109,9 @@ const CategoryManager: React.FC = () => {
           </div>
         </div>
 
-        <div className="cat-summary-divider"></div>
-
         <div className="cat-summary-card">
-          <div className="cat-icon-wrap" style={{ color: '#16A34A' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+          <div className="cat-icon-wrap" style={{ color: '#16A34A', background: '#F0FDF4' }}>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
               <polyline points="22 4 12 14.01 9 11.01" />
             </svg>
