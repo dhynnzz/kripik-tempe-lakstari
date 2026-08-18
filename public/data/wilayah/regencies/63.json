@@ -1,1 +1,67 @@
-[{"id":"6301","province_id":"63","name":"KABUPATEN TANAH LAUT"},{"id":"6302","province_id":"63","name":"KABUPATEN KOTA BARU"},{"id":"6303","province_id":"63","name":"KABUPATEN BANJAR"},{"id":"6304","province_id":"63","name":"KABUPATEN BARITO KUALA"},{"id":"6305","province_id":"63","name":"KABUPATEN TAPIN"},{"id":"6306","province_id":"63","name":"KABUPATEN HULU SUNGAI SELATAN"},{"id":"6307","province_id":"63","name":"KABUPATEN HULU SUNGAI TENGAH"},{"id":"6308","province_id":"63","name":"KABUPATEN HULU SUNGAI UTARA"},{"id":"6309","province_id":"63","name":"KABUPATEN TABALONG"},{"id":"6310","province_id":"63","name":"KABUPATEN TANAH BUMBU"},{"id":"6311","province_id":"63","name":"KABUPATEN BALANGAN"},{"id":"6371","province_id":"63","name":"KOTA BANJARMASIN"},{"id":"6372","province_id":"63","name":"KOTA BANJAR BARU"}]
+[
+  {
+    "id": "63.01",
+    "province_id": "63",
+    "name": "KABUPATEN TANAH LAUT"
+  },
+  {
+    "id": "63.02",
+    "province_id": "63",
+    "name": "KABUPATEN KOTABARU"
+  },
+  {
+    "id": "63.03",
+    "province_id": "63",
+    "name": "KABUPATEN BANJAR"
+  },
+  {
+    "id": "63.04",
+    "province_id": "63",
+    "name": "KABUPATEN BARITO KUALA"
+  },
+  {
+    "id": "63.05",
+    "province_id": "63",
+    "name": "KABUPATEN TAPIN"
+  },
+  {
+    "id": "63.06",
+    "province_id": "63",
+    "name": "KABUPATEN HULU SUNGAI SELATAN"
+  },
+  {
+    "id": "63.07",
+    "province_id": "63",
+    "name": "KABUPATEN HULU SUNGAI TENGAH"
+  },
+  {
+    "id": "63.08",
+    "province_id": "63",
+    "name": "KABUPATEN HULU SUNGAI UTARA"
+  },
+  {
+    "id": "63.09",
+    "province_id": "63",
+    "name": "KABUPATEN TABALONG"
+  },
+  {
+    "id": "63.10",
+    "province_id": "63",
+    "name": "KABUPATEN TANAH BUMBU"
+  },
+  {
+    "id": "63.11",
+    "province_id": "63",
+    "name": "KABUPATEN BALANGAN"
+  },
+  {
+    "id": "63.71",
+    "province_id": "63",
+    "name": "KOTA BANJARMASIN"
+  },
+  {
+    "id": "63.72",
+    "province_id": "63",
+    "name": "KOTA BANJARBARU"
+  }
+]

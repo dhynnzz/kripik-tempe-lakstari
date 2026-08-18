@@ -127,12 +127,24 @@ export const regionService = {
     return [];
   },
 
-  // 4. Ambil Desa / Kelurahan via Backend Proxy Laravel / Online
+  // 4. Ambil 100% Seluruh Desa / Kelurahan di Indonesia (0 ms dari dataset lokal)
   async getVillages(districtId: string): Promise<RegionItem[]> {
     if (!districtId) return [];
     if (villageCache[districtId]) return villageCache[districtId];
 
-    // Coba via Backend Laravel terlebih dahulu (Bebas CORS)
+    // Coba langsung dari dataset lokal proyek (0 ms instant)
+    try {
+      const res = await fetch(`/data/wilayah/villages/${districtId}.json`);
+      if (res.ok) {
+        const data: RegionItem[] = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          villageCache[districtId] = data;
+          return data;
+        }
+      }
+    } catch (e) {}
+
+    // Fallback via Backend Laravel Proxy (Bebas CORS)
     try {
       const res = await fetch(`${API_BASE_URL}/wilayah/villages/${districtId}`);
       if (res.ok) {
@@ -144,7 +156,7 @@ export const regionService = {
       }
     } catch (e) {}
 
-    // Fallback EMSIFA Online
+    // Fallback Online
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/villages/${districtId}.json`);
       if (res.ok) {

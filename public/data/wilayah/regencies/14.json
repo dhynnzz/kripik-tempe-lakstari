@@ -1,1 +1,62 @@
-[{"id":"1401","province_id":"14","name":"KABUPATEN KUANTAN SINGINGI"},{"id":"1402","province_id":"14","name":"KABUPATEN INDRAGIRI HULU"},{"id":"1403","province_id":"14","name":"KABUPATEN INDRAGIRI HILIR"},{"id":"1404","province_id":"14","name":"KABUPATEN PELALAWAN"},{"id":"1405","province_id":"14","name":"KABUPATEN S I A K"},{"id":"1406","province_id":"14","name":"KABUPATEN KAMPAR"},{"id":"1407","province_id":"14","name":"KABUPATEN ROKAN HULU"},{"id":"1408","province_id":"14","name":"KABUPATEN BENGKALIS"},{"id":"1409","province_id":"14","name":"KABUPATEN ROKAN HILIR"},{"id":"1410","province_id":"14","name":"KABUPATEN KEPULAUAN MERANTI"},{"id":"1471","province_id":"14","name":"KOTA PEKANBARU"},{"id":"1473","province_id":"14","name":"KOTA D U M A I"}]
+[
+  {
+    "id": "14.01",
+    "province_id": "14",
+    "name": "KABUPATEN KAMPAR"
+  },
+  {
+    "id": "14.02",
+    "province_id": "14",
+    "name": "KABUPATEN INDRAGIRI HULU"
+  },
+  {
+    "id": "14.03",
+    "province_id": "14",
+    "name": "KABUPATEN BENGKALIS"
+  },
+  {
+    "id": "14.04",
+    "province_id": "14",
+    "name": "KABUPATEN INDRAGIRI HILIR"
+  },
+  {
+    "id": "14.05",
+    "province_id": "14",
+    "name": "KABUPATEN PELALAWAN"
+  },
+  {
+    "id": "14.06",
+    "province_id": "14",
+    "name": "KABUPATEN ROKAN HULU"
+  },
+  {
+    "id": "14.07",
+    "province_id": "14",
+    "name": "KABUPATEN ROKAN HILIR"
+  },
+  {
+    "id": "14.08",
+    "province_id": "14",
+    "name": "KABUPATEN SIAK"
+  },
+  {
+    "id": "14.09",
+    "province_id": "14",
+    "name": "KABUPATEN KUANTAN SINGINGI"
+  },
+  {
+    "id": "14.10",
+    "province_id": "14",
+    "name": "KABUPATEN KEPULAUAN MERANTI"
+  },
+  {
+    "id": "14.71",
+    "province_id": "14",
+    "name": "KOTA PEKANBARU"
+  },
+  {
+    "id": "14.72",
+    "province_id": "14",
+    "name": "KOTA DUMAI"
+  }
+]

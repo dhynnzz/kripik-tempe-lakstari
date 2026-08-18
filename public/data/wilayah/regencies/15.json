@@ -1,1 +1,57 @@
-[{"id":"1501","province_id":"15","name":"KABUPATEN KERINCI"},{"id":"1502","province_id":"15","name":"KABUPATEN MERANGIN"},{"id":"1503","province_id":"15","name":"KABUPATEN SAROLANGUN"},{"id":"1504","province_id":"15","name":"KABUPATEN BATANG HARI"},{"id":"1505","province_id":"15","name":"KABUPATEN MUARO JAMBI"},{"id":"1506","province_id":"15","name":"KABUPATEN TANJUNG JABUNG TIMUR"},{"id":"1507","province_id":"15","name":"KABUPATEN TANJUNG JABUNG BARAT"},{"id":"1508","province_id":"15","name":"KABUPATEN TEBO"},{"id":"1509","province_id":"15","name":"KABUPATEN BUNGO"},{"id":"1571","province_id":"15","name":"KOTA JAMBI"},{"id":"1572","province_id":"15","name":"KOTA SUNGAI PENUH"}]
+[
+  {
+    "id": "15.01",
+    "province_id": "15",
+    "name": "KABUPATEN KERINCI"
+  },
+  {
+    "id": "15.02",
+    "province_id": "15",
+    "name": "KABUPATEN MERANGIN"
+  },
+  {
+    "id": "15.03",
+    "province_id": "15",
+    "name": "KABUPATEN SAROLANGUN"
+  },
+  {
+    "id": "15.04",
+    "province_id": "15",
+    "name": "KABUPATEN BATANGHARI"
+  },
+  {
+    "id": "15.05",
+    "province_id": "15",
+    "name": "KABUPATEN MUARO JAMBI"
+  },
+  {
+    "id": "15.06",
+    "province_id": "15",
+    "name": "KABUPATEN TANJUNG JABUNG BARAT"
+  },
+  {
+    "id": "15.07",
+    "province_id": "15",
+    "name": "KABUPATEN TANJUNG JABUNG TIMUR"
+  },
+  {
+    "id": "15.08",
+    "province_id": "15",
+    "name": "KABUPATEN BUNGO"
+  },
+  {
+    "id": "15.09",
+    "province_id": "15",
+    "name": "KABUPATEN TEBO"
+  },
+  {
+    "id": "15.71",
+    "province_id": "15",
+    "name": "KOTA JAMBI"
+  },
+  {
+    "id": "15.72",
+    "province_id": "15",
+    "name": "KOTA SUNGAI PENUH"
+  }
+]

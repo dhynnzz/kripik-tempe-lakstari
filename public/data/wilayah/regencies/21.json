@@ -1,1 +1,37 @@
-[{"id":"2101","province_id":"21","name":"KABUPATEN KARIMUN"},{"id":"2102","province_id":"21","name":"KABUPATEN BINTAN"},{"id":"2103","province_id":"21","name":"KABUPATEN NATUNA"},{"id":"2104","province_id":"21","name":"KABUPATEN LINGGA"},{"id":"2105","province_id":"21","name":"KABUPATEN KEPULAUAN ANAMBAS"},{"id":"2171","province_id":"21","name":"KOTA B A T A M"},{"id":"2172","province_id":"21","name":"KOTA TANJUNG PINANG"}]
+[
+  {
+    "id": "21.01",
+    "province_id": "21",
+    "name": "KABUPATEN BINTAN"
+  },
+  {
+    "id": "21.02",
+    "province_id": "21",
+    "name": "KABUPATEN KARIMUN"
+  },
+  {
+    "id": "21.03",
+    "province_id": "21",
+    "name": "KABUPATEN NATUNA"
+  },
+  {
+    "id": "21.04",
+    "province_id": "21",
+    "name": "KABUPATEN LINGGA"
+  },
+  {
+    "id": "21.05",
+    "province_id": "21",
+    "name": "KABUPATEN KEPULAUAN ANAMBAS"
+  },
+  {
+    "id": "21.71",
+    "province_id": "21",
+    "name": "KOTA BATAM"
+  },
+  {
+    "id": "21.72",
+    "province_id": "21",
+    "name": "KOTA TANJUNG PINANG"
+  }
+]

@@ -1,1 +1,177 @@
-[{"id":"3301","province_id":"33","name":"KABUPATEN CILACAP"},{"id":"3302","province_id":"33","name":"KABUPATEN BANYUMAS"},{"id":"3303","province_id":"33","name":"KABUPATEN PURBALINGGA"},{"id":"3304","province_id":"33","name":"KABUPATEN BANJARNEGARA"},{"id":"3305","province_id":"33","name":"KABUPATEN KEBUMEN"},{"id":"3306","province_id":"33","name":"KABUPATEN PURWOREJO"},{"id":"3307","province_id":"33","name":"KABUPATEN WONOSOBO"},{"id":"3308","province_id":"33","name":"KABUPATEN MAGELANG"},{"id":"3309","province_id":"33","name":"KABUPATEN BOYOLALI"},{"id":"3310","province_id":"33","name":"KABUPATEN KLATEN"},{"id":"3311","province_id":"33","name":"KABUPATEN SUKOHARJO"},{"id":"3312","province_id":"33","name":"KABUPATEN WONOGIRI"},{"id":"3313","province_id":"33","name":"KABUPATEN KARANGANYAR"},{"id":"3314","province_id":"33","name":"KABUPATEN SRAGEN"},{"id":"3315","province_id":"33","name":"KABUPATEN GROBOGAN"},{"id":"3316","province_id":"33","name":"KABUPATEN BLORA"},{"id":"3317","province_id":"33","name":"KABUPATEN REMBANG"},{"id":"3318","province_id":"33","name":"KABUPATEN PATI"},{"id":"3319","province_id":"33","name":"KABUPATEN KUDUS"},{"id":"3320","province_id":"33","name":"KABUPATEN JEPARA"},{"id":"3321","province_id":"33","name":"KABUPATEN DEMAK"},{"id":"3322","province_id":"33","name":"KABUPATEN SEMARANG"},{"id":"3323","province_id":"33","name":"KABUPATEN TEMANGGUNG"},{"id":"3324","province_id":"33","name":"KABUPATEN KENDAL"},{"id":"3325","province_id":"33","name":"KABUPATEN BATANG"},{"id":"3326","province_id":"33","name":"KABUPATEN PEKALONGAN"},{"id":"3327","province_id":"33","name":"KABUPATEN PEMALANG"},{"id":"3328","province_id":"33","name":"KABUPATEN TEGAL"},{"id":"3329","province_id":"33","name":"KABUPATEN BREBES"},{"id":"3371","province_id":"33","name":"KOTA MAGELANG"},{"id":"3372","province_id":"33","name":"KOTA SURAKARTA"},{"id":"3373","province_id":"33","name":"KOTA SALATIGA"},{"id":"3374","province_id":"33","name":"KOTA SEMARANG"},{"id":"3375","province_id":"33","name":"KOTA PEKALONGAN"},{"id":"3376","province_id":"33","name":"KOTA TEGAL"}]
+[
+  {
+    "id": "33.01",
+    "province_id": "33",
+    "name": "KABUPATEN CILACAP"
+  },
+  {
+    "id": "33.02",
+    "province_id": "33",
+    "name": "KABUPATEN BANYUMAS"
+  },
+  {
+    "id": "33.03",
+    "province_id": "33",
+    "name": "KABUPATEN PURBALINGGA"
+  },
+  {
+    "id": "33.04",
+    "province_id": "33",
+    "name": "KABUPATEN BANJARNEGARA"
+  },
+  {
+    "id": "33.05",
+    "province_id": "33",
+    "name": "KABUPATEN KEBUMEN"
+  },
+  {
+    "id": "33.06",
+    "province_id": "33",
+    "name": "KABUPATEN PURWOREJO"
+  },
+  {
+    "id": "33.07",
+    "province_id": "33",
+    "name": "KABUPATEN WONOSOBO"
+  },
+  {
+    "id": "33.08",
+    "province_id": "33",
+    "name": "KABUPATEN MAGELANG"
+  },
+  {
+    "id": "33.09",
+    "province_id": "33",
+    "name": "KABUPATEN BOYOLALI"
+  },
+  {
+    "id": "33.10",
+    "province_id": "33",
+    "name": "KABUPATEN KLATEN"
+  },
+  {
+    "id": "33.11",
+    "province_id": "33",
+    "name": "KABUPATEN SUKOHARJO"
+  },
+  {
+    "id": "33.12",
+    "province_id": "33",
+    "name": "KABUPATEN WONOGIRI"
+  },
+  {
+    "id": "33.13",
+    "province_id": "33",
+    "name": "KABUPATEN KARANGANYAR"
+  },
+  {
+    "id": "33.14",
+    "province_id": "33",
+    "name": "KABUPATEN SRAGEN"
+  },
+  {
+    "id": "33.15",
+    "province_id": "33",
+    "name": "KABUPATEN GROBOGAN"
+  },
+  {
+    "id": "33.16",
+    "province_id": "33",
+    "name": "KABUPATEN BLORA"
+  },
+  {
+    "id": "33.17",
+    "province_id": "33",
+    "name": "KABUPATEN REMBANG"
+  },
+  {
+    "id": "33.18",
+    "province_id": "33",
+    "name": "KABUPATEN PATI"
+  },
+  {
+    "id": "33.19",
+    "province_id": "33",
+    "name": "KABUPATEN KUDUS"
+  },
+  {
+    "id": "33.20",
+    "province_id": "33",
+    "name": "KABUPATEN JEPARA"
+  },
+  {
+    "id": "33.21",
+    "province_id": "33",
+    "name": "KABUPATEN DEMAK"
+  },
+  {
+    "id": "33.22",
+    "province_id": "33",
+    "name": "KABUPATEN SEMARANG"
+  },
+  {
+    "id": "33.23",
+    "province_id": "33",
+    "name": "KABUPATEN TEMANGGUNG"
+  },
+  {
+    "id": "33.24",
+    "province_id": "33",
+    "name": "KABUPATEN KENDAL"
+  },
+  {
+    "id": "33.25",
+    "province_id": "33",
+    "name": "KABUPATEN BATANG"
+  },
+  {
+    "id": "33.26",
+    "province_id": "33",
+    "name": "KABUPATEN PEKALONGAN"
+  },
+  {
+    "id": "33.27",
+    "province_id": "33",
+    "name": "KABUPATEN PEMALANG"
+  },
+  {
+    "id": "33.28",
+    "province_id": "33",
+    "name": "KABUPATEN TEGAL"
+  },
+  {
+    "id": "33.29",
+    "province_id": "33",
+    "name": "KABUPATEN BREBES"
+  },
+  {
+    "id": "33.71",
+    "province_id": "33",
+    "name": "KOTA MAGELANG"
+  },
+  {
+    "id": "33.72",
+    "province_id": "33",
+    "name": "KOTA SURAKARTA"
+  },
+  {
+    "id": "33.73",
+    "province_id": "33",
+    "name": "KOTA SALATIGA"
+  },
+  {
+    "id": "33.74",
+    "province_id": "33",
+    "name": "KOTA SEMARANG"
+  },
+  {
+    "id": "33.75",
+    "province_id": "33",
+    "name": "KOTA PEKALONGAN"
+  },
+  {
+    "id": "33.76",
+    "province_id": "33",
+    "name": "KOTA TEGAL"
+  }
+]

@@ -1,1 +1,192 @@
-[{"id":"3501","province_id":"35","name":"KABUPATEN PACITAN"},{"id":"3502","province_id":"35","name":"KABUPATEN PONOROGO"},{"id":"3503","province_id":"35","name":"KABUPATEN TRENGGALEK"},{"id":"3504","province_id":"35","name":"KABUPATEN TULUNGAGUNG"},{"id":"3505","province_id":"35","name":"KABUPATEN BLITAR"},{"id":"3506","province_id":"35","name":"KABUPATEN KEDIRI"},{"id":"3507","province_id":"35","name":"KABUPATEN MALANG"},{"id":"3508","province_id":"35","name":"KABUPATEN LUMAJANG"},{"id":"3509","province_id":"35","name":"KABUPATEN JEMBER"},{"id":"3510","province_id":"35","name":"KABUPATEN BANYUWANGI"},{"id":"3511","province_id":"35","name":"KABUPATEN BONDOWOSO"},{"id":"3512","province_id":"35","name":"KABUPATEN SITUBONDO"},{"id":"3513","province_id":"35","name":"KABUPATEN PROBOLINGGO"},{"id":"3514","province_id":"35","name":"KABUPATEN PASURUAN"},{"id":"3515","province_id":"35","name":"KABUPATEN SIDOARJO"},{"id":"3516","province_id":"35","name":"KABUPATEN MOJOKERTO"},{"id":"3517","province_id":"35","name":"KABUPATEN JOMBANG"},{"id":"3518","province_id":"35","name":"KABUPATEN NGANJUK"},{"id":"3519","province_id":"35","name":"KABUPATEN MADIUN"},{"id":"3520","province_id":"35","name":"KABUPATEN MAGETAN"},{"id":"3521","province_id":"35","name":"KABUPATEN NGAWI"},{"id":"3522","province_id":"35","name":"KABUPATEN BOJONEGORO"},{"id":"3523","province_id":"35","name":"KABUPATEN TUBAN"},{"id":"3524","province_id":"35","name":"KABUPATEN LAMONGAN"},{"id":"3525","province_id":"35","name":"KABUPATEN GRESIK"},{"id":"3526","province_id":"35","name":"KABUPATEN BANGKALAN"},{"id":"3527","province_id":"35","name":"KABUPATEN SAMPANG"},{"id":"3528","province_id":"35","name":"KABUPATEN PAMEKASAN"},{"id":"3529","province_id":"35","name":"KABUPATEN SUMENEP"},{"id":"3571","province_id":"35","name":"KOTA KEDIRI"},{"id":"3572","province_id":"35","name":"KOTA BLITAR"},{"id":"3573","province_id":"35","name":"KOTA MALANG"},{"id":"3574","province_id":"35","name":"KOTA PROBOLINGGO"},{"id":"3575","province_id":"35","name":"KOTA PASURUAN"},{"id":"3576","province_id":"35","name":"KOTA MOJOKERTO"},{"id":"3577","province_id":"35","name":"KOTA MADIUN"},{"id":"3578","province_id":"35","name":"KOTA SURABAYA"},{"id":"3579","province_id":"35","name":"KOTA BATU"}]
+[
+  {
+    "id": "35.01",
+    "province_id": "35",
+    "name": "KABUPATEN PACITAN"
+  },
+  {
+    "id": "35.02",
+    "province_id": "35",
+    "name": "KABUPATEN PONOROGO"
+  },
+  {
+    "id": "35.03",
+    "province_id": "35",
+    "name": "KABUPATEN TRENGGALEK"
+  },
+  {
+    "id": "35.04",
+    "province_id": "35",
+    "name": "KABUPATEN TULUNGAGUNG"
+  },
+  {
+    "id": "35.05",
+    "province_id": "35",
+    "name": "KABUPATEN BLITAR"
+  },
+  {
+    "id": "35.06",
+    "province_id": "35",
+    "name": "KABUPATEN KEDIRI"
+  },
+  {
+    "id": "35.07",
+    "province_id": "35",
+    "name": "KABUPATEN MALANG"
+  },
+  {
+    "id": "35.08",
+    "province_id": "35",
+    "name": "KABUPATEN LUMAJANG"
+  },
+  {
+    "id": "35.09",
+    "province_id": "35",
+    "name": "KABUPATEN JEMBER"
+  },
+  {
+    "id": "35.10",
+    "province_id": "35",
+    "name": "KABUPATEN BANYUWANGI"
+  },
+  {
+    "id": "35.11",
+    "province_id": "35",
+    "name": "KABUPATEN BONDOWOSO"
+  },
+  {
+    "id": "35.12",
+    "province_id": "35",
+    "name": "KABUPATEN SITUBONDO"
+  },
+  {
+    "id": "35.13",
+    "province_id": "35",
+    "name": "KABUPATEN PROBOLINGGO"
+  },
+  {
+    "id": "35.14",
+    "province_id": "35",
+    "name": "KABUPATEN PASURUAN"
+  },
+  {
+    "id": "35.15",
+    "province_id": "35",
+    "name": "KABUPATEN SIDOARJO"
+  },
+  {
+    "id": "35.16",
+    "province_id": "35",
+    "name": "KABUPATEN MOJOKERTO"
+  },
+  {
+    "id": "35.17",
+    "province_id": "35",
+    "name": "KABUPATEN JOMBANG"
+  },
+  {
+    "id": "35.18",
+    "province_id": "35",
+    "name": "KABUPATEN NGANJUK"
+  },
+  {
+    "id": "35.19",
+    "province_id": "35",
+    "name": "KABUPATEN MADIUN"
+  },
+  {
+    "id": "35.20",
+    "province_id": "35",
+    "name": "KABUPATEN MAGETAN"
+  },
+  {
+    "id": "35.21",
+    "province_id": "35",
+    "name": "KABUPATEN NGAWI"
+  },
+  {
+    "id": "35.22",
+    "province_id": "35",
+    "name": "KABUPATEN BOJONEGORO"
+  },
+  {
+    "id": "35.23",
+    "province_id": "35",
+    "name": "KABUPATEN TUBAN"
+  },
+  {
+    "id": "35.24",
+    "province_id": "35",
+    "name": "KABUPATEN LAMONGAN"
+  },
+  {
+    "id": "35.25",
+    "province_id": "35",
+    "name": "KABUPATEN GRESIK"
+  },
+  {
+    "id": "35.26",
+    "province_id": "35",
+    "name": "KABUPATEN BANGKALAN"
+  },
+  {
+    "id": "35.27",
+    "province_id": "35",
+    "name": "KABUPATEN SAMPANG"
+  },
+  {
+    "id": "35.28",
+    "province_id": "35",
+    "name": "KABUPATEN PAMEKASAN"
+  },
+  {
+    "id": "35.29",
+    "province_id": "35",
+    "name": "KABUPATEN SUMENEP"
+  },
+  {
+    "id": "35.71",
+    "province_id": "35",
+    "name": "KOTA KEDIRI"
+  },
+  {
+    "id": "35.72",
+    "province_id": "35",
+    "name": "KOTA BLITAR"
+  },
+  {
+    "id": "35.73",
+    "province_id": "35",
+    "name": "KOTA MALANG"
+  },
+  {
+    "id": "35.74",
+    "province_id": "35",
+    "name": "KOTA PROBOLINGGO"
+  },
+  {
+    "id": "35.75",
+    "province_id": "35",
+    "name": "KOTA PASURUAN"
+  },
+  {
+    "id": "35.76",
+    "province_id": "35",
+    "name": "KOTA MOJOKERTO"
+  },
+  {
+    "id": "35.77",
+    "province_id": "35",
+    "name": "KOTA MADIUN"
+  },
+  {
+    "id": "35.78",
+    "province_id": "35",
+    "name": "KOTA SURABAYA"
+  },
+  {
+    "id": "35.79",
+    "province_id": "35",
+    "name": "KOTA BATU"
+  }
+]

@@ -1,1 +1,57 @@
-[{"id":"8101","province_id":"81","name":"KABUPATEN MALUKU TENGGARA BARAT"},{"id":"8102","province_id":"81","name":"KABUPATEN MALUKU TENGGARA"},{"id":"8103","province_id":"81","name":"KABUPATEN MALUKU TENGAH"},{"id":"8104","province_id":"81","name":"KABUPATEN BURU"},{"id":"8105","province_id":"81","name":"KABUPATEN KEPULAUAN ARU"},{"id":"8106","province_id":"81","name":"KABUPATEN SERAM BAGIAN BARAT"},{"id":"8107","province_id":"81","name":"KABUPATEN SERAM BAGIAN TIMUR"},{"id":"8108","province_id":"81","name":"KABUPATEN MALUKU BARAT DAYA"},{"id":"8109","province_id":"81","name":"KABUPATEN BURU SELATAN"},{"id":"8171","province_id":"81","name":"KOTA AMBON"},{"id":"8172","province_id":"81","name":"KOTA TUAL"}]
+[
+  {
+    "id": "81.01",
+    "province_id": "81",
+    "name": "KABUPATEN MALUKU TENGAH"
+  },
+  {
+    "id": "81.02",
+    "province_id": "81",
+    "name": "KABUPATEN MALUKU TENGGARA"
+  },
+  {
+    "id": "81.03",
+    "province_id": "81",
+    "name": "KABUPATEN KEPULAUAN TANIMBAR"
+  },
+  {
+    "id": "81.04",
+    "province_id": "81",
+    "name": "KABUPATEN BURU"
+  },
+  {
+    "id": "81.05",
+    "province_id": "81",
+    "name": "KABUPATEN SERAM BAGIAN TIMUR"
+  },
+  {
+    "id": "81.06",
+    "province_id": "81",
+    "name": "KABUPATEN SERAM BAGIAN BARAT"
+  },
+  {
+    "id": "81.07",
+    "province_id": "81",
+    "name": "KABUPATEN KEPULAUAN ARU"
+  },
+  {
+    "id": "81.08",
+    "province_id": "81",
+    "name": "KABUPATEN MALUKU BARAT DAYA"
+  },
+  {
+    "id": "81.09",
+    "province_id": "81",
+    "name": "KABUPATEN BURU SELATAN"
+  },
+  {
+    "id": "81.71",
+    "province_id": "81",
+    "name": "KOTA AMBON"
+  },
+  {
+    "id": "81.72",
+    "province_id": "81",
+    "name": "KOTA TUAL"
+  }
+]

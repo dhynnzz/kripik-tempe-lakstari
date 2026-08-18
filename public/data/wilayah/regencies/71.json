@@ -1,1 +1,77 @@
-[{"id":"7101","province_id":"71","name":"KABUPATEN BOLAANG MONGONDOW"},{"id":"7102","province_id":"71","name":"KABUPATEN MINAHASA"},{"id":"7103","province_id":"71","name":"KABUPATEN KEPULAUAN SANGIHE"},{"id":"7104","province_id":"71","name":"KABUPATEN KEPULAUAN TALAUD"},{"id":"7105","province_id":"71","name":"KABUPATEN MINAHASA SELATAN"},{"id":"7106","province_id":"71","name":"KABUPATEN MINAHASA UTARA"},{"id":"7107","province_id":"71","name":"KABUPATEN BOLAANG MONGONDOW UTARA"},{"id":"7108","province_id":"71","name":"KABUPATEN SIAU TAGULANDANG BIARO"},{"id":"7109","province_id":"71","name":"KABUPATEN MINAHASA TENGGARA"},{"id":"7110","province_id":"71","name":"KABUPATEN BOLAANG MONGONDOW SELATAN"},{"id":"7111","province_id":"71","name":"KABUPATEN BOLAANG MONGONDOW TIMUR"},{"id":"7171","province_id":"71","name":"KOTA MANADO"},{"id":"7172","province_id":"71","name":"KOTA BITUNG"},{"id":"7173","province_id":"71","name":"KOTA TOMOHON"},{"id":"7174","province_id":"71","name":"KOTA KOTAMOBAGU"}]
+[
+  {
+    "id": "71.01",
+    "province_id": "71",
+    "name": "KABUPATEN BOLAANG MONGONDOW"
+  },
+  {
+    "id": "71.02",
+    "province_id": "71",
+    "name": "KABUPATEN MINAHASA"
+  },
+  {
+    "id": "71.03",
+    "province_id": "71",
+    "name": "KABUPATEN KEPULAUAN SANGIHE"
+  },
+  {
+    "id": "71.04",
+    "province_id": "71",
+    "name": "KABUPATEN KEPULAUAN TALAUD"
+  },
+  {
+    "id": "71.05",
+    "province_id": "71",
+    "name": "KABUPATEN MINAHASA SELATAN"
+  },
+  {
+    "id": "71.06",
+    "province_id": "71",
+    "name": "KABUPATEN MINAHASA UTARA"
+  },
+  {
+    "id": "71.07",
+    "province_id": "71",
+    "name": "KABUPATEN MINAHASA TENGGARA"
+  },
+  {
+    "id": "71.08",
+    "province_id": "71",
+    "name": "KABUPATEN BOLAANG MONGONDOW UTARA"
+  },
+  {
+    "id": "71.09",
+    "province_id": "71",
+    "name": "KABUPATEN KEPULAUAN SIAU TAGULANDANG BIARO"
+  },
+  {
+    "id": "71.10",
+    "province_id": "71",
+    "name": "KABUPATEN BOLAANG MONGONDOW TIMUR"
+  },
+  {
+    "id": "71.11",
+    "province_id": "71",
+    "name": "KABUPATEN BOLAANG MONGONDOW SELATAN"
+  },
+  {
+    "id": "71.71",
+    "province_id": "71",
+    "name": "KOTA MANADO"
+  },
+  {
+    "id": "71.72",
+    "province_id": "71",
+    "name": "KOTA BITUNG"
+  },
+  {
+    "id": "71.73",
+    "province_id": "71",
+    "name": "KOTA TOMOHON"
+  },
+  {
+    "id": "71.74",
+    "province_id": "71",
+    "name": "KOTA KOTAMOBAGU"
+  }
+]

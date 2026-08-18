@@ -1,1 +1,42 @@
-[{"id":"3601","province_id":"36","name":"KABUPATEN PANDEGLANG"},{"id":"3602","province_id":"36","name":"KABUPATEN LEBAK"},{"id":"3603","province_id":"36","name":"KABUPATEN TANGERANG"},{"id":"3604","province_id":"36","name":"KABUPATEN SERANG"},{"id":"3671","province_id":"36","name":"KOTA TANGERANG"},{"id":"3672","province_id":"36","name":"KOTA CILEGON"},{"id":"3673","province_id":"36","name":"KOTA SERANG"},{"id":"3674","province_id":"36","name":"KOTA TANGERANG SELATAN"}]
+[
+  {
+    "id": "36.01",
+    "province_id": "36",
+    "name": "KABUPATEN PANDEGLANG"
+  },
+  {
+    "id": "36.02",
+    "province_id": "36",
+    "name": "KABUPATEN LEBAK"
+  },
+  {
+    "id": "36.03",
+    "province_id": "36",
+    "name": "KABUPATEN TANGERANG"
+  },
+  {
+    "id": "36.04",
+    "province_id": "36",
+    "name": "KABUPATEN SERANG"
+  },
+  {
+    "id": "36.71",
+    "province_id": "36",
+    "name": "KOTA TANGERANG"
+  },
+  {
+    "id": "36.72",
+    "province_id": "36",
+    "name": "KOTA CILEGON"
+  },
+  {
+    "id": "36.73",
+    "province_id": "36",
+    "name": "KOTA SERANG"
+  },
+  {
+    "id": "36.74",
+    "province_id": "36",
+    "name": "KOTA TANGERANG SELATAN"
+  }
+]

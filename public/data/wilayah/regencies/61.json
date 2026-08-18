@@ -1,1 +1,72 @@
-[{"id":"6101","province_id":"61","name":"KABUPATEN SAMBAS"},{"id":"6102","province_id":"61","name":"KABUPATEN BENGKAYANG"},{"id":"6103","province_id":"61","name":"KABUPATEN LANDAK"},{"id":"6104","province_id":"61","name":"KABUPATEN MEMPAWAH"},{"id":"6105","province_id":"61","name":"KABUPATEN SANGGAU"},{"id":"6106","province_id":"61","name":"KABUPATEN KETAPANG"},{"id":"6107","province_id":"61","name":"KABUPATEN SINTANG"},{"id":"6108","province_id":"61","name":"KABUPATEN KAPUAS HULU"},{"id":"6109","province_id":"61","name":"KABUPATEN SEKADAU"},{"id":"6110","province_id":"61","name":"KABUPATEN MELAWI"},{"id":"6111","province_id":"61","name":"KABUPATEN KAYONG UTARA"},{"id":"6112","province_id":"61","name":"KABUPATEN KUBU RAYA"},{"id":"6171","province_id":"61","name":"KOTA PONTIANAK"},{"id":"6172","province_id":"61","name":"KOTA SINGKAWANG"}]
+[
+  {
+    "id": "61.01",
+    "province_id": "61",
+    "name": "KABUPATEN SAMBAS"
+  },
+  {
+    "id": "61.02",
+    "province_id": "61",
+    "name": "KABUPATEN MEMPAWAH"
+  },
+  {
+    "id": "61.03",
+    "province_id": "61",
+    "name": "KABUPATEN SANGGAU"
+  },
+  {
+    "id": "61.04",
+    "province_id": "61",
+    "name": "KABUPATEN KETAPANG"
+  },
+  {
+    "id": "61.05",
+    "province_id": "61",
+    "name": "KABUPATEN SINTANG"
+  },
+  {
+    "id": "61.06",
+    "province_id": "61",
+    "name": "KABUPATEN KAPUAS HULU"
+  },
+  {
+    "id": "61.07",
+    "province_id": "61",
+    "name": "KABUPATEN BENGKAYANG"
+  },
+  {
+    "id": "61.08",
+    "province_id": "61",
+    "name": "KABUPATEN LANDAK"
+  },
+  {
+    "id": "61.09",
+    "province_id": "61",
+    "name": "KABUPATEN SEKADAU"
+  },
+  {
+    "id": "61.10",
+    "province_id": "61",
+    "name": "KABUPATEN MELAWI"
+  },
+  {
+    "id": "61.11",
+    "province_id": "61",
+    "name": "KABUPATEN KAYONG UTARA"
+  },
+  {
+    "id": "61.12",
+    "province_id": "61",
+    "name": "KABUPATEN KUBU RAYA"
+  },
+  {
+    "id": "61.71",
+    "province_id": "61",
+    "name": "KOTA PONTIANAK"
+  },
+  {
+    "id": "61.72",
+    "province_id": "61",
+    "name": "KOTA SINGKAWANG"
+  }
+]

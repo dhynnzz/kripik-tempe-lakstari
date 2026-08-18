@@ -1,0 +1,32 @@
+[
+  {
+    "id": "96.01",
+    "province_id": "96",
+    "name": "KABUPATEN SORONG"
+  },
+  {
+    "id": "96.02",
+    "province_id": "96",
+    "name": "KABUPATEN SORONG SELATAN"
+  },
+  {
+    "id": "96.03",
+    "province_id": "96",
+    "name": "KABUPATEN RAJA AMPAT"
+  },
+  {
+    "id": "96.04",
+    "province_id": "96",
+    "name": "KABUPATEN TAMBRAUW"
+  },
+  {
+    "id": "96.05",
+    "province_id": "96",
+    "name": "KABUPATEN MAYBRAT"
+  },
+  {
+    "id": "96.71",
+    "province_id": "96",
+    "name": "KOTA SORONG"
+  }
+]

@@ -1,1 +1,27 @@
-[{"id":"6501","province_id":"65","name":"KABUPATEN MALINAU"},{"id":"6502","province_id":"65","name":"KABUPATEN BULUNGAN"},{"id":"6503","province_id":"65","name":"KABUPATEN TANA TIDUNG"},{"id":"6504","province_id":"65","name":"KABUPATEN NUNUKAN"},{"id":"6571","province_id":"65","name":"KOTA TARAKAN"}]
+[
+  {
+    "id": "65.01",
+    "province_id": "65",
+    "name": "KABUPATEN BULUNGAN"
+  },
+  {
+    "id": "65.02",
+    "province_id": "65",
+    "name": "KABUPATEN MALINAU"
+  },
+  {
+    "id": "65.03",
+    "province_id": "65",
+    "name": "KABUPATEN NUNUKAN"
+  },
+  {
+    "id": "65.04",
+    "province_id": "65",
+    "name": "KABUPATEN TANA TIDUNG"
+  },
+  {
+    "id": "65.71",
+    "province_id": "65",
+    "name": "KOTA TARAKAN"
+  }
+]
