@@ -35,6 +35,11 @@ const Hero = () => {
 
   return (
     <section className="hero">
+      {/* Logo Halal di kanan atas, persis di bawah logo WhatsApp Header */}
+      <div className="hero-halal-right">
+        <img src="/halal.png" alt="Halal Indonesia" />
+      </div>
+
       {/* Background Decorations */}
       <Spiral style={{ top: '15%', left: '5%', transform: 'rotate(15deg) scale(1.5)' }} />
       <Spiral style={{ top: '65%', left: '8%', transform: 'rotate(-45deg) scale(2)' }} />
@@ -47,19 +52,16 @@ const Hero = () => {
       <Spiral style={{ top: '5%', left: '45%', transform: 'rotate(10deg) scale(1.3)' }} />
 
       <div className="hero-text">
+        <div className="hero-certifications">
+          <div className="cert-logo">
+            <img src="/PIRT.png" alt="PIRT" />
+          </div>
+        </div>
         <span className="hero-badge">PREMIUM QUALITY SNACK</span>
         <h1>Kripik Tempe<br />Lakstari</h1>
         <p>Renyah, Gurih, Nagih. Camilan tradisional kualitas premium yang diolah dengan resep rahasia keluarga.</p>
       </div>
       <div className="hero-image-wrapper">
-        <div className="hero-certifications hero-cert-right">
-          <div className="cert-logo">
-            <img src="/PIRT.png" alt="PIRT" />
-          </div>
-          <div className="cert-logo">
-            <img src="/halal.png" alt="Halal Indonesia" />
-          </div>
-        </div>
         {images.map((src, idx) => (
           <img
             key={src}
