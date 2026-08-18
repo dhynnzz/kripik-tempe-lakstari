@@ -893,11 +893,21 @@
   transform: translateY(-1px);
 }
 
-.ewallet-icon-box {
+.ewallet-logo-box {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 32px;
+  height: 40px;
+  width: 100%;
+}
+
+.payment-logo-img {
+  max-height: 36px;
+  max-width: 90%;
+  width: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
 }
 
 .ewallet-label {

@@ -586,15 +586,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                           className={`ewallet-btn-card ${paymentMethod === 'qris' ? 'selected' : ''}`}
                           onClick={() => setPaymentMethod('qris')}
                         >
-                          <div className="ewallet-icon-box">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="3" y="3" width="7" height="7" rx="1"></rect>
-                              <rect x="14" y="3" width="7" height="7" rx="1"></rect>
-                              <rect x="14" y="14" width="7" height="7" rx="1"></rect>
-                              <rect x="3" y="14" width="7" height="7" rx="1"></rect>
-                            </svg>
+                          <div className="ewallet-logo-box">
+                            <img src="/logo-qris.png" alt="QRIS" className="payment-logo-img" />
                           </div>
-                          <span className="ewallet-label">QRIS</span>
                           <span className="payment-sub-text">E-Wallet & QR</span>
                         </div>
 
@@ -603,14 +597,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                           className={`ewallet-btn-card ${paymentMethod === 'bca_va' ? 'selected' : ''}`}
                           onClick={() => setPaymentMethod('bca_va')}
                         >
-                          <div className="ewallet-icon-box">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0066AE" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="2" y="5" width="20" height="14" rx="3"></rect>
-                              <line x1="2" y1="10" x2="22" y2="10"></line>
-                              <circle cx="17" cy="15" r="1.5" fill="#0066AE"></circle>
-                            </svg>
+                          <div className="ewallet-logo-box">
+                            <img src="/logo-bca.png" alt="BCA" className="payment-logo-img" />
                           </div>
-                          <span className="ewallet-label">BCA</span>
                           <span className="payment-sub-text">Virtual Account</span>
                         </div>
 
@@ -619,14 +608,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                           className={`ewallet-btn-card ${paymentMethod === 'bni_va' ? 'selected' : ''}`}
                           onClick={() => setPaymentMethod('bni_va')}
                         >
-                          <div className="ewallet-icon-box">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F15A24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="2" y="5" width="20" height="14" rx="3"></rect>
-                              <line x1="2" y1="10" x2="22" y2="10"></line>
-                              <circle cx="17" cy="15" r="1.5" fill="#F15A24"></circle>
-                            </svg>
+                          <div className="ewallet-logo-box">
+                            <img src="/logo-bni.png" alt="BNI" className="payment-logo-img" />
                           </div>
-                          <span className="ewallet-label">BNI</span>
                           <span className="payment-sub-text">Virtual Account</span>
                         </div>
 
@@ -635,14 +619,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                           className={`ewallet-btn-card ${paymentMethod === 'bri_va' ? 'selected' : ''}`}
                           onClick={() => setPaymentMethod('bri_va')}
                         >
-                          <div className="ewallet-icon-box">
-                            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00529C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                              <rect x="2" y="5" width="20" height="14" rx="3"></rect>
-                              <line x1="2" y1="10" x2="22" y2="10"></line>
-                              <circle cx="17" cy="15" r="1.5" fill="#00529C"></circle>
-                            </svg>
+                          <div className="ewallet-logo-box">
+                            <img src="/logo-bri.png" alt="BRI" className="payment-logo-img" />
                           </div>
-                          <span className="ewallet-label">BRI</span>
                           <span className="payment-sub-text">Virtual Account</span>
                         </div>
 
