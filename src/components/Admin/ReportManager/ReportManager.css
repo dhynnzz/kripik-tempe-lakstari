@@ -6,44 +6,50 @@
 }
 
 .report-filter-card {
-  background-color: #ffffff;
-  padding: 20px 24px;
-  border-radius: 16px;
-  border: 1px solid #EAEFEF;
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
+  background: linear-gradient(135deg, #232B45 0%, #1c2236 50%, #3a2b16 100%);
+  padding: 22px 26px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.2);
+  border: 1px solid rgba(250, 172, 48, 0.35);
+  color: #ffffff;
 }
 
 .report-filter-title h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--primary-dark);
-  margin: 0 0 4px 0;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.2px;
 }
 
 .report-filter-title p {
+  color: #FAAC30;
   font-size: 13px;
-  color: #64748B;
-  margin: 0;
+  margin-top: 4px;
+  font-weight: 600;
 }
 
 .report-filter-controls {
   display: flex;
   align-items: center;
   gap: 10px;
+  color: #ffffff;
 }
 
 .report-filter-select {
   height: 40px;
   padding: 0 14px;
   border-radius: 10px;
-  border: 1px solid #CBD5E1;
+  border: 1px solid rgba(250, 172, 48, 0.5);
+  background: #1A2035;
   font-size: 13px;
-  font-weight: 600;
-  color: var(--primary-dark);
+  font-weight: 700;
+  color: #FAAC30;
   outline: none;
 }
 
@@ -74,47 +80,3 @@
   font-weight: 800;
   color: var(--primary-dark);
 }
-
-/* ════════════════════════════════════════
-   REPORT MANAGER DARK MODE STYLES
-════════════════════════════════════════ */
-.admin-dark .report-filter-card,
-[data-theme="dark"] .report-filter-card {
-  background: #131B2E;
-  border-color: #23304A;
-}
-
-.admin-dark .report-filter-title h2,
-[data-theme="dark"] .report-filter-title h2 {
-  color: #F8FAFC;
-}
-
-.admin-dark .report-filter-title p,
-[data-theme="dark"] .report-filter-title p {
-  color: #94A3B8;
-}
-
-.admin-dark .report-filter-select,
-[data-theme="dark"] .report-filter-select {
-  background: #1E293B;
-  border-color: #334155;
-  color: #F8FAFC;
-}
-
-.admin-dark .report-stat-card,
-[data-theme="dark"] .report-stat-card {
-  background: #131B2E;
-  border-color: #23304A;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-}
-
-.admin-dark .report-stat-label,
-[data-theme="dark"] .report-stat-label {
-  color: #94A3B8;
-}
-
-.admin-dark .report-stat-value,
-[data-theme="dark"] .report-stat-value {
-  color: #F8FAFC;
-}
-

@@ -53,11 +53,8 @@ const AdminManager: React.FC = () => {
         </div>
 
         <button 
+          className="btn-add-admin"
           onClick={() => setIsModalOpen(true)}
-          style={{
-            background: 'var(--primary-accent)', color: 'var(--primary-dark)',
-            border: 'none', padding: '10px 18px', borderRadius: '10px', fontWeight: 700, fontSize: '13px', cursor: 'pointer'
-          }}
         >
           + Tambah Admin
         </button>

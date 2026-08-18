@@ -71,11 +71,14 @@ const CategoryManager: React.FC = () => {
 
   return (
     <div className="category-manager-container">
-      {/* Tombol Tambah (Dipindah ke atas untuk keleluasaan) */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{ margin: 0, fontSize: '24px', color: '#1E293B' }}>Kategori Produk</h2>
+      {/* Header Banner */}
+      <div className="cat-header">
+        <div>
+          <h2>Kategori Produk</h2>
+          <p>Kelola kategori produk untuk mempermudah katalog dan pencarian pelanggan.</p>
+        </div>
         <button className="btn-add-category" onClick={openAddModal}>
-          ➕ Tambah Kategori Baru
+          + Tambah Kategori Baru
         </button>
       </div>
 

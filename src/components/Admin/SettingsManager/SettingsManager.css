@@ -5,6 +5,35 @@
   gap: 20px;
 }
 
+.settings-header-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: linear-gradient(135deg, #232B45 0%, #1c2236 50%, #3a2b16 100%);
+  padding: 22px 26px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.2);
+  border: 1px solid rgba(250, 172, 48, 0.35);
+  color: #ffffff;
+}
+
+.settings-header-bar h2 {
+  font-size: 22px;
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.2px;
+}
+
+.settings-header-bar p {
+  color: #FAAC30;
+  font-size: 13px;
+  margin-top: 4px;
+  font-weight: 600;
+}
+
 .settings-card {
   background-color: #ffffff;
   padding: 24px;
@@ -44,7 +73,8 @@
   color: #334155;
 }
 
-.settings-field input, .settings-field textarea {
+.settings-field input,
+.settings-field textarea {
   height: 42px;
   padding: 0 14px;
   border-radius: 10px;
@@ -69,46 +99,4 @@
   font-size: 14px;
   cursor: pointer;
   margin-top: 16px;
-  box-shadow: 0 4px 14px rgba(250, 172, 48, 0.3);
-  transition: all 0.2s ease;
 }
-
-.btn-save-settings:hover {
-  background: #e59b26;
-  transform: translateY(-1px);
-}
-
-/* ════════════════════════════════════════
-   SETTINGS MANAGER DARK MODE STYLES
-════════════════════════════════════════ */
-.admin-dark .settings-card,
-[data-theme="dark"] .settings-card {
-  background: #131B2E;
-  border-color: #23304A;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-}
-
-.admin-dark .settings-card h3,
-[data-theme="dark"] .settings-card h3 {
-  color: #F8FAFC;
-}
-
-.admin-dark .settings-card p,
-[data-theme="dark"] .settings-card p {
-  color: #94A3B8;
-}
-
-.admin-dark .settings-field label,
-[data-theme="dark"] .settings-field label {
-  color: #E2E8F0;
-}
-
-.admin-dark .settings-field input,
-.admin-dark .settings-field textarea,
-[data-theme="dark"] .settings-field input,
-[data-theme="dark"] .settings-field textarea {
-  background: #1E293B;
-  border-color: #334155;
-  color: #F8FAFC;
-}
-

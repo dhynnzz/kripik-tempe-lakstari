@@ -12,18 +12,19 @@
   font-family: 'Inter', 'Segoe UI', -apple-system, sans-serif;
 }
 
-/* ── Page Header (Clean Modern SaaS Style) ── */
+/* ── Page Header (Lakstari Brand Navy #232B45 & Warm Gold #FAAC30) ── */
 .dh-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  background: #ffffff;
-  padding: 24px 28px;
-  border-radius: 16px;
-  border: 1px solid #E2E8F0;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 6px 16px rgba(0, 0, 0, 0.02);
+  background: linear-gradient(135deg, #232B45 0%, #1c2236 50%, #3a2b16 100%);
+  padding: 22px 26px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.2);
+  border: 1px solid rgba(250, 172, 48, 0.35);
+  color: #ffffff;
 }
 
 .dh-header-left {
@@ -36,9 +37,9 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: #F1F5F9;
-  border: 1px solid #E2E8F0;
-  color: #475569;
+  background: rgba(250, 172, 48, 0.12);
+  border: 1px solid rgba(250, 172, 48, 0.3);
+  color: #FAAC30;
   font-size: 11px;
   font-weight: 700;
   padding: 3px 10px;
@@ -67,16 +68,16 @@
 .dh-page-header h1 {
   font-size: 22px;
   font-weight: 800;
-  color: #0F172A;
+  color: #ffffff;
   margin: 0;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.2px;
 }
 
 .dh-page-header p {
   font-size: 13px;
-  color: #64748B;
+  color: #FAAC30;
   margin: 2px 0 0;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .dh-header-right {
@@ -103,23 +104,21 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 10px 18px;
   border-radius: 10px;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 800;
   cursor: pointer;
-  border: 1px solid #0F172A;
-  background: #0F172A;
-  color: #ffffff;
+  border: none;
+  background-color: #FAAC30;
+  color: #232B45;
   transition: all 0.2s ease;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+  box-shadow: 0 4px 14px rgba(250, 172, 48, 0.3);
 }
 
 .dh-refresh-btn:hover {
-  background: #1E293B;
-  border-color: #1E293B;
+  background-color: #e59b26;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.2);
 }
 
 .dh-refresh-btn svg {
@@ -1020,9 +1019,9 @@
 ═══════════════════════════════════════════ */
 .admin-dark .dh-page-header,
 [data-theme="dark"] .dh-page-header {
-  background: #131B2E;
-  border-color: #23304A;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  background: linear-gradient(135deg, #1D243A 0%, #171D2E 50%, #2A1F10 100%);
+  border-color: rgba(250, 172, 48, 0.35);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
 }
 
 .admin-dark .dh-page-header h1,
@@ -1032,14 +1031,14 @@
 
 .admin-dark .dh-page-header p,
 [data-theme="dark"] .dh-page-header p {
-  color: #94A3B8;
+  color: #FAAC30;
 }
 
 .admin-dark .dh-header-badge,
 [data-theme="dark"] .dh-header-badge {
-  background: #1E293B;
-  border-color: #334155;
-  color: #CBD5E1;
+  background: rgba(250, 172, 48, 0.15);
+  border-color: rgba(250, 172, 48, 0.35);
+  color: #FAAC30;
 }
 
 .admin-dark .dh-date-pill,

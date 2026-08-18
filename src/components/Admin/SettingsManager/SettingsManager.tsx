@@ -21,9 +21,15 @@ const SettingsManager: React.FC = () => {
 
   return (
     <div className="settings-manager-container">
+      {/* Header Banner */}
+      <div className="settings-header-bar">
+        <div>
+          <h2>Pengaturan Toko & Informasi Website</h2>
+          <p>Kelola rincian kontak operasional, nomor WhatsApp pemesanan, dan batas notifikasi stok menipis.</p>
+        </div>
+      </div>
+
       <div className="settings-card">
-        <h3>Pengaturan Toko & Informasi Website</h3>
-        <p>Kelola rincian kontak operasional, nomor WhatsApp pemesanan, dan batas notifikasi stok menipis (Sesuai Poin 13 PRD).</p>
 
         {savedMessage && (
           <div style={{ background: '#DCFCE7', color: '#166534', padding: '12px 16px', borderRadius: '10px', fontWeight: 700, fontSize: '13px', marginBottom: '16px' }}>

@@ -1,31 +1,41 @@
 /* Customer Manager Styles - PRD Lakstari */
+.customer-manager,
 .customer-manager-container {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
+.cm-header,
 .customer-header-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #ffffff;
-  padding: 20px 24px;
-  border-radius: 16px;
-  border: 1px solid #EAEFEF;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: linear-gradient(135deg, #232B45 0%, #1c2236 50%, #3a2b16 100%);
+  padding: 22px 26px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.2);
+  border: 1px solid rgba(250, 172, 48, 0.35);
+  color: #ffffff;
 }
 
+.cm-header h2,
 .customer-header-title h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--primary-dark);
-  margin: 0 0 4px 0;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.2px;
 }
 
+.cm-header p,
 .customer-header-title p {
+  color: #FAAC30;
   font-size: 13px;
-  color: #64748B;
-  margin: 0;
+  margin-top: 4px;
+  font-weight: 600;
 }
 
 .customer-table-card {
@@ -59,48 +69,3 @@
   color: #334155;
   border-bottom: 1px solid #F1F5F9;
 }
-
-/* ════════════════════════════════════════
-   CUSTOMER MANAGER DARK MODE STYLES
-════════════════════════════════════════ */
-.admin-dark .customer-header-bar,
-[data-theme="dark"] .customer-header-bar {
-  background: #131B2E;
-  border-color: #23304A;
-}
-
-.admin-dark .customer-header-title h2,
-[data-theme="dark"] .customer-header-title h2 {
-  color: #F8FAFC;
-}
-
-.admin-dark .customer-header-title p,
-[data-theme="dark"] .customer-header-title p {
-  color: #94A3B8;
-}
-
-.admin-dark .customer-table-card,
-[data-theme="dark"] .customer-table-card {
-  background: #131B2E;
-  border-color: #23304A;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-}
-
-.admin-dark .customer-table th,
-[data-theme="dark"] .customer-table th {
-  background: #18233C;
-  color: #94A3B8;
-  border-bottom-color: #23304A;
-}
-
-.admin-dark .customer-table td,
-[data-theme="dark"] .customer-table td {
-  color: #E2E8F0;
-  border-bottom-color: #1E2A42;
-}
-
-.admin-dark .customer-table tbody tr:hover,
-[data-theme="dark"] .customer-table tbody tr:hover {
-  background: #1A253D;
-}
-

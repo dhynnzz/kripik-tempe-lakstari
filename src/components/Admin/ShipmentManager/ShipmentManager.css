@@ -9,23 +9,29 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #ffffff;
-  padding: 20px 24px;
-  border-radius: 16px;
-  border: 1px solid #EAEFEF;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: linear-gradient(135deg, #232B45 0%, #1c2236 50%, #3a2b16 100%);
+  padding: 22px 26px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.2);
+  border: 1px solid rgba(250, 172, 48, 0.35);
+  color: #ffffff;
 }
 
 .shipment-header-title h2 {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
-  color: var(--primary-dark);
-  margin: 0 0 4px 0;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.2px;
 }
 
 .shipment-header-title p {
+  color: #FAAC30;
   font-size: 13px;
-  color: #64748B;
-  margin: 0;
+  margin-top: 4px;
+  font-weight: 600;
 }
 
 .shipment-table-card {
@@ -87,48 +93,3 @@
   font-size: 11px;
   font-weight: 700;
 }
-
-/* ════════════════════════════════════════
-   SHIPMENT MANAGER DARK MODE STYLES
-════════════════════════════════════════ */
-.admin-dark .shipment-header-bar,
-[data-theme="dark"] .shipment-header-bar {
-  background: #131B2E;
-  border-color: #23304A;
-}
-
-.admin-dark .shipment-header-title h2,
-[data-theme="dark"] .shipment-header-title h2 {
-  color: #F8FAFC;
-}
-
-.admin-dark .shipment-header-title p,
-[data-theme="dark"] .shipment-header-title p {
-  color: #94A3B8;
-}
-
-.admin-dark .shipment-table-card,
-[data-theme="dark"] .shipment-table-card {
-  background: #131B2E;
-  border-color: #23304A;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-}
-
-.admin-dark .shipment-table th,
-[data-theme="dark"] .shipment-table th {
-  background: #18233C;
-  color: #94A3B8;
-  border-bottom-color: #23304A;
-}
-
-.admin-dark .shipment-table td,
-[data-theme="dark"] .shipment-table td {
-  color: #E2E8F0;
-  border-bottom-color: #1E2A42;
-}
-
-.admin-dark .shipment-table tbody tr:hover,
-[data-theme="dark"] .shipment-table tbody tr:hover {
-  background: #1A253D;
-}
-

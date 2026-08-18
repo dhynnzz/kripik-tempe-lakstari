@@ -6,16 +6,33 @@
   gap: 24px;
 }
 
+.om-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  background: linear-gradient(135deg, #232B45 0%, #1c2236 50%, #3a2b16 100%);
+  padding: 22px 26px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.2);
+  border: 1px solid rgba(250, 172, 48, 0.35);
+  color: #ffffff;
+}
+
 .om-header h2 {
   font-size: 22px;
-  color: var(--primary-dark);
-  font-family: var(--font-heading);
+  font-weight: 800;
+  color: #ffffff;
+  margin: 0;
+  letter-spacing: -0.2px;
 }
 
 .om-header p {
-  color: #718096;
+  color: #FAAC30;
   font-size: 13px;
   margin-top: 4px;
+  font-weight: 600;
 }
 
 .om-filter-tabs {
@@ -96,51 +113,3 @@
   outline: none;
   cursor: pointer;
 }
-
-/* ════════════════════════════════════════
-   ORDER MANAGER DARK MODE STYLES
-════════════════════════════════════════ */
-.admin-dark .om-header h2,
-[data-theme="dark"] .om-header h2 {
-  color: #F8FAFC;
-}
-
-.admin-dark .om-header p,
-[data-theme="dark"] .om-header p {
-  color: #94A3B8;
-}
-
-.admin-dark .filter-tab-btn,
-[data-theme="dark"] .filter-tab-btn {
-  background: #1E293B;
-  border-color: #334155;
-  color: #94A3B8;
-}
-
-.admin-dark .filter-tab-btn.active,
-[data-theme="dark"] .filter-tab-btn.active {
-  background: #FAAC30;
-  color: #232B45;
-  border-color: #FAAC30;
-  box-shadow: 0 4px 14px rgba(250, 172, 48, 0.3);
-}
-
-.admin-dark .customer-cell strong,
-[data-theme="dark"] .customer-cell strong {
-  color: #F8FAFC;
-}
-
-.admin-dark .customer-cell span,
-.admin-dark .date-text,
-[data-theme="dark"] .customer-cell span,
-[data-theme="dark"] .date-text {
-  color: #94A3B8;
-}
-
-.admin-dark .status-select,
-[data-theme="dark"] .status-select {
-  background: #1E293B;
-  border-color: #334155;
-  color: #F8FAFC;
-}
-
