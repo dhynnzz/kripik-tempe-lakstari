@@ -42,7 +42,7 @@ const Hero = () => {
 
       {/* Logo Halal di kanan atas, persis di bawah logo WhatsApp Header */}
       <div className="hero-halal-right">
-        <img src="/halal.png" alt="Halal Indonesia" />
+        <img src="/halal.svg" alt="Halal Indonesia" />
       </div>
 
       {/* Background Decorations */}
