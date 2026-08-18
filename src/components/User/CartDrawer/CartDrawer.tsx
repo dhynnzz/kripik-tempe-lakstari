@@ -560,6 +560,60 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                         />
                       </div>
 
+                      {/* Metode Pembayaran */}
+                      <div className="form-item payment-section-wrapper" style={{ marginTop: '6px' }}>
+                        <label style={{ fontSize: '13.5px', fontWeight: 800, color: '#1E293B' }}>Metode Pembayaran</label>
+                        <div className="payment-methods-list">
+                          <label className={`payment-option-card ${paymentMethod === 'bca_va' ? 'selected' : ''}`}>
+                            <div className="payment-radio-wrap">
+                              <input 
+                                type="radio" 
+                                name="payment" 
+                                value="bca_va" 
+                                checked={paymentMethod === 'bca_va'}
+                                onChange={(e) => setPaymentMethod(e.target.value)} 
+                              />
+                            </div>
+                            <div className="payment-info-text">
+                              <span className="payment-name">BCA Virtual Account</span>
+                              <span className="payment-desc">Transfer otomatis</span>
+                            </div>
+                          </label>
+                          
+                          <label className={`payment-option-card ${paymentMethod === 'mandiri_va' ? 'selected' : ''}`}>
+                            <div className="payment-radio-wrap">
+                              <input 
+                                type="radio" 
+                                name="payment" 
+                                value="mandiri_va" 
+                                checked={paymentMethod === 'mandiri_va'}
+                                onChange={(e) => setPaymentMethod(e.target.value)} 
+                              />
+                            </div>
+                            <div className="payment-info-text">
+                              <span className="payment-name">Mandiri VA</span>
+                              <span className="payment-desc">Transfer otomatis</span>
+                            </div>
+                          </label>
+
+                          <label className={`payment-option-card ${paymentMethod === 'qris' ? 'selected' : ''}`}>
+                            <div className="payment-radio-wrap">
+                              <input 
+                                type="radio" 
+                                name="payment" 
+                                value="qris" 
+                                checked={paymentMethod === 'qris'}
+                                onChange={(e) => setPaymentMethod(e.target.value)} 
+                              />
+                            </div>
+                            <div className="payment-info-text">
+                              <span className="payment-name">QRIS</span>
+                              <span className="payment-desc">GoPay, ShopeePay, dll</span>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+
                     </div>
                   </div>
 
@@ -567,54 +621,6 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
 
                 {/* SISI KANAN: Ringkasan Pesanan */}
                 <div className="checkout-right-section">
-
-                  {/* Pilih Metode Pembayaran */}
-                  <div className="checkout-summary-card-box" style={{ marginBottom: '20px' }}>
-                    <h3 className="summary-title">Metode Pembayaran</h3>
-                    <div className="payment-methods">
-                      <label className={`payment-option ${paymentMethod === 'bca_va' ? 'selected' : ''}`}>
-                        <input 
-                          type="radio" 
-                          name="payment" 
-                          value="bca_va" 
-                          checked={paymentMethod === 'bca_va'}
-                          onChange={(e) => setPaymentMethod(e.target.value)} 
-                        />
-                        <div className="payment-label">
-                          <strong>BCA Virtual Account</strong>
-                          <span>Transfer otomatis</span>
-                        </div>
-                      </label>
-                      
-                      <label className={`payment-option ${paymentMethod === 'mandiri_va' ? 'selected' : ''}`}>
-                        <input 
-                          type="radio" 
-                          name="payment" 
-                          value="mandiri_va" 
-                          checked={paymentMethod === 'mandiri_va'}
-                          onChange={(e) => setPaymentMethod(e.target.value)} 
-                        />
-                        <div className="payment-label">
-                          <strong>Mandiri VA</strong>
-                          <span>Transfer otomatis</span>
-                        </div>
-                      </label>
-
-                      <label className={`payment-option ${paymentMethod === 'qris' ? 'selected' : ''}`}>
-                        <input 
-                          type="radio" 
-                          name="payment" 
-                          value="qris" 
-                          checked={paymentMethod === 'qris'}
-                          onChange={(e) => setPaymentMethod(e.target.value)} 
-                        />
-                        <div className="payment-label">
-                          <strong>QRIS</strong>
-                          <span>GoPay, ShopeePay, dll</span>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
 
                   <div className="checkout-summary-card-box">
                     <h3 className="summary-title">Ringkasan Pesanan</h3>
