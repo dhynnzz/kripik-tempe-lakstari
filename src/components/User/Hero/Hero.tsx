@@ -35,6 +35,11 @@ const Hero = () => {
 
   return (
     <section className="hero">
+      {/* Logo PIRT di kiri atas, sejajar dengan logo Halal di kanan */}
+      <div className="hero-pirt-left">
+        <img src="/PIRT.png" alt="PIRT" />
+      </div>
+
       {/* Logo Halal di kanan atas, persis di bawah logo WhatsApp Header */}
       <div className="hero-halal-right">
         <img src="/halal.png" alt="Halal Indonesia" />
@@ -52,11 +57,6 @@ const Hero = () => {
       <Spiral style={{ top: '5%', left: '45%', transform: 'rotate(10deg) scale(1.3)' }} />
 
       <div className="hero-text">
-        <div className="hero-certifications">
-          <div className="cert-logo">
-            <img src="/PIRT.png" alt="PIRT" />
-          </div>
-        </div>
         <span className="hero-badge">PREMIUM QUALITY SNACK</span>
         <h1>Kripik Tempe<br />Lakstari</h1>
         <p>Renyah, Gurih, Nagih. Camilan tradisional kualitas premium yang diolah dengan resep rahasia keluarga.</p>
