@@ -119,8 +119,8 @@ class OrderController extends Controller
                 'id_transaksi' => $transaksi->id_transaksi,
                 'id_pelanggan' => $pelanggan->id_pelanggan,
                 'id_alamat' => $alamat->id_alamat,
-                'kurir' => 'J&T Express', // Default atau dari request
-                'layanan_kurir' => 'REG',
+                'kurir' => $request->kurir ?? 'JNE',
+                'layanan_kurir' => $request->layanan_kurir ?? 'Reguler',
                 'status_pengiriman' => 'menunggu_pickup',
                 'biaya_pengiriman' => $request->biaya_pengiriman,
                 'berat_total' => 1000 // Simulasi 1kg

@@ -4,11 +4,56 @@ import './CartDrawer.css';
 import { apiService } from '../../../services/api';
 import { regionService, formatRegionName, type RegionItem } from '../../../services/regionService';
 
+export interface ShippingOption {
+  id: string;
+  name: string;
+  courier: string;
+  cost: number;
+  etd: string;
+  badge?: string;
+}
+
+export const shippingOptions: ShippingOption[] = [
+  {
+    id: 'reguler',
+    name: 'Reguler (2–3 hari)',
+    courier: 'JNE / J&T / Sicepat',
+    cost: 20000,
+    etd: '2–3 hari',
+    badge: 'Populer'
+  },
+  {
+    id: 'kargo',
+    name: 'Kargo / Hemat (3–5 hari)',
+    courier: 'JTR / J&T Cargo',
+    cost: 15000,
+    etd: '3–5 hari',
+    badge: 'Hemat'
+  },
+  {
+    id: 'instan',
+    name: 'Instan (Hari ini)',
+    courier: 'Gojek / Grab (Max 15km)',
+    cost: 35000,
+    etd: '1–3 jam',
+    badge: 'Cepat'
+  },
+  {
+    id: 'pickup',
+    name: 'Ambil di Toko (Self Pick-up)',
+    courier: 'Toko Kripik Tempe Lakstari',
+    cost: 0,
+    etd: 'Bisa Diambil Langsung',
+    badge: 'Gratis'
+  }
+];
+
 const CartDrawer: React.FC = () => {
   const { isCartOpen, toggleCart, cartItems, updateQuantity, removeFromCart, totalPrice } = useCart();
   const [checkoutStep, setCheckoutStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [agreedTerms, setAgreedTerms] = useState(true);
+  const [selectedShippingId, setSelectedShippingId] = useState<string>('reguler');
 
   // State data wilayah
   const [provinces, setProvinces] = useState<RegionItem[]>([]);
@@ -153,26 +198,26 @@ const CartDrawer: React.FC = () => {
     const payload = {
       nama_pelanggan: formData.nama_pelanggan,
       no_hp: formData.no_hp,
-      email: formData.email || null,
+      email: formData.email ? formData.email.trim() : null,
       alamat_lengkap: fullAlamat,
       kecamatan: formData.kecamatan,
       kota: formData.kota,
       provinsi: formData.provinsi,
       kode_pos: formData.kode_pos,
       items: items,
-      biaya_pengiriman: 20000
+      biaya_pengiriman: selectedShipping.cost
     };
 
     const res = await apiService.checkout(payload);
     setIsSubmitting(false);
 
-    if (res && res.success) {
-      alert("Pesanan Berhasil Dibuat! Invoice: " + res.invoice);
+    if (res && res.invoice) {
+      alert('Pesanan Berhasil Dibuat! Invoice: ' + res.invoice);
       setCheckoutStep(0);
       toggleCart(false);
       window.location.reload();
     } else {
-      alert("Gagal melakukan checkout: " + (res?.message || 'Error'));
+      alert('Gagal melakukan checkout: ' + (res?.message || 'Error'));
     }
   };
 
@@ -181,118 +226,168 @@ const CartDrawer: React.FC = () => {
   };
 
   const totalItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const ongkir = 20000;
+  const selectedShipping = shippingOptions.find(s => s.id === selectedShippingId) || shippingOptions[0];
+  const ongkir = selectedShipping.cost;
   const totalBayar = totalPrice + ongkir;
 
   return (
     <>
-      {/* 1. SIDEBAR KERANJANG BELANJA (Step 0) */}
-      <div 
-        className={`cart-overlay ${(isCartOpen && checkoutStep === 0) ? 'open' : ''}`} 
-        onClick={() => toggleCart(false)}
-      ></div>
-      
-      <div className={`cart-drawer ${(isCartOpen && checkoutStep === 0) ? 'open' : ''}`}>
-        
-        <div className="cart-header-wrapper">
-          <div className="cart-header">
-            <h2>Keranjang Belanja</h2>
-            <button className="close-btn" onClick={() => toggleCart(false)} title="Tutup Keranjang">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="18" y1="6" x2="6" y2="18"></line>
-                <line x1="6" y1="6" x2="18" y2="18"></line>
-              </svg>
-            </button>
-          </div>
-        </div>
+      {/* ==========================================================
+          1. STEP 0: SIDEBAR DRAWER KERANJANG BELANJA (GAMBAR 1)
+          ========================================================== */}
+      {checkoutStep === 0 && (
+        <>
+          <div 
+            className={`cart-sidebar-overlay ${isCartOpen ? 'open' : ''}`}
+            onClick={() => toggleCart(false)}
+          />
 
-        <div className="cart-content">
-          {cartItems.length === 0 ? (
-            <div className="empty-cart">
-              <p>Keranjang belanja Anda masih kosong.</p>
+          <div className={`cart-sidebar-drawer ${isCartOpen ? 'open' : ''}`}>
+            
+            {/* Header Sidebar */}
+            <div className="cart-sidebar-header">
+              <div className="cart-sidebar-title-row">
+                <h3>Keranjang Belanja</h3>
+                <button className="cart-sidebar-close" onClick={() => toggleCart(false)} title="Tutup">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+              <div className="cart-sidebar-breadcrumb">
+                <span>Beranda</span>
+                <span className="separator">&gt;</span>
+                <span className="active">Keranjang ({totalItemCount} item)</span>
+              </div>
             </div>
-          ) : (
-            <div className="cart-items-container">
-              {cartItems.map((item) => (
-                <div key={item.id} className="cart-item-card">
-                  
-                  <div className="cart-item-info-row">
-                    {item.image && (
-                      <div className="cart-item-image">
-                        <img src={item.image} alt={item.productName} />
-                      </div>
-                    )}
 
-                    <div className="cart-item-details">
-                      <h4>{item.productName}</h4>
-                      <p className="cart-item-variant">{item.variant} {item.weight ? `• ${item.weight}` : ''}</p>
-                      <span className="cart-item-unit-price">{formatRupiah(item.priceRaw)}</span>
-                    </div>
+            {/* Content List Sidebar */}
+            <div className="cart-sidebar-body">
+              {cartItems.length === 0 ? (
+                <div className="cart-sidebar-empty">
+                  <div className="cart-empty-icon-wrap">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="8" cy="21" r="2"></circle>
+                      <circle cx="18" cy="21" r="2"></circle>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
                   </div>
-
-                  <div className="cart-item-actions">
-                    <div className="quantity-control">
-                      <button onClick={() => updateQuantity(item.id, -1)}>-</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => updateQuantity(item.id, 1)}>+</button>
-                    </div>
-
-                    <div className="cart-item-price-total">
-                      {formatRupiah(item.priceRaw * item.quantity)}
-                    </div>
-
-                    <button className="trash-btn" onClick={() => removeFromCart(item.id)} title="Hapus Item">
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                      </svg>
-                    </button>
-                  </div>
-
+                  <h4>Keranjang Belanja Kosong</h4>
+                  <p>Belum ada produk kripik tempe yang Anda pilih.</p>
                 </div>
-              ))}
+              ) : (
+                <div className="cart-sidebar-items-list">
+                  {cartItems.map((item) => (
+                    <div key={item.id} className="cart-sidebar-item-card">
+                      
+                      <div className="cart-sidebar-item-top">
+                        {item.image && (
+                          <div className="cart-sidebar-img-box">
+                            <img src={item.image} alt={item.productName} />
+                          </div>
+                        )}
+                        <div className="cart-sidebar-item-info">
+                          <h4 className="cart-sidebar-item-title">{item.variant || item.productName}</h4>
+                          <span className="cart-sidebar-item-weight">{item.weight || '150 gram'}</span>
+                          <span className="cart-sidebar-item-price">{formatRupiah(item.priceRaw)}</span>
+                        </div>
+                      </div>
+
+                      <div className="cart-sidebar-item-bottom">
+                        {/* Kontrol Qty Pill */}
+                        <div className="cart-qty-pill">
+                          <button 
+                            className="qty-circle-btn" 
+                            onClick={() => updateQuantity(item.id, -1)}
+                            title="Kurangi"
+                          >
+                            -
+                          </button>
+                          <span className="qty-number">{item.quantity}</span>
+                          <button 
+                            className="qty-circle-btn" 
+                            onClick={() => updateQuantity(item.id, 1)} 
+                            disabled={item.stock !== undefined && item.quantity >= item.stock} 
+                            title={item.stock !== undefined && item.quantity >= item.stock ? 'Maksimal stok tercapai' : 'Tambah'}
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <span className="cart-sidebar-item-subtotal">{formatRupiah(item.priceRaw * item.quantity)}</span>
+
+                        <button 
+                          className="cart-trash-btn-small" 
+                          onClick={() => removeFromCart(item.id)} 
+                          title="Hapus Item"
+                        >
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                          </svg>
+                        </button>
+                      </div>
+
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
 
-          {cartItems.length > 0 && (
-            <div className="cart-summary-card">
-              <h3>Ringkasan Belanja</h3>
-              
-              <div className="summary-row">
-                <span className="summary-label">Total ({totalItemCount} Barang)</span>
-                <span className="summary-value">{formatRupiah(totalPrice)}</span>
-              </div>
-              
-              <div className="summary-row">
-                <span className="summary-label">Ongkos Kirim</span>
-                <span className="summary-value small-text">Dihitung saat checkout</span>
-              </div>
-              
-              <hr className="summary-divider" />
-              
-              <div className="summary-row total-row">
-                <span className="summary-label-bold">Total Belanja</span>
-                <span className="summary-total-price">{formatRupiah(totalPrice)}</span>
-              </div>
-              
-              <button className="btn-lanjut-pembayaran" onClick={() => setCheckoutStep(1)}>
-                Lanjut ke Pengiriman
-              </button>
-            </div>
-          )}
-        </div>
+            {/* Footer Summary Sidebar */}
+            {cartItems.length > 0 && (
+              <div className="cart-sidebar-footer">
+                <div className="cart-sidebar-summary-box">
+                  <div className="summary-row-mini">
+                    <span>Total Harga ({totalItemCount} Barang)</span>
+                    <span className="val">{formatRupiah(totalPrice)}</span>
+                  </div>
+                  <div className="summary-row-mini">
+                    <span>Ongkos Kirim</span>
+                    <span className="val-hint">Dihitung saat checkout</span>
+                  </div>
+                  <hr className="summary-divider-mini" />
+                  <div className="summary-row-total">
+                    <span className="label">Total Belanja</span>
+                    <span className="price">{formatRupiah(totalPrice)}</span>
+                  </div>
+                </div>
 
-      </div>
+                <button 
+                  className="btn-sidebar-checkout"
+                  onClick={() => setCheckoutStep(1)}
+                >
+                  Lanjut ke Pembayaran
+                </button>
+              </div>
+            )}
 
-      {/* 2. MODAL FORM CHECKOUT (Step 1 - Desain Pembayaran Sesuai Mockup) */}
+          </div>
+        </>
+      )}
+
+      {/* ==========================================================
+          2. STEP 1: MODAL POP-UP TENGAH CHECKOUT (GAMBAR 2)
+          ========================================================== */}
       {isCartOpen && checkoutStep === 1 && (
-        <div className="checkout-page-overlay" onClick={() => setCheckoutStep(0)}>
+        <div className="checkout-page-overlay open" onClick={() => setCheckoutStep(0)}>
           <div className="checkout-page-card" onClick={(e) => e.stopPropagation()}>
             
-            {/* Header Judul Pembayaran */}
+            {/* Header & Breadcrumb Checkout */}
             <div className="checkout-page-top">
-              <h1 className="checkout-main-title">Pembayaran</h1>
-              <button className="checkout-close-circle" onClick={() => setCheckoutStep(0)} title="Kembali">
+              <div>
+                <div className="cart-breadcrumb" style={{ marginBottom: '6px' }}>
+                  <span>Beranda</span>
+                  <span className="breadcrumb-separator">&gt;</span>
+                  <span style={{ cursor: 'pointer', color: '#D97706', fontWeight: 600 }} onClick={() => setCheckoutStep(0)}>Keranjang</span>
+                  <span className="breadcrumb-separator">&gt;</span>
+                  <span className="breadcrumb-active">Form Checkout</span>
+                </div>
+                <h1 className="checkout-main-title">Form Checkout & Pembayaran</h1>
+              </div>
+
+              <button className="checkout-close-circle" onClick={() => setCheckoutStep(0)} title="Kembali ke Keranjang">
                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="18" y1="6" x2="6" y2="18"></line>
                   <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -328,7 +423,7 @@ const CartDrawer: React.FC = () => {
                         <input 
                           required 
                           type="text"
-                          placeholder="Masukkan nama lengkap" 
+                          placeholder="Masukkan nama lengkap penerima" 
                           value={formData.nama_pelanggan} 
                           onChange={e => setFormData({...formData, nama_pelanggan: e.target.value})} 
                         />
@@ -355,18 +450,6 @@ const CartDrawer: React.FC = () => {
                             onChange={e => setFormData({...formData, email: e.target.value})} 
                           />
                         </div>
-                      </div>
-
-                      {/* Alamat Lengkap */}
-                      <div className="form-item">
-                        <label>Alamat Lengkap</label>
-                        <textarea 
-                          required 
-                          rows={2}
-                          placeholder="Nama jalan, RT/RW, nomor rumah, patokan lokasi" 
-                          value={formData.alamat_lengkap} 
-                          onChange={e => setFormData({...formData, alamat_lengkap: e.target.value})} 
-                        />
                       </div>
 
                       {/* Provinsi, Kota/Kabupaten & Kode Pos (3 Kolom Sejajar) */}
@@ -497,17 +580,76 @@ const CartDrawer: React.FC = () => {
                         </div>
                       </div>
 
+                      {/* Alamat Lengkap (Ditaruh di bawah Kecamatan & Desa / Kelurahan) */}
+                      <div className="form-item">
+                        <label>Alamat Lengkap</label>
+                        <textarea 
+                          required 
+                          rows={2}
+                          placeholder="Nama jalan, RT/RW, nomor rumah, patokan lokasi" 
+                          value={formData.alamat_lengkap} 
+                          onChange={e => setFormData({...formData, alamat_lengkap: e.target.value})} 
+                        />
+                      </div>
+
                       {/* Catatan Tambahan */}
                       <div className="form-item">
                         <label>Catatan Tambahan (Opsional)</label>
                         <input 
                           type="text"
-                          placeholder="Contoh: Titip di pos satpam" 
+                          placeholder="Contoh: Titip di pos satpam atau jangan dibanting" 
                           value={formData.catatan} 
                           onChange={e => setFormData({...formData, catatan: e.target.value})} 
                         />
                       </div>
 
+                    </div>
+                  </div>
+
+                  {/* CARD 2: Pilihan Pengiriman (Ekspedisi & Kurir) */}
+                  <div className="checkout-card-box">
+                    <div className="card-box-header">
+                      <span className="box-icon-wrap box-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                          <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                          <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                        </svg>
+                      </span>
+                      <h3>Pilihan Pengiriman</h3>
+                    </div>
+
+                    <div className="shipping-options-list">
+                      {shippingOptions.map((opt) => {
+                        const isSelected = selectedShippingId === opt.id;
+                        return (
+                          <div 
+                            key={opt.id}
+                            className={`shipping-option-box ${isSelected ? 'selected' : ''}`}
+                            onClick={() => setSelectedShippingId(opt.id)}
+                          >
+                            <div className="shipping-left">
+                              <div className={`custom-radio-dot ${isSelected ? 'active' : ''}`}>
+                                {isSelected && <div className="inner-dot"></div>}
+                              </div>
+                              <div className="shipping-text">
+                                <div className="shipping-name-row">
+                                  <span className="shipping-name">{opt.name}</span>
+                                  {opt.badge && (
+                                    <span className={`shipping-badge ${opt.cost === 0 ? 'badge-free' : ''}`}>
+                                      {opt.badge}
+                                    </span>
+                                  )}
+                                </div>
+                                <span className="shipping-courier">{opt.courier}</span>
+                              </div>
+                            </div>
+                            <span className={`shipping-price ${opt.cost === 0 ? 'price-free' : ''}`}>
+                              {opt.cost === 0 ? 'Gratis' : formatRupiah(opt.cost)}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
 
@@ -576,7 +718,7 @@ const CartDrawer: React.FC = () => {
                       disabled={isSubmitting || !agreedTerms} 
                       className="btn-selesaikan-pesanan"
                     >
-                      {isSubmitting ? 'Memproses Pesanan...' : 'Selesaikan Pesanan'}
+                      {isSubmitting ? 'Memproses Pesanan...' : 'Selesaikan Pesanan & Bayar'}
                     </button>
 
                     {/* Security Badge */}

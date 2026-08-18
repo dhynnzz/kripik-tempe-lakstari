@@ -21,6 +21,7 @@ const Spiral = ({ style }: { style: React.CSSProperties }) => (
 
 const ProductList = () => {
   const { products: allProducts } = useProducts();
+  const { addToCart } = useCart();
 
   // Hanya sembunyikan produk yang statusnya 'nonaktif' (produk dengan stok 0 / status 'habis' tetap tampil)
   const displayProducts = allProducts.filter(p => p.status !== 'nonaktif');
@@ -30,8 +31,6 @@ const ProductList = () => {
   const handleVariantChange = (category: string, id: number) => {
     setSelectedVariants(prev => ({ ...prev, [category]: id }));
   };
-
-  const { addToCart } = useCart();
 
   const CartIcon = () => (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -132,14 +131,17 @@ const ProductList = () => {
 
                       <button
                         className="btn-add btn-add-full"
-                        onClick={() => addToCart({
-                          productId: activeItem.id,
-                          productName: categoryName,
-                          variant: activeItem.name,
-                          priceStr: activeItem.priceStr || 'Rp 0',
-                          weight: activeItem.weight,
-                          image: activeItem.image
-                        })}
+                        onClick={() => {
+                          addToCart({
+                            productId: activeItem.id,
+                            productName: categoryName,
+                            variant: activeItem.name,
+                            priceStr: activeItem.priceStr || 'Rp 0',
+                            weight: activeItem.weight,
+                            image: activeItem.image,
+                            stock: activeItem.stock
+                          });
+                        }}
                         disabled={activeItem.stock === 0}
                       >
                         {activeItem.stock === 0 ? 'Stok Habis' : <>Tambah ke Keranjang <CartIcon /></>}

@@ -1,6 +1,6 @@
 // Service wilayah Indonesia berkinerja tinggi
-// 1. Provinsi & Kota/Kabupaten: Dimuat dari dataset lokal (/data/wilayah/all_regions.json) (Instant 0ms, 100% anti-gagal, zero CORS)
-// 2. Kecamatan & Desa/Kelurahan: Dimuat dari endpoint backend proxy Laravel (/api/wilayah/...) dengan fallback ke EMSIFA
+// 1. Provinsi, Kota/Kabupaten & Kecamatan: 100% Instan dari Dataset Lokal (/data/wilayah/...) (0ms latency, zero CORS)
+// 2. Desa/Kelurahan: Dimuat dari endpoint backend proxy Laravel (/api/wilayah/...) dengan fallback online
 
 export interface RegionItem {
   id: string;
@@ -25,8 +25,8 @@ export const formatRegionName = (name: string): string => {
     .toLowerCase()
     .split(' ')
     .map(word => {
-      if (word.startsWith('dki')) return 'DKI';
-      if (word.startsWith('di')) return 'DI';
+      if (word === 'dki') return 'DKI';
+      if (word === 'di') return 'DI';
       if (word.startsWith('kab.')) return 'Kab. ' + word.slice(4).charAt(0).toUpperCase() + word.slice(5);
       return word.charAt(0).toUpperCase() + word.slice(1);
     })
@@ -55,13 +55,13 @@ async function loadAllRegionsData(): Promise<AllRegionsData> {
 }
 
 export const regionService = {
-  // 1. Ambil 100% Seluruh Provinsi di Indonesia
+  // 1. Ambil 100% Seluruh Provinsi di Indonesia (0 ms)
   async getProvinces(): Promise<RegionItem[]> {
     const data = await loadAllRegionsData();
     return data.provinces || [];
   },
 
-  // 2. Ambil 100% Seluruh Kota / Kabupaten berdasarkan ID Provinsi
+  // 2. Ambil 100% Seluruh Kota / Kabupaten berdasarkan ID Provinsi (0 ms)
   async getRegencies(provinceId: string): Promise<RegionItem[]> {
     if (!provinceId) return [];
     const data = await loadAllRegionsData();
@@ -70,24 +70,39 @@ export const regionService = {
     }
 
     try {
+      const res = await fetch(`/data/wilayah/regencies/${provinceId}.json`);
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {}
+
+    try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/regencies/${provinceId}.json`);
       if (res.ok) {
-        const regencies: RegionItem[] = await res.json();
-        if (data.regencies) data.regencies[provinceId] = regencies;
-        return regencies;
+        return await res.json();
       }
-    } catch (e) {
-      console.warn('Error fetching regency:', e);
-    }
+    } catch (e) {}
     return [];
   },
 
-  // 3. Ambil Kecamatan via Backend Proxy Laravel (Bebas CORS)
+  // 3. Ambil 100% Seluruh Kecamatan di Indonesia (0 ms dari dataset lokal)
   async getDistricts(regencyId: string): Promise<RegionItem[]> {
     if (!regencyId) return [];
     if (districtCache[regencyId]) return districtCache[regencyId];
 
-    // Coba via Backend Laravel terlebih dahulu
+    // Coba langsung dari dataset lokal proyek (0 ms instant)
+    try {
+      const res = await fetch(`/data/wilayah/districts/${regencyId}.json`);
+      if (res.ok) {
+        const data: RegionItem[] = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          districtCache[regencyId] = data;
+          return data;
+        }
+      }
+    } catch (e) {}
+
+    // Fallback via Backend Laravel Proxy
     try {
       const res = await fetch(`${API_BASE_URL}/wilayah/districts/${regencyId}`);
       if (res.ok) {
@@ -97,10 +112,9 @@ export const regionService = {
           return data;
         }
       }
-    } catch {
-      // Fallback ke EMSIFA langsung
-    }
+    } catch (e) {}
 
+    // Fallback EMSIFA Online
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/districts/${regencyId}.json`);
       if (res.ok) {
@@ -108,18 +122,17 @@ export const regionService = {
         districtCache[regencyId] = data;
         return data;
       }
-    } catch (e) {
-      console.warn('Error fetching districts:', e);
-    }
+    } catch (e) {}
+
     return [];
   },
 
-  // 4. Ambil Desa / Kelurahan via Backend Proxy Laravel (Bebas CORS)
+  // 4. Ambil Desa / Kelurahan via Backend Proxy Laravel / Online
   async getVillages(districtId: string): Promise<RegionItem[]> {
     if (!districtId) return [];
     if (villageCache[districtId]) return villageCache[districtId];
 
-    // Coba via Backend Laravel terlebih dahulu
+    // Coba via Backend Laravel terlebih dahulu (Bebas CORS)
     try {
       const res = await fetch(`${API_BASE_URL}/wilayah/villages/${districtId}`);
       if (res.ok) {
@@ -129,10 +142,9 @@ export const regionService = {
           return data;
         }
       }
-    } catch {
-      // Fallback ke EMSIFA langsung
-    }
+    } catch (e) {}
 
+    // Fallback EMSIFA Online
     try {
       const res = await fetch(`https://emsifa.github.io/api-wilayah-indonesia/api/villages/${districtId}.json`);
       if (res.ok) {

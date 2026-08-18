@@ -5,6 +5,7 @@ import { AdminLayout } from './components/Admin';
 import { CartProvider } from './context/CartContext';
 import { ProductProvider } from './context/ProductContext';
 import { CategoryProvider } from './context/CategoryContext';
+import { NotifProvider, NotifContainer } from '@/components/ui/notif';
 
 function App() {
   const [role, setRole] = useState<'user' | 'admin'>(() => {
@@ -22,26 +23,29 @@ function App() {
   };
 
   return (
-    <CategoryProvider>
-      <ProductProvider>
-        <CartProvider>
-        {role === 'admin' ? (
-          <AdminLayout onSwitchToUser={handleSwitchToUser} />
-        ) : (
-          <div className="app-container">
-            <Header onSwitchToAdmin={handleSwitchToAdmin} />
-            <Hero />
-            <PaymentBanner />
-            <ProductList />
-            <Footer />
-            
-            <FloatingCart />
-            <CartDrawer />
-          </div>
-        )}
-        </CartProvider>
-      </ProductProvider>
-    </CategoryProvider>
+    <NotifProvider>
+      <CategoryProvider>
+        <ProductProvider>
+          <CartProvider>
+            <NotifContainer />
+            {role === 'admin' ? (
+              <AdminLayout onSwitchToUser={handleSwitchToUser} />
+            ) : (
+              <div className="app-container">
+                <Header onSwitchToAdmin={handleSwitchToAdmin} />
+                <Hero />
+                <PaymentBanner />
+                <ProductList />
+                <Footer />
+                
+                <FloatingCart />
+                <CartDrawer />
+              </div>
+            )}
+          </CartProvider>
+        </ProductProvider>
+      </CategoryProvider>
+    </NotifProvider>
   );
 }
 
