@@ -41,6 +41,26 @@ interface ProductContextType {
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
+export const normalizeProductImage = (img?: string): string => {
+  if (!img || img.startsWith('blob:')) return '/images/products/flavor-original.png';
+  if (img.startsWith('data:') || img.startsWith('http://') || img.startsWith('https://')) return img;
+  if (img.startsWith('/images/')) return img;
+
+  const filename = img.replace(/^\//, '').toLowerCase();
+  if (filename.includes('original')) return '/images/products/flavor-original.png';
+  if (filename.includes('pedas_manis') || filename.includes('pedas-manis')) return '/images/products/flavor-pedas-manis.png';
+  if (filename.includes('balado')) return '/images/products/flavor-balado.png';
+  if (filename.includes('bbq')) return '/images/products/flavor-bbq.png';
+  if (filename.includes('keju')) return '/images/products/flavor-keju.png';
+  if (filename.includes('jagung')) return '/images/products/flavor-jagung-bakar.png';
+  if (filename.includes('sapi')) return '/images/products/flavor-sapi-panggang.png';
+  if (filename.includes('daun_jeruk') || filename.includes('jeruk')) return '/images/products/flavor-daun-jeruk.png';
+  if (filename.includes('paket_4') || filename.includes('paket-4') || filename.includes('hemat')) return '/images/products/paket-4-hemat.png';
+  if (filename.includes('paket_5') || filename.includes('paket-5') || filename.includes('lengkap')) return '/images/products/paket-5-lengkap.png';
+
+  return `/images/products/${filename}`;
+};
+
 export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<ProductItem[]>([]);
 
@@ -69,7 +89,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
           weight: `${p.berat_product} gram`,
           status: computedStatus,
           desc: p.deskripsi_product,
-          image: (!p.foto_product || p.foto_product.startsWith('blob:')) ? '/flavor_original_1786524783436.png' : p.foto_product
+          image: normalizeProductImage(p.foto_product)
         };
       });
       setProducts(formatted);

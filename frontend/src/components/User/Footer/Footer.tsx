@@ -1,13 +1,6 @@
-import { useState } from 'react';
 import './Footer.css';
 
 const Footer = () => {
-  const [shouldSimulateError, setShouldSimulateError] = useState(false);
-
-  if (shouldSimulateError) {
-    throw new Error("Simulasi Uji Coba: Halaman Toko Mengalami Gangguan Teknis (500)");
-  }
-
   return (
     <div className="footer-wave">
       <footer className="footer">
@@ -77,33 +70,8 @@ const Footer = () => {
 
         </div>
         <div className="container">
-          <div className="footer-bottom" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
-            <p style={{ margin: 0 }}>&copy; 2026 Kripik Tempe Lakstari. Seluruh Hak Cipta Dilindungi.</p>
-            <button
-              type="button"
-              onClick={() => setShouldSimulateError(true)}
-              style={{
-                background: 'rgba(255, 255, 255, 0.08)',
-                color: '#94A3B8',
-                border: '1px solid rgba(255, 255, 255, 0.15)',
-                borderRadius: '8px',
-                padding: '4px 10px',
-                fontSize: '11px',
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = 'rgba(239, 68, 68, 0.2)';
-                (e.currentTarget as HTMLElement).style.color = '#FCA5A5';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = 'rgba(255, 255, 255, 0.08)';
-                (e.currentTarget as HTMLElement).style.color = '#94A3B8';
-              }}
-              title="Klik untuk mencoba simulasi tampilan halaman error"
-            >
-              🧪 Tes Tampilan Error
-            </button>
+          <div className="footer-bottom">
+            <p>&copy; 2026 Kripik Tempe Lakstari. Seluruh Hak Cipta Dilindungi.</p>
           </div>
         </div>
       </footer>

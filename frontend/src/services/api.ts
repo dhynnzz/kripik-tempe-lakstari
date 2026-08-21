@@ -106,7 +106,7 @@ export const apiService = {
         harga_product: product.priceNum,
         stok_product: product.stock,
         berat_product: parseInt(product.weight) || 100,
-        foto_product: product.image || '/flavor_original_1786524783436.png',
+        foto_product: product.image || '/images/products/flavor-original.png',
         status_product: product.status || 'aktif'
       };
 

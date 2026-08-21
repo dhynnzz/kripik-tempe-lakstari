@@ -1,9 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { useCart } from '../../../context/CartContext';
 import './FloatingCart.css';
 
 const FloatingCart: React.FC = () => {
-  const { totalItems, toggleCart } = useCart();
+  const { totalItems, toggleCart, isCartOpen } = useCart();
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   
@@ -25,33 +25,6 @@ const FloatingCart: React.FC = () => {
 
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  // Set default initial position on mount & handle window resizing
-  useEffect(() => {
-    const updateDefaultPosition = () => {
-      const btnSize = window.innerWidth <= 768 ? 60 : 70;
-      const margin = window.innerWidth <= 768 ? 20 : 36;
-      const defaultX = window.innerWidth - btnSize - margin;
-      const defaultY = window.innerHeight - btnSize - margin;
-
-      setPosition((prev) => {
-        if (!prev) {
-          return { x: defaultX, y: defaultY };
-        }
-        // Clamp current position within new window bounds
-        const maxX = window.innerWidth - btnSize - 10;
-        const maxY = window.innerHeight - btnSize - 10;
-        return {
-          x: Math.min(Math.max(prev.x, 10), maxX),
-          y: Math.min(Math.max(prev.y, 10), maxY),
-        };
-      });
-    };
-
-    updateDefaultPosition();
-    window.addEventListener('resize', updateDefaultPosition);
-    return () => window.removeEventListener('resize', updateDefaultPosition);
-  }, []);
-
   const handlePointerDown = (e: React.PointerEvent<HTMLButtonElement>) => {
     if (!buttonRef.current) return;
     
@@ -62,8 +35,8 @@ const FloatingCart: React.FC = () => {
     }
 
     const rect = buttonRef.current.getBoundingClientRect();
-    const currentPosX = position ? position.x : rect.left;
-    const currentPosY = position ? position.y : rect.top;
+    const currentPosX = rect.left;
+    const currentPosY = rect.top;
 
     dragRef.current = {
       startX: e.clientX,
@@ -82,14 +55,14 @@ const FloatingCart: React.FC = () => {
     const dy = e.clientY - dragRef.current.startY;
 
     // Threshold to distinguish between click and drag
-    if (!dragRef.current.hasMoved && Math.hypot(dx, dy) > 4) {
+    if (!dragRef.current.hasMoved && Math.hypot(dx, dy) > 5) {
       dragRef.current.hasMoved = true;
       setIsDragging(true);
     }
 
     if (dragRef.current.hasMoved) {
-      const btnWidth = buttonRef.current ? buttonRef.current.offsetWidth : 70;
-      const btnHeight = buttonRef.current ? buttonRef.current.offsetHeight : 70;
+      const btnWidth = buttonRef.current ? buttonRef.current.offsetWidth : 60;
+      const btnHeight = buttonRef.current ? buttonRef.current.offsetHeight : 60;
       
       const minX = 10;
       const maxX = window.innerWidth - btnWidth - 10;
@@ -131,6 +104,7 @@ const FloatingCart: React.FC = () => {
     }
   };
 
+  // Only apply absolute positioning style if user has explicitly dragged it
   const style: React.CSSProperties = position
     ? {
         left: `${position.x}px`,
@@ -143,7 +117,7 @@ const FloatingCart: React.FC = () => {
   return (
     <button
       ref={buttonRef}
-      className={`floating-cart-btn ${isDragging ? 'is-dragging' : ''}`}
+      className={`floating-cart-btn ${isDragging ? 'is-dragging' : ''} ${isCartOpen ? 'is-cart-open' : ''}`}
       style={style}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
@@ -155,8 +129,7 @@ const FloatingCart: React.FC = () => {
       <div className="cart-icon-container">
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="40"
-          height="40"
+          className="cart-icon-svg"
           viewBox="0 0 24 24"
           fill="none"
           stroke="currentColor"
@@ -175,4 +148,3 @@ const FloatingCart: React.FC = () => {
 };
 
 export default FloatingCart;
-

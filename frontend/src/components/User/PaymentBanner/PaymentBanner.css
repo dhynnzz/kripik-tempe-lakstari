@@ -1,9 +1,11 @@
-/* Payment Banner */
 .payment-banner {
   background-color: var(--primary-accent);
   padding: 5px 0 10px;
   margin-bottom: 0;
   position: relative;
+  width: 100%;
+  max-width: 100vw;
+  overflow: hidden;
 }
 
 .payment-banner::before {

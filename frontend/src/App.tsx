@@ -35,26 +35,28 @@ function App() {
             {role === 'admin' ? (
               <AdminLayout onSwitchToUser={handleSwitchToUser} />
             ) : (
-              <div className="app-container">
-                <Header
-                  onSwitchToAdmin={handleSwitchToAdmin}
-                  onNavigate={(view) => setCurrentView(view)}
-                  currentView={currentView}
-                />
-                {currentView === 'home' ? (
-                  <>
-                    <Hero />
-                    <PaymentBanner />
-                    <ProductList />
-                    <Footer />
+              <>
+                <div className="app-container">
+                  <Header
+                    onSwitchToAdmin={handleSwitchToAdmin}
+                    onNavigate={(view) => setCurrentView(view)}
+                    currentView={currentView}
+                  />
+                  {currentView === 'home' ? (
+                    <>
+                      <Hero />
+                      <PaymentBanner />
+                      <ProductList />
+                      <Footer />
+                    </>
+                  ) : (
+                    <OrderTracking onBack={() => setCurrentView('home')} />
+                  )}
+                </div>
 
-                    <FloatingCart />
-                    <CartDrawer onNavigateToTracking={() => setCurrentView('track-order')} />
-                  </>
-                ) : (
-                  <OrderTracking onBack={() => setCurrentView('home')} />
-                )}
-              </div>
+                <FloatingCart />
+                <CartDrawer onNavigateToTracking={() => setCurrentView('track-order')} />
+              </>
             )}
           </CartProvider>
         </ProductProvider>

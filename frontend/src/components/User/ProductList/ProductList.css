@@ -91,6 +91,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+  gap: 12px;
   margin-bottom: 10px;
 }
 
@@ -98,12 +99,18 @@
   margin-bottom: 0;
   font-size: 20px;
   color: var(--primary-dark);
+  flex: 1;
+  word-break: break-word;
 }
 
 .price-large {
   color: var(--primary-accent);
-  font-weight: 700;
+  font-weight: 800;
   font-size: 20px;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+  text-align: right;
+  letter-spacing: -0.2px;
 }
 
 .product-desc-min {
@@ -252,5 +259,62 @@
 @media (max-width: 900px) {
   .products-grid-2x2 {
     grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+@media (max-width: 600px) {
+  .product-info {
+    padding: 18px 16px;
+  }
+
+  .title-price-row {
+    gap: 8px;
+  }
+
+  .title-price-row h4 {
+    font-size: 17px;
+  }
+
+  .price-large {
+    font-size: 18px;
+    white-space: nowrap !important;
+  }
+
+  .katalog-title h2 {
+    font-size: 22px;
+    letter-spacing: 1px;
+  }
+
+  .products-section {
+    margin-bottom: 50px;
+  }
+
+  .product-image-placeholder-large {
+    height: 220px;
+    min-height: 220px;
+    max-height: 220px;
+  }
+
+  .product-info-large {
+    padding: 16px;
+  }
+
+  .product-title-large {
+    font-size: 20px;
+  }
+
+  .price-current-large {
+    font-size: 22px;
+  }
+}
+
+@media (max-width: 380px) {
+  .title-price-row h4 {
+    font-size: 15.5px;
+  }
+
+  .price-large {
+    font-size: 16.5px;
   }
 }

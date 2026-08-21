@@ -22,6 +22,18 @@
   padding: 0;
 }
 
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+/* Pure Scroll Lock when Cart Drawer / Checkout is Open (No background changes) */
+html.cart-open,
+body.cart-open {
+  overflow-y: hidden !important;
+}
+
 body {
   font-family: var(--font-body);
   color: var(--text-main);
@@ -56,6 +68,8 @@ img {
 /* Utilities */
 .container {
   max-width: var(--container-width);
+  width: 100%;
+  box-sizing: border-box;
   margin: 0 auto;
   padding: 0 20px;
 }

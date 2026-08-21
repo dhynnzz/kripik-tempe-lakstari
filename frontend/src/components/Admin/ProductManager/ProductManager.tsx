@@ -74,7 +74,7 @@ const ProductManager: React.FC = () => {
       weight: newProductWeight || '100 gram',
       status: stockNum === 0 ? 'habis' : 'aktif',
       label: 'Baru',
-      image: (!newProductImage || newProductImage.startsWith('blob:')) ? '/flavor_original_1786524783436.png' : newProductImage,
+      image: (!newProductImage || newProductImage.startsWith('blob:')) ? '/images/products/flavor-original.png' : newProductImage,
       desc: newProductDesc || 'Produk olahan Kripik tempe Lakstari lezat & berkualitas.'
     });
 

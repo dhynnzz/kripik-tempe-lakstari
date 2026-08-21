@@ -5,18 +5,19 @@ import { useProducts } from '../../../context/ProductContext';
 import './ProductList.css';
 
 const Spiral = ({ style }: { style: React.CSSProperties }) => (
-  <svg
-    width="60" height="60" viewBox="0 0 100 100" fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    style={{ position: 'absolute', zIndex: -1, opacity: 0.05, ...style }}
-  >
-    <path
-      d="M50 50 C 50 42, 58 42, 58 50 C 58 62, 42 62, 42 50 C 42 34, 66 34, 66 50 C 66 70, 34 70, 34 50 C 34 26, 74 26, 74 50 C 74 78, 26 78, 26 50"
-      stroke="#D97706"
-      strokeWidth="3"
-      strokeLinecap="round"
-    />
-  </svg>
+  <img
+    src="/images/decorations/spiral-decoration.png"
+    alt=""
+    aria-hidden="true"
+    style={{
+      position: 'absolute',
+      zIndex: 0,
+      opacity: 0.35,
+      pointerEvents: 'none',
+      userSelect: 'none',
+      ...style,
+    }}
+  />
 );
 
 const ProductList = () => {
@@ -74,21 +75,38 @@ const ProductList = () => {
         <h2>Katalog Produk</h2>
       </div>
 
-      <section className="products-section container" style={{ position: 'relative' }}>
+      <section className="products-section container" style={{ position: 'relative', overflow: 'hidden' }}>
+        {/* Background Spiral Decorations for Product List (Ukuran Ramping & Tersebar Rapi) */}
+        <Spiral style={{ top: '2%', left: '1%', width: '85px', transform: 'rotate(25deg)' }} />
+        <Spiral style={{ top: '6%', left: '30%', width: '70px', transform: 'rotate(75deg)' }} />
+        <Spiral style={{ top: '4%', right: '5%', width: '90px', transform: 'rotate(45deg)' }} />
+        <Spiral style={{ top: '10%', right: '25%', width: '75px', transform: 'rotate(-30deg)' }} />
 
-        {/* Background Decorations for Product List */}
-        <Spiral style={{ top: '5%', left: '-5%', transform: 'rotate(25deg) scale(2.5)' }} />
-        <Spiral style={{ top: '15%', right: '10%', transform: 'rotate(45deg) scale(1.8)' }} />
-        <Spiral style={{ top: '25%', right: '-2%', transform: 'rotate(-15deg) scale(3)' }} />
-        <Spiral style={{ top: '35%', left: '15%', transform: 'rotate(110deg) scale(2.2)' }} />
-        <Spiral style={{ top: '45%', right: '25%', transform: 'rotate(-70deg) scale(1.5)' }} />
-        <Spiral style={{ top: '50%', left: '45%', transform: 'rotate(80deg) scale(2)' }} />
-        <Spiral style={{ top: '60%', left: '-2%', transform: 'rotate(15deg) scale(3.2)' }} />
-        <Spiral style={{ top: '65%', right: '5%', transform: 'rotate(145deg) scale(1.9)' }} />
-        <Spiral style={{ top: '75%', left: '5%', transform: 'rotate(-40deg) scale(1.5)' }} />
-        <Spiral style={{ top: '85%', left: '35%', transform: 'rotate(90deg) scale(2.1)' }} />
-        <Spiral style={{ top: '90%', right: '10%', transform: 'rotate(60deg) scale(2.5)' }} />
-        <Spiral style={{ top: '95%', left: '15%', transform: 'rotate(-25deg) scale(1.7)' }} />
+        <Spiral style={{ top: '16%', left: '8%', width: '80px', transform: 'rotate(110deg)' }} />
+        <Spiral style={{ top: '20%', left: '42%', width: '95px', transform: 'rotate(15deg)' }} />
+        <Spiral style={{ top: '18%', right: '2%', width: '85px', transform: 'rotate(-65deg)' }} />
+        <Spiral style={{ top: '26%', right: '35%', width: '70px', transform: 'rotate(80deg)' }} />
+
+        <Spiral style={{ top: '32%', left: '2%', width: '90px', transform: 'rotate(-40deg)' }} />
+        <Spiral style={{ top: '38%', left: '25%', width: '75px', transform: 'rotate(135deg)' }} />
+        <Spiral style={{ top: '35%', right: '12%', width: '95px', transform: 'rotate(-20deg)' }} />
+        <Spiral style={{ top: '44%', right: '40%', width: '80px', transform: 'rotate(55deg)' }} />
+
+        <Spiral style={{ top: '50%', left: '12%', width: '85px', transform: 'rotate(90deg)' }} />
+        <Spiral style={{ top: '55%', left: '45%', width: '70px', transform: 'rotate(-85deg)' }} />
+        <Spiral style={{ top: '52%', right: '4%', width: '90px', transform: 'rotate(30deg)' }} />
+        <Spiral style={{ top: '60%', right: '28%', width: '80px', transform: 'rotate(-45deg)' }} />
+
+        <Spiral style={{ top: '66%', left: '4%', width: '95px', transform: 'rotate(120deg)' }} />
+        <Spiral style={{ top: '72%', left: '32%', width: '75px', transform: 'rotate(40deg)' }} />
+        <Spiral style={{ top: '69%', right: '8%', width: '85px', transform: 'rotate(-70deg)' }} />
+        <Spiral style={{ top: '78%', right: '36%', width: '90px', transform: 'rotate(60deg)' }} />
+
+        <Spiral style={{ top: '84%', left: '2%', width: '80px', transform: 'rotate(-35deg)' }} />
+        <Spiral style={{ top: '88%', left: '40%', width: '95px', transform: 'rotate(100deg)' }} />
+        <Spiral style={{ top: '86%', right: '15%', width: '75px', transform: 'rotate(25deg)' }} />
+        <Spiral style={{ top: '94%', left: '18%', width: '90px', transform: 'rotate(-50deg)' }} />
+        <Spiral style={{ top: '96%', right: '5%', width: '85px', transform: 'rotate(80deg)' }} />
 
         <div className="products-grid-2x2">
           {displayProducts.length === 0 ? (
