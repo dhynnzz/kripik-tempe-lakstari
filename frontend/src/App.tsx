@@ -6,6 +6,7 @@ import { CartProvider } from './context/CartContext';
 import { ProductProvider } from './context/ProductContext';
 import { CategoryProvider } from './context/CategoryContext';
 import { NotifProvider, NotifContainer } from '@/components/ui/notif';
+import { OfflineAlert } from './components/common/OfflineAlert/OfflineAlert';
 
 function App() {
   const [role, setRole] = useState<'user' | 'admin'>(() => {
@@ -30,29 +31,32 @@ function App() {
         <ProductProvider>
           <CartProvider>
             <NotifContainer />
+            <OfflineAlert />
             {role === 'admin' ? (
               <AdminLayout onSwitchToUser={handleSwitchToUser} />
             ) : (
-              <div className="app-container">
-                <Header
-                  onSwitchToAdmin={handleSwitchToAdmin}
-                  onNavigate={(view) => setCurrentView(view)}
-                  currentView={currentView}
-                />
-                {currentView === 'home' ? (
-                  <>
-                    <Hero />
-                    <PaymentBanner />
-                    <ProductList />
-                    <Footer />
+              <>
+                <div className="app-container">
+                  <Header
+                    onSwitchToAdmin={handleSwitchToAdmin}
+                    onNavigate={(view) => setCurrentView(view)}
+                    currentView={currentView}
+                  />
+                  {currentView === 'home' ? (
+                    <>
+                      <Hero />
+                      <PaymentBanner />
+                      <ProductList />
+                      <Footer />
+                    </>
+                  ) : (
+                    <OrderTracking onBack={() => setCurrentView('home')} />
+                  )}
+                </div>
 
-                    <FloatingCart />
-                    <CartDrawer onNavigateToTracking={() => setCurrentView('track-order')} />
-                  </>
-                ) : (
-                  <OrderTracking onBack={() => setCurrentView('home')} />
-                )}
-              </div>
+                <FloatingCart />
+                <CartDrawer onNavigateToTracking={() => setCurrentView('track-order')} />
+              </>
             )}
           </CartProvider>
         </ProductProvider>

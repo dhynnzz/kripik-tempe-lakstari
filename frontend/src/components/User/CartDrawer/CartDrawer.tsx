@@ -69,6 +69,27 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
     });
   }, []);
 
+  // Kunci scroll dan interaksi halaman belakang saat keranjang atau form pembayaran terbuka
+  useEffect(() => {
+    if (isCartOpen) {
+      const originalOverflow = document.body.style.overflow;
+      const originalTouchAction = document.body.style.touchAction;
+      const scrollBarWidth = window.innerWidth - document.documentElement.clientWidth;
+
+      document.body.style.overflow = 'hidden';
+      document.body.style.touchAction = 'none';
+      if (scrollBarWidth > 0) {
+        document.body.style.paddingRight = `${scrollBarWidth}px`;
+      }
+
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.touchAction = originalTouchAction;
+        document.body.style.paddingRight = '';
+      };
+    }
+  }, [isCartOpen]);
+
   if (!isCartOpen) return null;
 
   // 1. Handler saat memilih Provinsi
@@ -640,7 +661,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                           onClick={() => setPaymentMethod('qris')}
                         >
                           <div className="ewallet-logo-box">
-                            <img src="/logo-qris.png" alt="QRIS" className="payment-logo-img" />
+                            <img src="/images/payments/logo-qris.png" alt="QRIS" className="payment-logo-img" />
                           </div>
                           <span className="payment-sub-text">E-Wallet & QR</span>
                         </div>
@@ -651,7 +672,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                           onClick={() => setPaymentMethod('bca_va')}
                         >
                           <div className="ewallet-logo-box">
-                            <img src="/logo-bca.png" alt="BCA" className="payment-logo-img" />
+                            <img src="/images/payments/logo-bca.png" alt="BCA" className="payment-logo-img" />
                           </div>
                           <span className="payment-sub-text">Virtual Account</span>
                         </div>
@@ -662,7 +683,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                           onClick={() => setPaymentMethod('bni_va')}
                         >
                           <div className="ewallet-logo-box">
-                            <img src="/logo-bni.png" alt="BNI" className="payment-logo-img" />
+                            <img src="/images/payments/logo-bni.png" alt="BNI" className="payment-logo-img" />
                           </div>
                           <span className="payment-sub-text">Virtual Account</span>
                         </div>
@@ -673,7 +694,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                           onClick={() => setPaymentMethod('bri_va')}
                         >
                           <div className="ewallet-logo-box">
-                            <img src="/logo-bri.png" alt="BRI" className="payment-logo-img" />
+                            <img src="/images/payments/logo-bri.png" alt="BRI" className="payment-logo-img" />
                           </div>
                           <span className="payment-sub-text">Virtual Account</span>
                         </div>

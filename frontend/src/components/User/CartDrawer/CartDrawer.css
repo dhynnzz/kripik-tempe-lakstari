@@ -5,8 +5,8 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  z-index: 100;
+  background-color: rgba(0, 0, 0, 0.45);
+  z-index: 99998;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, visibility 0.3s ease;
@@ -22,15 +22,15 @@
   position: fixed;
   top: 0;
   right: -100%; /* Hidden by default */
-  width: 400px; /* Ramping kembali */
+  width: 420px;
   max-width: 100vw;
   height: 100vh;
-  background-color: #FAF9F6; /* Light cream/gray background */
-  z-index: 101;
+  background-color: #FAF9F6;
+  z-index: 99999;
   display: flex;
   flex-direction: column;
-  transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: -10px 0 30px rgba(0,0,0,0.1);
+  transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: -15px 0 40px rgba(0, 0, 0, 0.25);
   font-family: var(--font-body);
 }
 
@@ -332,9 +332,8 @@
   left: 0;
   width: 100vw;
   height: 100vh;
-  background-color: rgba(15, 23, 42, 0.65);
-  backdrop-filter: blur(6px);
-  z-index: 1050;
+  background-color: rgba(0, 0, 0, 0.45);
+  z-index: 999999;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -940,10 +939,56 @@
   margin-top: 2px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
+  .checkout-page-overlay {
+    padding: 0 !important;
+    align-items: stretch !important;
+    justify-content: stretch !important;
+  }
+
+  .checkout-page-card {
+    border-radius: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
+    box-shadow: none !important;
+  }
+
+  .checkout-page-top {
+    padding: 16px 20px !important;
+    border-radius: 0 !important;
+  }
+
+  .checkout-main-title {
+    font-size: 22px !important;
+  }
+
+  .checkout-page-body {
+    padding: 20px 16px 40px 16px !important;
+  }
+
+  .checkout-main-grid {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  .checkout-card-box {
+    padding: 16px !important;
+    border-radius: 14px !important;
+  }
+
+  .form-row-2col,
+  .form-row-3col {
+    grid-template-columns: 1fr !important;
+    gap: 12px !important;
+  }
+
   .ewallet-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
   }
 }
 

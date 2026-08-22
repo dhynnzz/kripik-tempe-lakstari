@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { useNotif } from '@/components/ui/notif';
 
@@ -41,6 +41,22 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const { showNotif } = useNotif();
+
+  // Kunci scroll latar belakang secara global saat drawer/modal keranjang terbuka
+  useEffect(() => {
+    if (isCartOpen) {
+      document.documentElement.classList.add('cart-open');
+      document.body.classList.add('cart-open');
+    } else {
+      document.documentElement.classList.remove('cart-open');
+      document.body.classList.remove('cart-open');
+    }
+
+    return () => {
+      document.documentElement.classList.remove('cart-open');
+      document.body.classList.remove('cart-open');
+    };
+  }, [isCartOpen]);
 
   const parsePrice = (priceStr: string) => {
     return Number(priceStr.replace(/[^0-9]/g, ''));

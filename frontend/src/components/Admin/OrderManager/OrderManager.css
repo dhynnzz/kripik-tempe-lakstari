@@ -38,6 +38,7 @@
 .om-filter-tabs {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
 }
 
 .filter-tab-btn {
@@ -60,6 +61,8 @@
 
 .om-card {
   padding: 20px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .customer-cell {
