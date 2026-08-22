@@ -23,6 +23,7 @@ Route::post('/payment/success-fallback', [\App\Http\Controllers\OrderController:
 Route::post('/track-order', [\App\Http\Controllers\OrderController::class, 'trackOrder']);
 Route::get('/wilayah/districts/{regencyId}', [\App\Http\Controllers\WilayahController::class, 'getDistricts']);
 Route::get('/wilayah/villages/{districtId}', [\App\Http\Controllers\WilayahController::class, 'getVillages']);
+Route::post('/shipping-rates', [\App\Http\Controllers\BiteshipController::class, 'getRates']);
 
 // Protected Routes (Sanctum)
 Route::middleware('auth:sanctum')->group(function () {

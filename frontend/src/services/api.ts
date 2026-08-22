@@ -276,6 +276,23 @@ export const apiService = {
     }
   },
 
+  getShippingRates: async (payload: { destination_postal_code: string, items: any[] }) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/shipping-rates`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(payload)
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error getting shipping rates:', error);
+      throw error;
+    }
+  },
+
   trackOrder: async (nomor_invoice: string, no_hp: string): Promise<any> => {
     try {
       const response = await fetch(`${API_BASE_URL}/track-order`, {

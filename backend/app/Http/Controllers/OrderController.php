@@ -33,6 +33,8 @@ class OrderController extends Controller
             'items.*.id_product' => 'required|exists:products,id_product',
             'items.*.qty' => 'required|integer|min:1',
             'biaya_pengiriman' => 'required|numeric',
+            'kurir' => 'nullable|string',
+            'layanan_kurir' => 'nullable|string',
             'payment_method' => 'required|string|in:bca_va,bni_va,bri_va,mandiri_va,qris',
         ]);
 
@@ -295,6 +297,9 @@ class OrderController extends Controller
                     $order->status_pembayaran = 'paid';
                     $order->status_transaksi = 'diproses';
                     $order->paid_at = now();
+                    
+                    // Panggil Biteship Create Order
+                    \App\Http\Controllers\BiteshipController::createOrder($order);
                 }
             }
         } else if ($transaction == 'settlement') {
@@ -303,6 +308,9 @@ class OrderController extends Controller
             if (!$order->paid_at) {
                 $order->paid_at = now();
             }
+            
+            // Panggil Biteship Create Order
+            \App\Http\Controllers\BiteshipController::createOrder($order);
         } else if ($transaction == 'pending') {
             $order->status_pembayaran = 'pending';
         } else if (in_array($transaction, ['deny', 'expire', 'cancel'])) {
@@ -337,6 +345,9 @@ class OrderController extends Controller
             $order->status_transaksi = 'diproses';
             $order->paid_at = now();
             $order->save();
+            
+            // Panggil Biteship Create Order
+            \App\Http\Controllers\BiteshipController::createOrder($order);
         }
 
         return response()->json(['success' => true]);

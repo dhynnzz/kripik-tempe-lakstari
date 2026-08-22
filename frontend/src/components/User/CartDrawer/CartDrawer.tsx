@@ -56,6 +56,12 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
 
   const [paymentMethod, setPaymentMethod] = useState<'qris' | 'bca_va' | 'bni_va' | 'bri_va'>('qris');
 
+  // State ongkos kirim (Biteship)
+  const [shippingOptions, setShippingOptions] = useState<any[]>([]);
+  const [isLoadingRates, setIsLoadingRates] = useState(false);
+  const [selectedCourierId, setSelectedCourierId] = useState('');
+  const [ongkir, setOngkir] = useState(0);
+
   // Ambil data seluruh provinsi saat awal load
   useEffect(() => {
     regionService.getProvinces().then((data) => {
@@ -159,6 +165,14 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
 
     setIsSubmitting(true);
     
+    if (ongkir === 0) {
+      alert('Silakan cek dan pilih metode pengiriman terlebih dahulu.');
+      setIsSubmitting(false);
+      return;
+    }
+
+    const selectedOption = shippingOptions.find((opt: any) => `${opt.courier_name}-${opt.courier_service_name}` === selectedCourierId);
+    
     const items = cartItems.map(item => {
       const parsedId = item.productId || parseInt(item.id.replace(/\D/g, '')) || 1;
       return { id_product: parsedId, qty: item.quantity };
@@ -176,7 +190,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
       provinsi: formData.provinsi,
       kode_pos: formData.kode_pos,
       items: items,
-      biaya_pengiriman: 20000
+      biaya_pengiriman: ongkir,
+      kurir: selectedOption ? selectedOption.courier_name.toUpperCase() : '',
+      layanan_kurir: selectedOption ? selectedOption.courier_service_name : ''
     };
 
     try {
@@ -231,8 +247,43 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
     return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(number);
   };
 
+  const fetchShippingRates = async () => {
+    if (!formData.kode_pos || formData.kode_pos.length < 5) {
+      alert('Masukkan kode pos yang valid (5 digit) untuk mengecek ongkir.');
+      return;
+    }
+    setIsLoadingRates(true);
+    setShippingOptions([]);
+    setSelectedCourierId('');
+    setOngkir(0);
+
+    const items = cartItems.map(item => ({
+      name: item.productName,
+      price: item.priceRaw,
+      weight: parseInt(item.weight || '150'),
+      quantity: item.quantity
+    }));
+
+    try {
+      const res = await apiService.getShippingRates({
+        destination_postal_code: formData.kode_pos,
+        items
+      });
+      if (res && res.success && res.data && res.data.pricing) {
+        setShippingOptions(res.data.pricing);
+      } else {
+        const errMsg = res?.error?.error || res?.message || 'Pastikan kode pos benar atau area didukung.';
+        alert(`Gagal mengambil daftar ongkir: ${errMsg}`);
+      }
+    } catch (err: any) {
+      console.error(err);
+      alert(`Terjadi kesalahan saat memuat ongkir: ${err.message || ''}`);
+    } finally {
+      setIsLoadingRates(false);
+    }
+  };
+
   const totalItemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-  const ongkir = 20000;
   const totalBayar = totalPrice + ongkir;
 
   return (
@@ -508,6 +559,63 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                     </div>
                   </div>
 
+                  {/* CARD 1.5: Pilihan Pengiriman (Biteship) */}
+                  <div className="checkout-card-box shipping-method-card">
+                    <div className="card-box-header">
+                      <span className="box-icon-wrap truck-icon" style={{ background: '#E0E7FF' }}>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <circle cx="12" cy="12" r="10"></circle>
+                          <path d="M12 16v-4"></path>
+                          <path d="M12 8h.01"></path>
+                        </svg>
+                      </span>
+                      <h3>Pilihan Pengiriman</h3>
+                      <button 
+                        type="button" 
+                        onClick={fetchShippingRates}
+                        disabled={isLoadingRates || formData.kode_pos.length < 5}
+                        className="btn-cek-ongkir"
+                        style={{ marginLeft: 'auto', padding: '6px 12px', fontSize: '12px', background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
+                      >
+                        {isLoadingRates ? 'Memuat...' : 'Cek Ongkir'}
+                      </button>
+                    </div>
+
+                    <div className="box-form-body">
+                      {shippingOptions.length === 0 ? (
+                        <p style={{ fontSize: '13px', color: '#64748B', fontStyle: 'italic', margin: 0 }}>Silakan isi Kode Pos lalu klik tombol "Cek Ongkir" di atas untuk melihat pilihan pengiriman.</p>
+                      ) : (
+                        <div className="shipping-options-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          {shippingOptions.map((opt: any) => {
+                            const optId = `${opt.courier_name}-${opt.courier_service_name}`;
+                            return (
+                              <label key={optId} className={`shipping-opt-card ${selectedCourierId === optId ? 'selected' : ''}`} style={{ display: 'flex', alignItems: 'center', padding: '12px', border: selectedCourierId === optId ? '2px solid #D97706' : '1px solid #E2E8F0', borderRadius: '8px', cursor: 'pointer', background: selectedCourierId === optId ? '#FFFBEB' : '#FFF', transition: 'all 0.2s ease' }}>
+                                <input 
+                                  type="radio" 
+                                  name="shipping_service" 
+                                  value={optId}
+                                  checked={selectedCourierId === optId}
+                                  onChange={() => {
+                                    setSelectedCourierId(optId);
+                                    setOngkir(opt.price);
+                                  }}
+                                  style={{ marginRight: '12px', accentColor: '#D97706', width: '18px', height: '18px' }}
+                                />
+                                <div style={{ flex: 1 }}>
+                                  <div style={{ fontWeight: 600, color: '#1E293B', fontSize: '14px' }}>{opt.courier_name.toUpperCase()} - {opt.courier_service_name}</div>
+                                  <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>Estimasi {opt.duration}</div>
+                                </div>
+                                <div style={{ fontWeight: 700, color: '#D97706', fontSize: '15px' }}>
+                                  {formatRupiah(opt.price)}
+                                </div>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                   {/* CARD 2: Metode Pembayaran (Hanya QRIS, BCA, BNI, BRI) */}
                   <div className="checkout-card-box payment-method-card">
                     <div className="card-box-header">
@@ -691,13 +799,12 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
               </div>
             </div>
             
-            <h2 style={{ color: '#1E293B', marginBottom: '10px' }}>Pesanan Berhasil Dibuat!</h2>
+            <h2 style={{ color: '#1E293B', marginBottom: '10px' }}>Menunggu Pembayaran</h2>
             <p style={{ color: '#64748B', marginBottom: '30px' }}>Nomor Invoice: <strong>{successData.invoice}</strong></p>
 
             <div style={{ background: '#F8FAFC', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '30px', textAlign: 'left' }}>
               <p style={{ color: '#334155', lineHeight: '1.6' }}>
-                Terima kasih! Pesanan Anda telah berhasil tercatat di sistem kami.
-                Silakan simpan nomor invoice di atas untuk mengecek status pesanan Anda.
+                Pesanan Anda telah tercatat. Silakan segera selesaikan pembayaran sesuai instruksi (contoh: transfer VA atau scan QRIS) agar pesanan dapat segera kami proses dan kirimkan.
               </p>
             </div>
 

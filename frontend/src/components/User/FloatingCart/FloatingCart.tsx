@@ -3,7 +3,7 @@ import { useCart } from '../../../context/CartContext';
 import './FloatingCart.css';
 
 const FloatingCart: React.FC = () => {
-  const { totalItems, toggleCart } = useCart();
+  const { totalItems, toggleCart, isCartOpen } = useCart();
   const [position, setPosition] = useState<{ x: number; y: number } | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   
@@ -28,21 +28,21 @@ const FloatingCart: React.FC = () => {
   // Set default initial position on mount & handle window resizing
   useEffect(() => {
     const updateDefaultPosition = () => {
-      const btnSize = window.innerWidth <= 768 ? 60 : 70;
-      const margin = window.innerWidth <= 768 ? 20 : 36;
-      const defaultX = window.innerWidth - btnSize - margin;
-      const defaultY = window.innerHeight - btnSize - margin;
+      const btnSize = document.documentElement.clientWidth <= 768 ? 60 : 70;
+      const margin = document.documentElement.clientWidth <= 768 ? 20 : 36;
+      const defaultX = document.documentElement.clientWidth - btnSize - margin;
+      const defaultY = document.documentElement.clientHeight - btnSize - margin;
 
       setPosition((prev) => {
         if (!prev) {
           return { x: defaultX, y: defaultY };
         }
         // Clamp current position within new window bounds
-        const maxX = window.innerWidth - btnSize - 10;
-        const maxY = window.innerHeight - btnSize - 10;
+        const maxX = document.documentElement.clientWidth - btnSize - margin;
+        const maxY = document.documentElement.clientHeight - btnSize - margin;
         return {
-          x: Math.min(Math.max(prev.x, 10), maxX),
-          y: Math.min(Math.max(prev.y, 10), maxY),
+          x: Math.min(Math.max(prev.x, margin), maxX),
+          y: Math.min(Math.max(prev.y, margin), maxY),
         };
       });
     };
@@ -91,10 +91,12 @@ const FloatingCart: React.FC = () => {
       const btnWidth = buttonRef.current ? buttonRef.current.offsetWidth : 70;
       const btnHeight = buttonRef.current ? buttonRef.current.offsetHeight : 70;
       
-      const minX = 10;
-      const maxX = window.innerWidth - btnWidth - 10;
-      const minY = 10;
-      const maxY = window.innerHeight - btnHeight - 10;
+      const margin = document.documentElement.clientWidth <= 768 ? 20 : 36;
+      
+      const minX = margin;
+      const maxX = document.documentElement.clientWidth - btnWidth - margin;
+      const minY = margin;
+      const maxY = document.documentElement.clientHeight - btnHeight - margin;
 
       const newX = Math.min(Math.max(dragRef.current.initialPosX + dx, minX), maxX);
       const newY = Math.min(Math.max(dragRef.current.initialPosY + dy, minY), maxY);
@@ -121,6 +123,19 @@ const FloatingCart: React.FC = () => {
     // Only trigger cart drawer when it was a click/tap without dragging
     if (!wasDragging) {
       toggleCart();
+    } else if (position) {
+      // Magnetic snap effect: geser ke sisi kiri atau kanan layar terdekat
+      const btnWidth = buttonRef.current ? buttonRef.current.offsetWidth : 70;
+      const margin = document.documentElement.clientWidth <= 768 ? 20 : 36;
+      const minX = margin;
+      const maxX = document.documentElement.clientWidth - btnWidth - margin;
+      
+      const centerOfScreen = document.documentElement.clientWidth / 2;
+      const btnCenter = position.x + (btnWidth / 2);
+      
+      const snapX = btnCenter < centerOfScreen ? minX : maxX;
+      
+      setPosition({ x: snapX, y: position.y });
     }
   };
 
@@ -137,8 +152,11 @@ const FloatingCart: React.FC = () => {
         top: `${position.y}px`,
         bottom: 'auto',
         right: 'auto',
+        display: isCartOpen ? 'none' : undefined,
       }
-    : {};
+    : {
+        display: isCartOpen ? 'none' : undefined,
+      };
 
   return (
     <button
