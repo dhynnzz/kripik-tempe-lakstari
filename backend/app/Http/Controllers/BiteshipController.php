@@ -130,6 +130,8 @@ class BiteshipController extends Controller
                 'courier_company' => strtolower($pengiriman->kurir),
                 'courier_type' => strtolower($pengiriman->layanan_kurir),
                 'delivery_type' => 'later',
+                'delivery_date' => date('Y-m-d', strtotime('+1 day')), // Besok
+                'delivery_time' => '09:00',
                 'items' => $items,
             ];
 

@@ -5,7 +5,6 @@
  * Semua pemanggilan HTTP Request (fetch) ke server backend berpusat di sini.
  */
 
-import type { ProductItem } from '../context/ProductContext';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
@@ -333,7 +332,7 @@ export const apiService = {
 
   getOrders: async (page: number = 1): Promise<any> => {
     try {
-      const response = await apiFetch(`/admin/orders`, {
+      const response = await apiFetch(`/admin/orders?page=${page}`, {
         
       });
       const json = await response.json();
@@ -363,7 +362,7 @@ export const apiService = {
 
   getCustomers: async (page: number = 1): Promise<any> => {
     try {
-      const response = await apiFetch(`/admin/customers`, {
+      const response = await apiFetch(`/admin/customers?page=${page}`, {
         
       });
       const json = await response.json();
@@ -393,7 +392,7 @@ export const apiService = {
 
   getShipments: async (page: number = 1): Promise<any> => {
     try {
-      const response = await apiFetch(`/admin/shipments`, {
+      const response = await apiFetch(`/admin/shipments?page=${page}`, {
         
       });
       const json = await response.json();

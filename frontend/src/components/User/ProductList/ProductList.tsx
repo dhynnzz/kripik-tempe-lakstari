@@ -49,7 +49,7 @@ const ProductList = () => {
       setAddedCategories(prev => ({ ...prev, [categoryName]: true }));
       setTimeout(() => {
         setAddedCategories(prev => ({ ...prev, [categoryName]: false }));
-      }, 1500); // Reset animation after 1.5 seconds
+      }, 700); // Reset animation after 0.7 seconds
     }
   };
 

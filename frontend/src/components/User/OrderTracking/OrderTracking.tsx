@@ -116,6 +116,32 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
                   <span>Metode Pembayaran</span>
                   <strong>{orderData.payment_type ? orderData.payment_type.replace('_', ' ').toUpperCase() : '-'}</strong>
                 </div>
+                <div className="detail-row">
+                  <span>Status Pembayaran</span>
+                  <strong>
+                    {orderData.status_pembayaran === 'paid' ? (
+                      <span style={{ color: '#16A34A' }}>LUNAS</span>
+                    ) : orderData.status_pembayaran === 'pending' ? (
+                      <span style={{ color: '#D97706' }}>BELUM DIBAYAR</span>
+                    ) : (
+                      <span style={{ color: '#DC2626' }}>{orderData.status_pembayaran?.toUpperCase()}</span>
+                    )}
+                  </strong>
+                </div>
+                {orderData.pengiriman && (
+                  <>
+                    <div className="detail-row">
+                      <span>Status Pengiriman</span>
+                      <strong>{orderData.pengiriman.status_pengiriman?.replace('_', ' ').toUpperCase() || '-'}</strong>
+                    </div>
+                    {orderData.pengiriman.nomor_resi && (
+                      <div className="detail-row">
+                        <span>Nomor Resi</span>
+                        <strong>{orderData.pengiriman.nomor_resi}</strong>
+                      </div>
+                    )}
+                  </>
+                )}
                 
                 <div className="items-list">
                   <h4>Ringkasan Pesanan</h4>
@@ -123,7 +149,7 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
                     {orderData.details?.map((item: any) => (
                       <li key={item.id_detail}>
                         <span>{item.product?.nama_product}</span>
-                        <strong>x{item.qty}</strong>
+                        <strong>x{item.jumlah || item.qty || 1}</strong>
                       </li>
                     ))}
                   </ul>
@@ -131,7 +157,7 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
 
                 <div className="detail-row total-row">
                   <span>Total Tagihan</span>
-                  <strong>Rp {orderData.total_pembayaran?.toLocaleString('id-ID')}</strong>
+                  <strong>Rp {Number(orderData.total_pembayaran || 0).toLocaleString('id-ID')}</strong>
                 </div>
 
                 {orderData.status_transaksi === 'menunggu_pembayaran' && (
