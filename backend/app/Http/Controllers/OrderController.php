@@ -102,7 +102,8 @@ class OrderController extends Controller
 
             // 4. Buat Detail Transaksi & Kurangi Stok
             foreach ($request->items as $item) {
-                $product = Product::findOrFail($item['id_product']);
+                // Lock row produk agar tidak ada transaksi lain yang mengubah stok di detik yang sama
+                $product = Product::where('id_product', $item['id_product'])->lockForUpdate()->firstOrFail();
                 
                 // Cek Stok
                 if ($product->stok_product < $item['qty']) {
@@ -232,7 +233,66 @@ class OrderController extends Controller
     // [ADMIN] Ambil Semua Pesanan
     public function index()
     {
-        $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman'])->orderBy('tanggal_transaksi', 'desc')->get();
+        // Konfigurasi Midtrans
+        \Midtrans\Config::$serverKey = config('midtrans.server_key');
+        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+
+        $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman'])->orderBy('tanggal_transaksi', 'desc')->paginate(10);
+
+        // Auto-Sync khusus untuk localhost/testing dimana webhook tidak tertangkap
+        foreach ($orders as $order) {
+            // Hanya cek yang masih pending/belum lunas
+            if (in_array($order->status_pembayaran, ['pending', 'failed']) || $order->status_transaksi === 'menunggu_pembayaran') {
+                try {
+                    $status = \Midtrans\Transaction::status($order->nomor_invoice);
+                    
+                    if ($status) {
+                        $order->midtrans_transaction_status = $status->transaction_status;
+                        $order->midtrans_payment_type = $status->payment_type ?? $order->payment_type;
+                        if (isset($status->transaction_id)) {
+                            $order->midtrans_transaction_id = $status->transaction_id;
+                        }
+
+                        $transaction = $status->transaction_status;
+
+                        if ($transaction == 'capture' || $transaction == 'settlement') {
+                            $order->status_pembayaran = 'paid';
+                            $order->status_transaksi = 'diproses';
+                            if (!$order->paid_at) {
+                                $order->paid_at = now();
+                            }
+                            // Panggil Biteship
+                            \App\Http\Controllers\BiteshipController::createOrder($order);
+                        } else if ($transaction == 'pending') {
+                            $order->status_pembayaran = 'pending';
+                        } else if (in_array($transaction, ['deny', 'expire', 'cancel'])) {
+                            $order->status_pembayaran = $transaction == 'deny' ? 'failed' : ($transaction == 'expire' ? 'expired' : 'cancelled');
+                            
+                            if ($order->status_transaksi !== 'dibatalkan') {
+                                $order->status_transaksi = 'dibatalkan';
+                                // Kembalikan stok
+                                foreach ($order->details as $detail) {
+                                    $product = \App\Models\Product::find($detail->id_product);
+                                    if ($product) {
+                                        $product->increment('stok_product', $detail->jumlah);
+                                        if ($product->status_product == 'habis') {
+                                            $product->update(['status_product' => 'aktif']);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        $order->save();
+                    }
+                } catch (\Exception $e) {
+                    // Abaikan jika order tidak ditemukan di midtrans (mungkin data mock)
+                }
+            }
+        }
+
+        // Ambil ulang data agar relasi terbaru (setelah update status) terkirim
+        $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman'])->orderBy('tanggal_transaksi', 'desc')->paginate(10);
+
         return response()->json(['success' => true, 'data' => $orders]);
     }
 

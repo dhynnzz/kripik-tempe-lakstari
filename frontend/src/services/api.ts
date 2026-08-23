@@ -7,23 +7,50 @@
 
 import type { ProductItem } from '../context/ProductContext';
 
-const API_BASE_URL = 'http://localhost:8000/api';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
 
-// Token dipanggil secara dinamis dari Session Storage saat Admin berhasil login di Server
-const getAdminToken = () => {
-  const token = sessionStorage.getItem('admin_token') || '';
-  return `Bearer ${token}`;
+const getCsrfToken = () => {
+  const match = document.cookie.match(new RegExp('(^| )XSRF-TOKEN=([^;]+)'));
+  if (match) return decodeURIComponent(match[2]);
+  return '';
+};
+
+const apiFetch = async (url: string, options: RequestInit = {}) => {
+  const headers = new Headers(options.headers || {});
+  headers.set('Accept', 'application/json');
+  
+  if (!options.method || options.method === 'GET') {
+    headers.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    headers.set('Pragma', 'no-cache');
+    headers.set('Expires', '0');
+  }
+  
+  if (options.method && options.method !== 'GET' && options.method !== 'HEAD') {
+    headers.set('X-XSRF-TOKEN', getCsrfToken());
+  }
+
+  // Khusus sanctum csrf cookie, jalankan fetch biasa ke root url
+  const baseUrl = url.startsWith('/sanctum') ? API_BASE_URL.replace('/api', '') : API_BASE_URL;
+
+  return fetch(`${baseUrl}${url}`, {
+    ...options,
+    credentials: 'include',
+    headers,
+  });
 };
 
 export const apiService = {
   // 0. Autentikasi Login Admin ke Laravel Backend
-  loginAdmin: async (email: string, password: string): Promise<{ success: boolean; message: string; token?: string; user?: any }> => {
+  loginAdmin: async (email: string, password: string): Promise<{ success: boolean; message: string; user?: any }> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/login`, {
+      // 1. Ambil CSRF Cookie dulu
+      await apiFetch('/sanctum/csrf-cookie', { method: 'GET' });
+
+      // 2. Lakukan Login SPA
+      const response = await apiFetch('/admin/login', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ email, password })
       });
@@ -32,8 +59,7 @@ export const apiService = {
         throw new Error(json.message || 'Login gagal, pastikan kredensial benar.');
       }
 
-      if (json.success && json.token) {
-        sessionStorage.setItem('admin_token', json.token);
+      if (json.success && json.user) {
         sessionStorage.setItem('admin_user', JSON.stringify(json.user));
       }
       return json;
@@ -46,26 +72,21 @@ export const apiService = {
   // Logout Admin
   logoutAdmin: async (): Promise<boolean> => {
     try {
-      await fetch(`${API_BASE_URL}/admin/logout`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': getAdminToken()
-        }
+      await apiFetch('/admin/logout', {
+        method: 'POST'
       });
     } catch (err) {
       console.warn('Logout server bypass');
     } finally {
-      sessionStorage.removeItem('admin_token');
       sessionStorage.removeItem('admin_user');
     }
     return true;
   },
 
   // 1. Ambil Semua Produk & Stok Real-Time dari Server Backend
-  getProducts: async (): Promise<ProductItem[]> => {
+  getProducts: async (page: number = 1): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/products`);
+      const response = await apiFetch(`/products?page=${page}`);
       if (!response.ok) throw new Error('Gagal mengambil data dari server');
       const json = await response.json();
       return json; // Backend returns the array directly
@@ -78,12 +99,10 @@ export const apiService = {
   // 2. Admin Mengubah Stok Produk ke Laravel Backend (Aman & Terverifikasi Sanctum)
   updateProductStock: async (id: number, stock: number): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/products/${id}/stock`, {
+      const response = await apiFetch(`/admin/products/${id}/stock`, {
         method: 'PUT',
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': getAdminToken()
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({ stock })
       });
@@ -102,6 +121,7 @@ export const apiService = {
       const payload = {
         id_category: product.category === 'Lainnya' ? 2 : 1, // fallback default jika tidak ada
         nama_product: product.name,
+        varian_rasa: product.flavor,
         deskripsi_product: product.desc || 'Deskripsi Produk',
         harga_product: product.priceNum,
         stok_product: product.stock,
@@ -115,12 +135,10 @@ export const apiService = {
         payload.id_category = product.categoryId;
       }
 
-      const response = await fetch(`${API_BASE_URL}/admin/products`, {
+      const response = await apiFetch(`/admin/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': getAdminToken()
         },
         body: JSON.stringify(payload)
       });
@@ -135,12 +153,9 @@ export const apiService = {
   // 4. Admin Menghapus Produk dari Laravel Backend
   deleteProduct: async (id: number): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
+      const response = await apiFetch(`/admin/products/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': getAdminToken()
-        }
+        
       });
       const json = await response.json();
       return json.success;
@@ -158,6 +173,8 @@ export const apiService = {
       if (product.id_category) payload.id_category = product.id_category;
       if (product.name !== undefined) payload.nama_product = product.name;
       if (product.nama_product !== undefined) payload.nama_product = product.nama_product;
+      if (product.flavor !== undefined) payload.varian_rasa = product.flavor;
+      if (product.varian_rasa !== undefined) payload.varian_rasa = product.varian_rasa;
       if (product.desc !== undefined) payload.deskripsi_product = product.desc;
       if (product.deskripsi_product !== undefined) payload.deskripsi_product = product.deskripsi_product;
       if (product.priceNum !== undefined) payload.harga_product = product.priceNum;
@@ -171,12 +188,10 @@ export const apiService = {
       if (product.status !== undefined) payload.status_product = product.status;
       if (product.status_product !== undefined) payload.status_product = product.status_product;
 
-      const response = await fetch(`${API_BASE_URL}/admin/products/${id}`, {
+      const response = await apiFetch(`/admin/products/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': getAdminToken()
         },
         body: JSON.stringify(payload)
       });
@@ -192,12 +207,10 @@ export const apiService = {
 
   addCategory: async (nama_category: string): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/categories`, {
+      const response = await apiFetch(`/admin/categories`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': getAdminToken()
         },
         body: JSON.stringify({ nama_category, status_category: 'aktif' })
       });
@@ -211,12 +224,10 @@ export const apiService = {
 
   updateCategory: async (id: number, data: any): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/categories/${id}`, {
+      const response = await apiFetch(`/admin/categories/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': getAdminToken()
         },
         body: JSON.stringify(data)
       });
@@ -230,12 +241,9 @@ export const apiService = {
 
   deleteCategory: async (id: number): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/categories/${id}`, {
+      const response = await apiFetch(`/admin/categories/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Accept': 'application/json',
-          'Authorization': getAdminToken()
-        }
+        
       });
       const json = await response.json();
       return json.success;
@@ -246,6 +254,22 @@ export const apiService = {
   },
 
   // ================= ORDER / CHECKOUT API =================
+
+  paymentSuccessFallback: async (orderId: string): Promise<any> => {
+    try {
+      const response = await apiFetch(`/payment/success-fallback`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ order_id: orderId })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error fallback:', error);
+      return { success: false };
+    }
+  },
 
   checkout: async (orderData: {
     nama_pelanggan: string;
@@ -261,11 +285,10 @@ export const apiService = {
     payment_method: string;
   }): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/checkout`, {
+      const response = await apiFetch(`/checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
         },
         body: JSON.stringify(orderData)
       });
@@ -278,11 +301,10 @@ export const apiService = {
 
   getShippingRates: async (payload: { destination_postal_code: string, items: any[] }) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/shipping-rates`, {
+      const response = await apiFetch(`/shipping-rates`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
         },
         body: JSON.stringify(payload)
       });
@@ -295,11 +317,10 @@ export const apiService = {
 
   trackOrder: async (nomor_invoice: string, no_hp: string): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/track-order`, {
+      const response = await apiFetch(`/track-order`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
         },
         body: JSON.stringify({ nomor_invoice, no_hp })
       });
@@ -310,10 +331,10 @@ export const apiService = {
     }
   },
 
-  getOrders: async (): Promise<any[]> => {
+  getOrders: async (page: number = 1): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/orders`, {
-        headers: { 'Accept': 'application/json', 'Authorization': getAdminToken() }
+      const response = await apiFetch(`/admin/orders`, {
+        
       });
       const json = await response.json();
       return json.success ? json.data : [];
@@ -325,9 +346,9 @@ export const apiService = {
 
   updateOrderStatus: async (id: number, data: any): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/orders/${id}`, {
+      const response = await apiFetch(`/admin/orders/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': getAdminToken() },
+        headers: { 'Content-Type': 'application/json', },
         body: JSON.stringify(data)
       });
       const json = await response.json();
@@ -340,10 +361,10 @@ export const apiService = {
 
   // ================= CUSTOMERS API =================
 
-  getCustomers: async (): Promise<any[]> => {
+  getCustomers: async (page: number = 1): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/customers`, {
-        headers: { 'Accept': 'application/json', 'Authorization': getAdminToken() }
+      const response = await apiFetch(`/admin/customers`, {
+        
       });
       const json = await response.json();
       return json.success ? json.data : [];
@@ -355,9 +376,9 @@ export const apiService = {
 
   updateCustomerStatus: async (id: number, status_pelanggan: string): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/customers/${id}`, {
+      const response = await apiFetch(`/admin/customers/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': getAdminToken() },
+        headers: { 'Content-Type': 'application/json', },
         body: JSON.stringify({ status_pelanggan })
       });
       const json = await response.json();
@@ -370,10 +391,10 @@ export const apiService = {
 
   // ================= SHIPMENTS API =================
 
-  getShipments: async (): Promise<any[]> => {
+  getShipments: async (page: number = 1): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/shipments`, {
-        headers: { 'Accept': 'application/json', 'Authorization': getAdminToken() }
+      const response = await apiFetch(`/admin/shipments`, {
+        
       });
       const json = await response.json();
       return json.success ? json.data : [];
@@ -385,9 +406,9 @@ export const apiService = {
 
   updateShipment: async (id: number, data: any): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/shipments/${id}`, {
+      const response = await apiFetch(`/admin/shipments/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': getAdminToken() },
+        headers: { 'Content-Type': 'application/json', },
         body: JSON.stringify(data)
       });
       const json = await response.json();
@@ -402,8 +423,8 @@ export const apiService = {
 
   getDashboardStats: async (): Promise<any> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/reports/dashboard`, {
-        headers: { 'Accept': 'application/json', 'Authorization': getAdminToken() }
+      const response = await apiFetch(`/admin/reports/dashboard`, {
+        
       });
       const json = await response.json();
       return json.success ? json.data : null;
@@ -417,8 +438,8 @@ export const apiService = {
 
   getAdmins: async (): Promise<any[]> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/accounts`, {
-        headers: { 'Accept': 'application/json', 'Authorization': getAdminToken() }
+      const response = await apiFetch(`/admin/accounts`, {
+        
       });
       const json = await response.json();
       return json.success ? json.data : [];
@@ -430,9 +451,9 @@ export const apiService = {
 
   addAdminAccount: async (data: any): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/accounts`, {
+      const response = await apiFetch(`/admin/accounts`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': getAdminToken() },
+        headers: { 'Content-Type': 'application/json', },
         body: JSON.stringify(data)
       });
       const json = await response.json();
@@ -445,9 +466,9 @@ export const apiService = {
 
   updateAdminStatus: async (id: number, status_admin: string): Promise<boolean> => {
     try {
-      const response = await fetch(`${API_BASE_URL}/admin/accounts/${id}`, {
+      const response = await apiFetch(`/admin/accounts/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json', 'Authorization': getAdminToken() },
+        headers: { 'Content-Type': 'application/json', },
         body: JSON.stringify({ status_admin })
       });
       const json = await response.json();

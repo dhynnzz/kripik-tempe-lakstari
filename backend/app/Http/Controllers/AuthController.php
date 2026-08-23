@@ -44,12 +44,11 @@ class AuthController extends Controller
         $admin->last_login = now();
         $admin->save();
 
-        $token = $admin->createToken('admin_token')->plainTextToken;
+        \Illuminate\Support\Facades\Auth::guard('admin')->login($admin);
 
         return response()->json([
             'success' => true,
             'message' => 'Login Admin Berhasil!',
-            'token' => $token,
             'user' => [
                 'id' => $admin->id_admin,
                 'name' => $admin->nama_admin,
@@ -60,7 +59,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        \Illuminate\Support\Facades\Auth::guard('admin')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
 
         return response()->json([
             'success' => true,

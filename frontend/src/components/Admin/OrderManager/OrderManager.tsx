@@ -8,7 +8,7 @@ const OrderManager: React.FC = () => {
 
   const fetchOrders = async () => {
     const data = await apiService.getOrders();
-    setOrders(data);
+    setOrders(data.data ? data.data : data);
   };
 
   useEffect(() => {

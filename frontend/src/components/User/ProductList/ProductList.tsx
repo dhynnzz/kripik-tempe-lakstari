@@ -75,7 +75,7 @@ const ProductList = () => {
         <h2>Katalog Produk</h2>
       </div>
 
-      <section className="products-section container" style={{ position: 'relative', overflow: 'hidden' }}>
+      <section className="products-section container" style={{ position: 'relative' }}>
         {/* Background Spiral Decorations for Product List (Ukuran Ramping & Tersebar Rapi) */}
         <Spiral style={{ top: '2%', left: '1%', width: '85px', transform: 'rotate(25deg)' }} />
         <Spiral style={{ top: '6%', left: '30%', width: '70px', transform: 'rotate(75deg)' }} />
@@ -155,7 +155,7 @@ const ProductList = () => {
                           <CustomSelect
                             options={items.map(p => ({
                               value: p.id as number,
-                              label: p.name
+                              label: p.flavor || p.name
                             }))}
                             value={activeItem.id as number}
                             onChange={(val) => handleVariantChange(categoryName, val)}
@@ -164,7 +164,7 @@ const ProductList = () => {
                           <CustomSelect
                             options={[{
                               value: activeItem.id as number,
-                              label: activeItem.name
+                              label: activeItem.flavor || activeItem.name
                             }]}
                             value={activeItem.id as number}
                             onChange={() => { }}

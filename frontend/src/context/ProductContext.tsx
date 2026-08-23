@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react';
 import { apiService } from '../services/api';
 
 export interface ProductItem {
@@ -43,7 +43,19 @@ const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const normalizeProductImage = (img?: string): string => {
   if (!img || img.startsWith('blob:')) return '/images/products/flavor-original.png';
+  
+  // Fix for corrupted database entries that prepended /images/products/ to /storage/
+  if (img.startsWith('/images/products/storage/')) {
+    img = img.replace('/images/products/storage/', '/storage/');
+  }
+
   if (img.startsWith('data:') || img.startsWith('http://') || img.startsWith('https://')) return img;
+  
+  if (img.startsWith('/storage/')) {
+    const baseUrl = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', '') : 'http://localhost:8000';
+    return `${baseUrl}${img}`;
+  }
+
   if (img.startsWith('/images/')) return img;
 
   const filename = img.replace(/^\//, '').toLowerCase();
@@ -68,7 +80,8 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     try {
       const rawProducts = await apiService.getProducts();
       // Map data backend ke format frontend
-      const formatted = rawProducts.map((p: any) => {
+      const productsArray = rawProducts.data ? rawProducts.data : rawProducts;
+      const formatted = productsArray.map((p: any) => {
         const stock = parseInt(p.stok_product, 10) || 0;
         let computedStatus: 'aktif' | 'nonaktif' | 'habis' = p.status_product || 'aktif';
         if (stock === 0) {
@@ -82,7 +95,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
           name: p.nama_product,
           category: p.category ? p.category.nama_category : 'Lainnya',
           categoryId: p.id_category,
-          flavor: p.nama_product,
+          flavor: p.varian_rasa || '',
           priceNum: parseFloat(p.harga_product),
           priceStr: `Rp ${parseFloat(p.harga_product).toLocaleString('id-ID')}`,
           stock: stock,
@@ -97,19 +110,30 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
       console.error('Gagal mengambil data produk:', error);
     }
   };
+  const lastFetchTime = useRef<number>(0);
+
+  const fetchProductsThrottled = () => {
+    const now = Date.now();
+    // Jika fetch terakhir kurang dari 10 detik yang lalu, jangan fetch lagi
+    if (now - lastFetchTime.current > 10000) {
+      lastFetchTime.current = now;
+      fetchProducts();
+    }
+  };
 
   useEffect(() => {
     fetchProducts();
+    lastFetchTime.current = Date.now();
 
     // Auto-sync data ketika pengguna kembali membuka tab ini (Refresh on Focus)
     const handleVisibilityChange = () => {
       if (document.visibilityState === 'visible') {
-        fetchProducts();
+        fetchProductsThrottled();
       }
     };
     
     const handleFocus = () => {
-      fetchProducts();
+      fetchProductsThrottled();
     };
 
     document.addEventListener('visibilitychange', handleVisibilityChange);

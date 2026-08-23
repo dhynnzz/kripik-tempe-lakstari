@@ -15,6 +15,8 @@
 
 .products-section {
   margin-bottom: 80px;
+  position: relative;
+  z-index: 10;
 }
 
 .products-grid-2x2 {
@@ -42,6 +44,12 @@
   border-radius: 20px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
   position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, z-index 0s;
+}
+
+.product-card-large:hover,
+.product-card-large:focus-within {
+  z-index: 20;
 }
 
 .product-image-placeholder-large {

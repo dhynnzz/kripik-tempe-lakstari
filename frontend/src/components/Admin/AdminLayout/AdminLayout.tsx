@@ -94,7 +94,8 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
       style={{
         display: 'flex',
         width: '100%',
-        minHeight: '100vh',
+        height: '100vh',
+        overflow: 'hidden',
         background: isDark ? '#090D16' : '#F1F5F9',
       }}
     >
@@ -108,7 +109,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
       />
 
       {/* Main Content Area */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0, overflowY: 'auto' }}>
 
         {/* Top Navbar — 21st.dev style */}
         <header className="admin-topbar" style={{

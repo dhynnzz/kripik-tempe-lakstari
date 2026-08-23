@@ -9,7 +9,7 @@ const ShipmentManager: React.FC = () => {
 
   const fetchShipments = async () => {
     const data = await apiService.getShipments();
-    setShipments(data);
+    setShipments(data.data ? data.data : data);
   };
 
   useEffect(() => {

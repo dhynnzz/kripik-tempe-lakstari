@@ -226,7 +226,10 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
 
       if (res && res.success && res.snap_token) {
         window.snap.pay(res.snap_token, {
-          onSuccess: function(_result: any) {
+          onSuccess: async function(_result: any) {
+            // Beritahu backend (fallback localhost karena webhook tak terjangkau)
+            await apiService.paymentSuccessFallback(res.invoice);
+
             // Simpan ke local storage
             localStorage.setItem('last_invoice', res.invoice);
             setSuccessData({

@@ -55,8 +55,8 @@ const ProductManager: React.FC = () => {
     e.preventDefault();
     if (!newProductName.trim()) return;
 
-    const priceNum = parseInt(newProductPrice, 10) || 15000;
-    const stockNum = parseInt(newProductStock, 10) || 0;
+    const priceNum = parseInt(newProductPrice.replace(/[^0-9]/g, ''), 10) || 15000;
+    const stockNum = parseInt(newProductStock.replace(/[^0-9]/g, ''), 10) || 0;
     const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(priceNum);
 
     const selectedCat = categories.find(c => c.name === newProductCategory);
@@ -66,7 +66,7 @@ const ProductManager: React.FC = () => {
       name: newProductName,
       category: newProductCategory,
       categoryId: catId,
-      flavor: newProductFlavor || newProductName,
+      flavor: newProductFlavor,
       price: formattedPrice,
       priceNum: priceNum,
       priceStr: formattedPrice,
