@@ -22,7 +22,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
   const [agreedTerms, setAgreedTerms] = useState(true);
 
   // Data pesanan setelah berhasil checkout
-  const [successData, setSuccessData] = useState<{invoice: string, payment_type: string, payment_code: string} | null>(null);
+  const [successData, setSuccessData] = useState<{invoice: string, payment_type: string, payment_code: string, status?: 'success' | 'pending'} | null>(null);
 
   // State data wilayah
   const [provinces, setProvinces] = useState<RegionItem[]>([]);
@@ -212,8 +212,8 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
       kode_pos: formData.kode_pos,
       items: items,
       biaya_pengiriman: ongkir,
-      kurir: selectedOption ? selectedOption.courier_name.toUpperCase() : '',
-      layanan_kurir: selectedOption ? selectedOption.courier_service_name : ''
+      kurir: selectedOption ? (selectedOption.company || selectedOption.courier_name).toUpperCase() : '',
+      layanan_kurir: selectedOption ? (selectedOption.type || selectedOption.courier_service_name) : ''
     };
 
     try {
@@ -235,7 +235,8 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
             setSuccessData({
               invoice: res.invoice,
               payment_type: res.payment_type || paymentMethod,
-              payment_code: ''
+              payment_code: '',
+              status: 'success'
             });
             clearCart();
             setCheckoutStep(2);
@@ -245,7 +246,8 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
             setSuccessData({
               invoice: res.invoice,
               payment_type: res.payment_type || paymentMethod,
-              payment_code: ''
+              payment_code: '',
+              status: 'pending'
             });
             clearCart();
             setCheckoutStep(2);
@@ -823,12 +825,16 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
               </div>
             </div>
             
-            <h2 style={{ color: '#1E293B', marginBottom: '10px' }}>Menunggu Pembayaran</h2>
+            <h2 style={{ color: '#1E293B', marginBottom: '10px' }}>
+              {successData.status === 'success' ? 'Pembayaran Berhasil' : 'Menunggu Pembayaran'}
+            </h2>
             <p style={{ color: '#64748B', marginBottom: '30px' }}>Nomor Invoice: <strong>{successData.invoice}</strong></p>
 
             <div style={{ background: '#F8FAFC', padding: '20px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '30px', textAlign: 'left' }}>
               <p style={{ color: '#334155', lineHeight: '1.6' }}>
-                Pesanan Anda telah tercatat. Silakan segera selesaikan pembayaran sesuai instruksi (contoh: transfer VA atau scan QRIS) agar pesanan dapat segera kami proses dan kirimkan.
+                {successData.status === 'success'
+                  ? 'Pembayaran Anda telah berhasil kami terima. Pesanan Anda akan segera diproses dan dikirimkan oleh pihak toko.'
+                  : 'Pesanan Anda telah tercatat. Silakan segera selesaikan pembayaran sesuai instruksi (contoh: transfer VA atau scan QRIS) agar pesanan dapat segera kami proses dan kirimkan.'}
               </p>
             </div>
 

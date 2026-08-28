@@ -131,10 +131,36 @@ class OrderController extends Controller
                 }
             }
 
+            // [SECURITY] Validasi Biaya Pengiriman (Ongkir Tampering Fix)
+            $validatedShippingCost = (float) $request->biaya_pengiriman;
+            $itemsForValidation = DetailTransaksi::where('id_transaksi', $transaksi->id_transaksi)->get();
+            $realWeight = 0;
+            foreach($itemsForValidation as $it) {
+                $realWeight += ($it->berat_product ?? 150) * $it->jumlah;
+            }
+            if ($realWeight == 0) $realWeight = 1000;
+            
+            // Panggil API Biteship untuk validasi jika kurir dipilih
+            if ($request->kurir && $request->layanan_kurir) {
+                $validationResult = \App\Http\Controllers\BiteshipController::validateShippingCost(
+                    $request->kode_pos,
+                    $request->kurir,
+                    $request->layanan_kurir,
+                    $validatedShippingCost,
+                    $itemsForValidation
+                );
+                
+                // Jika hasilnya adalah angka, berarti ongkir dimanipulasi, timpa dengan ongkir asli dari server
+                if (is_numeric($validationResult) && $validationResult !== true) {
+                    $validatedShippingCost = $validationResult;
+                }
+            }
+
             // Update Total Transaksi
             $transaksi->update([
                 'subtotal' => $subtotal,
-                'total_pembayaran' => $subtotal + $request->biaya_pengiriman,
+                'biaya_pengiriman' => $validatedShippingCost,
+                'total_pembayaran' => $subtotal + $validatedShippingCost,
             ]);
 
             // 5. Buat Pengiriman (Draft)
@@ -145,8 +171,8 @@ class OrderController extends Controller
                 'kurir' => $request->kurir ?? 'JNE',
                 'layanan_kurir' => $request->layanan_kurir ?? 'Reguler',
                 'status_pengiriman' => 'menunggu_pickup',
-                'biaya_pengiriman' => $request->biaya_pengiriman,
-                'berat_total' => 1000 // Simulasi 1kg
+                'biaya_pengiriman' => $validatedShippingCost,
+                'berat_total' => $realWeight
             ]);
 
             DB::commit();
@@ -184,7 +210,7 @@ class OrderController extends Controller
             } elseif ($request->payment_method === 'mandiri_va') {
                 $enabledPayments = ['echannel'];
             } elseif ($request->payment_method === 'qris') {
-                $enabledPayments = ['qris'];
+                $enabledPayments = ['gopay', 'shopeepay', 'other_qris'];
             }
 
             $params = [
@@ -194,17 +220,20 @@ class OrderController extends Controller
                 ],
                 'customer_details' => [
                     'first_name' => $pelanggan->nama_pelanggan,
-                    'email' => $pelanggan->email ?: 'customer@example.com', // fallback
+                    'email' => $pelanggan->email ?: 'customer@example.com',
                     'phone' => $pelanggan->no_hp,
                 ],
                 'item_details' => $item_details,
-                'enabled_payments' => $enabledPayments,
                 'callbacks' => [
                     'finish' => env('FRONTEND_URL', 'http://localhost:5173'),
                     'error' => env('FRONTEND_URL', 'http://localhost:5173'),
                     'unfinish' => env('FRONTEND_URL', 'http://localhost:5173')
                 ]
             ];
+
+            if (!empty($enabledPayments)) {
+                $params['enabled_payments'] = $enabledPayments;
+            }
 
             $snapToken = \Midtrans\Snap::getSnapToken($params);
 
@@ -237,7 +266,7 @@ class OrderController extends Controller
         \Midtrans\Config::$serverKey = config('midtrans.server_key');
         \Midtrans\Config::$isProduction = config('midtrans.is_production');
 
-        $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman'])->orderBy('tanggal_transaksi', 'desc')->paginate(10);
+        $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman', 'alamat'])->orderBy('tanggal_transaksi', 'desc')->paginate(10);
 
         // Auto-Sync khusus untuk localhost/testing dimana webhook tidak tertangkap
         foreach ($orders as $order) {
@@ -291,7 +320,7 @@ class OrderController extends Controller
         }
 
         // Ambil ulang data agar relasi terbaru (setelah update status) terkirim
-        $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman'])->orderBy('tanggal_transaksi', 'desc')->paginate(10);
+        $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman', 'alamat'])->orderBy('tanggal_transaksi', 'desc')->paginate(10);
 
         return response()->json(['success' => true, 'data' => $orders]);
     }
@@ -401,6 +430,24 @@ class OrderController extends Controller
         $order = Transaksi::where('nomor_invoice', $request->order_id)->first();
         
         if ($order && $order->status_transaksi == 'menunggu_pembayaran') {
+            // Coba ambil status asli dari Midtrans agar data lengkap
+            try {
+                \Midtrans\Config::$serverKey = config('midtrans.server_key');
+                \Midtrans\Config::$isProduction = config('midtrans.is_production');
+                $status = \Midtrans\Transaction::status($order->nomor_invoice);
+                
+                if ($status) {
+                    $order->midtrans_transaction_status = $status->transaction_status;
+                    $order->midtrans_payment_type = $status->payment_type ?? $order->payment_type;
+                    if (isset($status->transaction_id)) {
+                        $order->midtrans_transaction_id = $status->transaction_id;
+                    }
+                }
+            } catch (\Exception $e) {
+                // Abaikan jika error, tetap lanjut update status lokal
+                $order->midtrans_transaction_status = 'settlement'; // asumsikan sukses
+            }
+
             $order->status_pembayaran = 'paid';
             $order->status_transaksi = 'diproses';
             $order->paid_at = now();
