@@ -41,7 +41,7 @@ const tabLabels: Record<string, string> = {
   settings: "Pengaturan",
 };
 
-const AdminLayout: React.FC<AdminLayoutProps> = () => {
+const AdminLayout: React.FC<AdminLayoutProps> = ({ onSwitchToUser }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
     return !!sessionStorage.getItem('admin_token');
   });
@@ -86,7 +86,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
   };
 
   if (!isAuthenticated) {
-    return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
+    return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} onSwitchToUser={onSwitchToUser} />;
   }
 
   return (

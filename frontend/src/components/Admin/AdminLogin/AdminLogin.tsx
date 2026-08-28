@@ -4,6 +4,7 @@ import './AdminLogin.css';
 
 interface AdminLoginProps {
   onLoginSuccess: () => void;
+  onSwitchToUser?: () => void;
 }
 
 // Standard SVG Icons for Email, Lock, Eye, and EyeOff
@@ -35,7 +36,7 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
+const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess, onSwitchToUser }) => {
   const [email, setEmail] = useState('admin@lakstari.com');
   const [password, setPassword] = useState('adminlakstari2026');
   const [showPassword, setShowPassword] = useState(false);
@@ -66,10 +67,28 @@ const AdminLogin: React.FC<AdminLoginProps> = ({ onLoginSuccess }) => {
     <div className="admin-login-page">
       <div className="bg-ambient-gradient" />
 
+      {onSwitchToUser && (
+        <button
+          type="button"
+          className="btn-back-to-store"
+          onClick={onSwitchToUser}
+          title="Kembali ke Toko Pelanggan"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          <span>Kembali ke Toko</span>
+        </button>
+      )}
+
       <div className="login-card-container">
         <div className="simple-card">
           {/* Header */}
           <div className="login-header">
+            <div className="login-brand-badge">
+              <span className="brand-badge-dot"></span>
+              LAKSTARI ADMIN
+            </div>
             <h1>Portal Admin Lakstari</h1>
             <p>Masuk untuk mengelola stok, varian rasa, dan pesanan toko.</p>
           </div>
