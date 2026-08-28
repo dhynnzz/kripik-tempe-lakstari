@@ -7,7 +7,7 @@ const CustomerManager: React.FC = () => {
 
   const fetchCustomers = async () => {
     const data = await apiService.getCustomers();
-    setCustomers(data);
+    setCustomers(data.data ? data.data : data);
   };
 
   useEffect(() => {

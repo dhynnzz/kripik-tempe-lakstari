@@ -12,7 +12,7 @@ class CustomerController extends Controller
     {
         $customers = Pelanggan::withCount('transaksi')
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
             
         return response()->json(['success' => true, 'data' => $customers]);
     }

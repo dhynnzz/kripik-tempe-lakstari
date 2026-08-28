@@ -63,9 +63,8 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
   return (
     <div className="order-tracking-container">
       <div className="ot-header">
-        <button className="back-btn" onClick={onBack}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-          Kembali ke Beranda
+        <button onClick={onBack} className="ot-back-btn" style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
+          &larr; Kembali
         </button>
         <h2>Lacak Pesanan Anda</h2>
         <p>Ketahui status terkini pesanan Anda atau lanjutkan pembayaran.</p>
@@ -116,6 +115,32 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
                   <span>Metode Pembayaran</span>
                   <strong>{orderData.payment_type ? orderData.payment_type.replace('_', ' ').toUpperCase() : '-'}</strong>
                 </div>
+                <div className="detail-row">
+                  <span>Status Pembayaran</span>
+                  <strong>
+                    {orderData.status_pembayaran === 'paid' ? (
+                      <span style={{ color: '#16A34A' }}>LUNAS</span>
+                    ) : orderData.status_pembayaran === 'pending' ? (
+                      <span style={{ color: '#D97706' }}>BELUM DIBAYAR</span>
+                    ) : (
+                      <span style={{ color: '#DC2626' }}>{orderData.status_pembayaran?.toUpperCase()}</span>
+                    )}
+                  </strong>
+                </div>
+                {orderData.pengiriman && (
+                  <>
+                    <div className="detail-row">
+                      <span>Status Pengiriman</span>
+                      <strong>{orderData.pengiriman.status_pengiriman?.replace('_', ' ').toUpperCase() || '-'}</strong>
+                    </div>
+                    {orderData.pengiriman.nomor_resi && (
+                      <div className="detail-row">
+                        <span>Nomor Resi</span>
+                        <strong>{orderData.pengiriman.nomor_resi}</strong>
+                      </div>
+                    )}
+                  </>
+                )}
                 
                 <div className="items-list">
                   <h4>Ringkasan Pesanan</h4>
@@ -123,7 +148,7 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
                     {orderData.details?.map((item: any) => (
                       <li key={item.id_detail}>
                         <span>{item.product?.nama_product}</span>
-                        <strong>x{item.qty}</strong>
+                        <strong>x{item.jumlah || item.qty || 1}</strong>
                       </li>
                     ))}
                   </ul>
@@ -131,7 +156,7 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
 
                 <div className="detail-row total-row">
                   <span>Total Tagihan</span>
-                  <strong>Rp {orderData.total_pembayaran?.toLocaleString('id-ID')}</strong>
+                  <strong>Rp {Number(orderData.total_pembayaran || 0).toLocaleString('id-ID')}</strong>
                 </div>
 
                 {orderData.status_transaksi === 'menunggu_pembayaran' && (

@@ -5,20 +5,31 @@ import './ShipmentManager.css';
 const ShipmentManager: React.FC = () => {
   const [shipments, setShipments] = useState<any[]>([]);
   const [selectedShipment, setSelectedShipment] = useState<any | null>(null);
+  const [selectedShipmentDetail, setSelectedShipmentDetail] = useState<any | null>(null);
   const [resiInput, setResiInput] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [totalShipments, setTotalShipments] = useState(0);
 
-  const fetchShipments = async () => {
-    const data = await apiService.getShipments();
-    setShipments(data);
+  const fetchShipments = async (page: number = 1) => {
+    const data = await apiService.getShipments(page);
+    if (data && data.data) {
+      setShipments(data.data);
+      setCurrentPage(data.current_page || 1);
+      setLastPage(data.last_page || 1);
+      setTotalShipments(data.total || 0);
+    } else {
+      setShipments(Array.isArray(data) ? data : []);
+    }
   };
 
   useEffect(() => {
-    fetchShipments();
-  }, []);
+    fetchShipments(currentPage);
+  }, [currentPage]);
 
   const handleStatusChange = async (id: number, newStatus: string) => {
     const success = await apiService.updateShipment(id, { status_pengiriman: newStatus });
-    if(success) fetchShipments();
+    if(success) fetchShipments(currentPage);
   };
 
   const handleUpdateResi = async (id: number) => {
@@ -28,7 +39,7 @@ const ShipmentManager: React.FC = () => {
       alert('Resi berhasil diperbarui');
       setResiInput('');
       setSelectedShipment(null);
-      fetchShipments();
+      fetchShipments(currentPage);
     }
   };
 
@@ -74,21 +85,38 @@ const ShipmentManager: React.FC = () => {
                   </span>
                 </td>
                 <td>
-                  <button 
-                    onClick={() => setSelectedShipment(s)}
-                    style={{
-                      background: 'var(--primary-dark)',
-                      color: 'var(--primary-accent)',
-                      border: 'none',
-                      padding: '6px 12px',
-                      borderRadius: '8px',
-                      fontWeight: 700,
-                      fontSize: '12px',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Kelola Pengiriman
-                  </button>
+                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <button 
+                      onClick={() => setSelectedShipment(s)}
+                      style={{
+                        background: 'var(--primary-dark)',
+                        color: 'var(--primary-accent)',
+                        border: 'none',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Kelola Pengiriman
+                    </button>
+                    <button 
+                      onClick={() => setSelectedShipmentDetail(s)}
+                      style={{
+                        background: '#e2e8f0',
+                        color: '#334155',
+                        border: '1px solid #cbd5e1',
+                        padding: '6px 12px',
+                        borderRadius: '8px',
+                        fontWeight: 700,
+                        fontSize: '12px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      Detail
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -99,6 +127,32 @@ const ShipmentManager: React.FC = () => {
             )}
           </tbody>
         </table>
+        
+        {/* Pagination Controls */}
+        {lastPage > 1 && (
+          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem', gap: '0.5rem', alignItems: 'center', borderTop: '1px solid #e2e8f0' }}>
+            <span style={{ fontSize: '0.875rem', color: '#64748b', marginRight: '1rem' }}>
+              Total: {totalShipments} pengiriman
+            </span>
+            <button 
+              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+              disabled={currentPage === 1}
+              style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', background: currentPage === 1 ? '#f8fafc' : '#ffffff', color: currentPage === 1 ? '#94a3b8' : '#334155', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontSize: '0.875rem', transition: 'all 0.2s' }}
+            >
+              Sebelumnya
+            </button>
+            <span style={{ padding: '0.25rem 0.5rem', fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>
+              Halaman {currentPage} dari {lastPage}
+            </span>
+            <button 
+              onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
+              disabled={currentPage === lastPage}
+              style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', background: currentPage === lastPage ? '#f8fafc' : '#ffffff', color: currentPage === lastPage ? '#94a3b8' : '#334155', cursor: currentPage === lastPage ? 'not-allowed' : 'pointer', fontSize: '0.875rem', transition: 'all 0.2s' }}
+            >
+              Selanjutnya
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Modal Kelola Pengiriman */}
@@ -143,6 +197,88 @@ const ShipmentManager: React.FC = () => {
 
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                <button onClick={() => setSelectedShipment(null)} style={{ background: '#E2E8F0', color: '#1E293B', border: 'none', padding: '8px 20px', borderRadius: '8px', cursor: 'pointer' }}>Tutup</button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Modal Detail Pengiriman */}
+      {selectedShipmentDetail && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
+          <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '30px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '2px solid #f1f5f9', paddingBottom: '16px' }}>
+              <h2 style={{ margin: 0, color: '#0f172a', fontSize: '1.25rem' }}>Detail Pengiriman: <span style={{ color: 'var(--primary-dark)' }}>{selectedShipmentDetail.transaksi?.nomor_invoice}</span></h2>
+              <button onClick={() => setSelectedShipmentDetail(null)} style={{ background: 'transparent', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+              {/* Kolom Kiri: Info Resi & Ekspedisi */}
+              <div>
+                <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '12px' }}>Informasi Resi & Kurir</h3>
+                <div style={{ fontSize: '0.9rem', color: '#475569', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <p style={{ margin: 0 }}><strong>Kurir:</strong> {selectedShipmentDetail.kurir || '-'}</p>
+                  <p style={{ margin: 0 }}><strong>Layanan:</strong> {selectedShipmentDetail.layanan_kurir || '-'}</p>
+                  <p style={{ margin: 0 }}><strong>Nomor Resi:</strong> <span style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>{selectedShipmentDetail.nomor_resi || 'Belum diisi'}</span></p>
+                  <p style={{ margin: 0 }}><strong>Status:</strong> <span style={{ color: selectedShipmentDetail.status_pengiriman === 'Terkirim' ? '#16a34a' : '#d97706', fontWeight: 600 }}>{selectedShipmentDetail.status_pengiriman || '-'}</span></p>
+                  <p style={{ margin: 0 }}><strong>Biaya Ongkir:</strong> Rp {parseFloat(selectedShipmentDetail.biaya_pengiriman || 0).toLocaleString('id-ID')}</p>
+                  <p style={{ margin: 0 }}><strong>Berat Total:</strong> {selectedShipmentDetail.berat_total || 0} gram</p>
+                </div>
+              </div>
+
+              {/* Kolom Kanan: Alamat Tujuan */}
+              <div>
+                <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '12px' }}>Alamat Tujuan</h3>
+                <div style={{ fontSize: '0.9rem', color: '#475569', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                  <p style={{ margin: 0 }}><strong>Penerima:</strong> {selectedShipmentDetail.alamat?.nama_penerima || selectedShipmentDetail.transaksi?.pelanggan?.nama_pelanggan || '-'}</p>
+                  <p style={{ margin: 0 }}><strong>No. HP:</strong> {selectedShipmentDetail.alamat?.no_hp_penerima || selectedShipmentDetail.transaksi?.pelanggan?.no_hp || '-'}</p>
+                  <p style={{ margin: 0, lineHeight: '1.5' }}><strong>Alamat:</strong> {selectedShipmentDetail.alamat?.alamat_lengkap || '-'}<br/>
+                    {selectedShipmentDetail.alamat?.kecamatan}, {selectedShipmentDetail.alamat?.kota}, {selectedShipmentDetail.alamat?.provinsi} {selectedShipmentDetail.alamat?.kode_pos}
+                  </p>
+                  {selectedShipmentDetail.alamat?.catatan && (
+                    <p style={{ margin: 0, marginTop: '4px', fontStyle: 'italic', color: '#d97706' }}>Catatan: {selectedShipmentDetail.alamat.catatan}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Isi Paket (Daftar Produk) */}
+            <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '12px' }}>Isi Paket (Daftar Barang)</h3>
+            <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', marginBottom: '24px' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+                <thead style={{ background: '#f8fafc' }}>
+                  <tr>
+                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Produk</th>
+                    <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #e2e8f0' }}>Varian</th>
+                    <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #e2e8f0' }}>Qty</th>
+                    <th style={{ padding: '12px', textAlign: 'right', borderBottom: '1px solid #e2e8f0' }}>Berat per item</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedShipmentDetail.transaksi?.details?.map((d: any, index: number) => (
+                    <tr key={index} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '12px' }}>
+                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{d.nama_product}</div>
+                      </td>
+                      <td style={{ padding: '12px', textAlign: 'center' }}>{d.product?.varian_rasa || '-'}</td>
+                      <td style={{ padding: '12px', textAlign: 'center', fontWeight: 600 }}>{d.jumlah}x</td>
+                      <td style={{ padding: '12px', textAlign: 'right' }}>{d.berat_product}g</td>
+                    </tr>
+                  ))}
+                  {(!selectedShipmentDetail.transaksi?.details || selectedShipmentDetail.transaksi?.details.length === 0) && (
+                    <tr>
+                      <td colSpan={4} style={{ padding: '12px', textAlign: 'center', color: '#94a3b8' }}>Data produk tidak tersedia</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            <div style={{ textAlign: 'right' }}>
+              <button 
+                onClick={() => setSelectedShipmentDetail(null)}
+                style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
+              >
+                Tutup Jendela
+              </button>
             </div>
           </div>
         </div>

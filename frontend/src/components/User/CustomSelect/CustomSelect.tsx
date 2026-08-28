@@ -25,7 +25,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [openUpwards, setOpenUpwards] = useState(false);
+  const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
   const dropdownRef = useRef<HTMLDivElement>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -41,8 +41,12 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       if (!isOpen && dropdownRef.current) {
         const rect = dropdownRef.current.getBoundingClientRect();
         const spaceBelow = window.innerHeight - rect.bottom;
-        // Jika ruang di bawah kurang dari 220px, buka ke atas
-        setOpenUpwards(spaceBelow < 220);
+        const spaceAbove = rect.top;
+        if (spaceBelow < 250 && spaceAbove > spaceBelow) {
+          setDropdownPosition('top');
+        } else {
+          setDropdownPosition('bottom');
+        }
       }
       setIsOpen(!isOpen);
       if (!isOpen) setSearchQuery('');
@@ -60,6 +64,19 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
 
     if (isOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      
+      // Calculate position
+      if (dropdownRef.current) {
+        const rect = dropdownRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        if (spaceBelow < 250 && spaceAbove > spaceBelow) {
+          setDropdownPosition('top');
+        } else {
+          setDropdownPosition('bottom');
+        }
+      }
+
       // Auto focus search input
       if (searchable && options.length > 7) {
         setTimeout(() => searchInputRef.current?.focus(), 50);
@@ -99,7 +116,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       </button>
 
       {isOpen && !disabled && (
-        <div className={`custom-select-dropdown is-open ${openUpwards ? 'open-upwards' : ''}`}>
+        <div className={`custom-select-dropdown is-open ${dropdownPosition === 'top' ? 'position-top' : 'position-bottom'}`}>
           {searchable && options.length > 7 && (
             <div className="custom-select-search-box">
               <input

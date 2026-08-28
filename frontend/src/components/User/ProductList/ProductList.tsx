@@ -49,7 +49,7 @@ const ProductList = () => {
       setAddedCategories(prev => ({ ...prev, [categoryName]: true }));
       setTimeout(() => {
         setAddedCategories(prev => ({ ...prev, [categoryName]: false }));
-      }, 1500); // Reset animation after 1.5 seconds
+      }, 700); // Reset animation after 0.7 seconds
     }
   };
 
@@ -155,7 +155,7 @@ const ProductList = () => {
                           <CustomSelect
                             options={items.map(p => ({
                               value: p.id as number,
-                              label: p.name
+                              label: p.flavor || p.name
                             }))}
                             value={activeItem.id as number}
                             onChange={(val) => handleVariantChange(categoryName, val)}
@@ -164,7 +164,7 @@ const ProductList = () => {
                           <CustomSelect
                             options={[{
                               value: activeItem.id as number,
-                              label: activeItem.name
+                              label: activeItem.flavor || activeItem.name
                             }]}
                             value={activeItem.id as number}
                             onChange={() => { }}
