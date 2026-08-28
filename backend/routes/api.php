@@ -13,7 +13,7 @@ use App\Http\Controllers\ProductController;
 */
 
 // Public Routes
-Route::post('/admin/login', [AuthController::class, 'login']);
+Route::post('/admin/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 
 Route::get('/products', [ProductController::class, 'index']);
 Route::get('/categories', [CategoryController::class, 'index']);

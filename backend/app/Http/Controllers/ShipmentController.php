@@ -10,7 +10,7 @@ class ShipmentController extends Controller
     // [ADMIN] Ambil Semua Data Pengiriman
     public function index()
     {
-        $shipments = Pengiriman::with(['transaksi.pelanggan'])->orderBy('created_at', 'desc')->paginate(10);
+        $shipments = Pengiriman::with(['transaksi.pelanggan', 'transaksi.details.product', 'transaksi.alamat', 'alamat'])->orderBy('created_at', 'desc')->paginate(10);
         return response()->json(['success' => true, 'data' => $shipments]);
     }
 
