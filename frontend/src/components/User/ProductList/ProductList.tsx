@@ -75,7 +75,7 @@ const ProductList = () => {
         <h2>Katalog Produk</h2>
       </div>
 
-      <section className="products-section container" style={{ position: 'relative' }}>
+      <section className="products-section container" style={{ position: 'relative', overflow: 'visible' }}>
         {/* Background Spiral Decorations for Product List (Ukuran Ramping & Tersebar Rapi) */}
         <Spiral style={{ top: '2%', left: '1%', width: '85px', transform: 'rotate(25deg)' }} />
         <Spiral style={{ top: '6%', left: '30%', width: '70px', transform: 'rotate(75deg)' }} />
@@ -146,7 +146,7 @@ const ProductList = () => {
                         {activeItem.stock === 0 ? (
                           <span style={{ color: '#EF4444', fontWeight: 700 }}>Stok 0 </span>
                         ) : (
-                          <>Stok Siap Kirim: <strong>{activeItem.stock} item</strong></>
+                          <>Stok Tersedia: <strong>{activeItem.stock} item</strong></>
                         )}
                       </div>
 

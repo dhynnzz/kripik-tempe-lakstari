@@ -22,35 +22,75 @@
 
 .payment-content {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
+  flex-wrap: nowrap;
+  gap: clamp(8px, 2vw, 24px);
   color: var(--primary-dark);
+  padding: 0 12px;
+  width: 100%;
 }
 
 .payment-supported-text {
-  font-family: var(--font-heading);
-  font-size: 15px;
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(11px, 2.6vw, 15px);
   font-weight: 700;
   color: var(--primary-dark);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .payment-logo {
-  height: 22px;
+  height: clamp(15px, 3.6vw, 22px);
   object-fit: contain;
-  max-width: 85px;
+  max-width: clamp(48px, 12vw, 85px);
+  flex-shrink: 0;
 }
 
 .payment-bank-logo {
-  max-width: 130px;
-  height: 24px;
+  max-width: clamp(78px, 20vw, 130px);
+  height: clamp(16px, 3.8vw, 24px);
+  flex-shrink: 0;
 }
 
-/* Responsive Payment Banner */
+/* Responsive Payment Banner (Tetap 1 Baris Sejajar di Semua Ukuran Layar) */
 @media (max-width: 768px) {
+  .payment-banner {
+    padding: 6px 0 8px 0;
+  }
+
   .payment-content {
-    flex-wrap: wrap;
-    gap: 15px;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    gap: 6px;
+    padding: 0 6px;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-banner {
+    padding: 5px 0 7px 0;
+  }
+
+  .payment-content {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 4px;
+    padding: 0 6px;
+  }
+
+  .payment-supported-text {
+    font-size: 11px;
+  }
+
+  .payment-logo {
+    height: 14px;
+    max-width: 46px;
+  }
+
+  .payment-bank-logo {
+    height: 15px;
+    max-width: 74px;
   }
 }

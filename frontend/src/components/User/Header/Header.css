@@ -1,12 +1,24 @@
-/* Header Base */
+/* Header Base & Sticky Transitions */
 .header {
   background-color: var(--primary-dark);
   color: white;
-  padding: 12px 0;
+  padding: 15px 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: padding, background-color, backdrop-filter, box-shadow;
+}
+
+/* Sticky Scrolled State (Glassmorphism & Compact Transition) */
+.header.scrolled {
+  padding: 9px 0;
+  background-color: rgba(15, 23, 42, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .header-content {
@@ -14,20 +26,27 @@
   align-items: center;
   justify-content: space-between;
   gap: 20px;
+  transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .logo {
-  font-family: var(--font-heading);
+  font-family: 'Montserrat', sans-serif;
   font-weight: 800;
   font-size: 22px;
   color: var(--primary-accent);
   letter-spacing: -0.5px;
   white-space: nowrap;
-  transition: opacity 0.2s;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease;
+  transform-origin: left center;
+}
+
+.header.scrolled .logo {
+  transform: scale(0.95);
 }
 
 .logo:hover {
   opacity: 0.9;
+  transform: scale(0.98);
 }
 
 /* Desktop Navigation */
@@ -38,12 +57,13 @@
 }
 
 .nav-desktop a {
-  font-size: 14.5px;
-  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
   color: #E2E8F0;
-  transition: color 0.2s ease;
+  transition: color 0.25s ease;
   position: relative;
-  padding: 4px 0;
+  padding: 5px 0;
 }
 
 .nav-desktop a:hover,
@@ -51,26 +71,34 @@
   color: var(--primary-accent);
 }
 
-.nav-desktop a.active::after {
+.nav-desktop a::after {
   content: "";
   position: absolute;
   bottom: 0;
-  left: 0;
-  width: 100%;
+  left: 50%;
+  width: 0;
   height: 2px;
   background-color: var(--primary-accent);
   border-radius: 2px;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-desktop a:hover::after,
+.nav-desktop a.active::after {
+  width: 100%;
+  left: 0;
 }
 
 .admin-nav-btn {
+  font-family: 'Poppins', sans-serif;
   background: rgba(250, 172, 48, 0.12);
   color: var(--primary-accent);
   border: 1px solid rgba(250, 172, 48, 0.4);
   padding: 6px 14px;
   border-radius: 10px;
-  font-size: 13px;
-  font-weight: 700;
-  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 400;
+  transition: all 0.25s ease;
   cursor: pointer;
 }
 
@@ -79,6 +107,7 @@
   color: var(--primary-dark);
   border-color: var(--primary-accent);
   transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(250, 172, 48, 0.35);
 }
 
 /* Header Actions Right */
@@ -92,17 +121,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.2s ease;
+  transition: transform 0.25s ease, filter 0.25s ease;
 }
 
 .wa-btn-link:hover {
   transform: scale(1.08);
+  filter: drop-shadow(0 4px 14px rgba(37, 211, 102, 0.5));
 }
 
 .wa-icon {
-  width: 38px;
-  height: 38px;
+  width: 50px;
+  height: 50px;
   object-fit: contain;
+  transition: width 0.3s ease, height 0.3s ease;
+}
+
+.header.scrolled .wa-icon {
+  width: 42px;
+  height: 42px;
 }
 
 /* Mobile Hamburger Button that morphs to X */

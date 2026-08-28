@@ -36,6 +36,23 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
     ? options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()))
     : options;
 
+  const handleToggle = () => {
+    if (!disabled) {
+      if (!isOpen && dropdownRef.current) {
+        const rect = dropdownRef.current.getBoundingClientRect();
+        const spaceBelow = window.innerHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        if (spaceBelow < 250 && spaceAbove > spaceBelow) {
+          setDropdownPosition('top');
+        } else {
+          setDropdownPosition('bottom');
+        }
+      }
+      setIsOpen(!isOpen);
+      if (!isOpen) setSearchQuery('');
+    }
+  };
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -81,12 +98,7 @@ const CustomSelect: React.FC<CustomSelectProps> = ({
       <button
         type="button"
         className={`custom-select-trigger ${isOpen ? 'is-open' : ''} ${disabled ? 'is-disabled' : ''}`}
-        onClick={() => {
-          if (!disabled) {
-            setIsOpen(!isOpen);
-            if (!isOpen) setSearchQuery('');
-          }
-        }}
+        onClick={handleToggle}
         disabled={disabled}
       >
         <span className={`trigger-label ${!selectedOption ? 'is-placeholder' : ''}`}>

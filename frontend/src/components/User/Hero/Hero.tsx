@@ -69,7 +69,7 @@ const Hero = () => {
 
       <div className="hero-text">
         <span className="hero-badge">PREMIUM QUALITY SNACK</span>
-        <h1>Kripik Tempe Lakstari</h1>
+        <h1>KRIPIK TEMPE LAKSTARI</h1>
         <p>Renyah, Gurih, Nagih. Camilan tradisional kualitas premium yang diolah dengan resep rahasia keluarga.</p>
       </div>
       <div className="hero-image-wrapper">

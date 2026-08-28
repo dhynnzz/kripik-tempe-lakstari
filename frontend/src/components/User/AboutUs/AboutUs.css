@@ -1,0 +1,1019 @@
+/* AboutUs.css - Full-Screen Panoramic Hero Carousel (Gaya Ladang Lima) */
+
+.about-page {
+  width: 100%;
+  background-color: #F8FAFC;
+  color: #1E293B;
+  font-family: var(--font-body, 'Nunito', sans-serif);
+  overflow-x: hidden;
+}
+
+/* =========================================================
+   1. FULL-WIDTH & FULL-SCREEN STATIC HERO BANNER (POPPINS FONT)
+   ========================================================= */
+.about-hero-static {
+  position: relative;
+  width: 100%;
+  height: 85vh;
+  min-height: 600px;
+  max-height: 850px;
+  overflow: hidden;
+  background-color: #0F172A;
+  display: flex;
+  align-items: center;
+}
+
+.about-hero-static-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+  z-index: 1;
+}
+
+/* Soft Center Dark Overlay for Text Contrast */
+.about-hero-static-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.48);
+  z-index: 2;
+}
+
+/* Transisi Kabut Putih Halus Tipis di Bagian Bawah Banner (Subtle Misty Fog) */
+.about-hero-fog-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 100px;
+  background: linear-gradient(to bottom,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.08) 35%,
+      rgba(255, 255, 255, 0.35) 65%,
+      rgba(255, 255, 255, 0.75) 88%,
+      #FFFFFF 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.about-hero-static-container {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.about-hero-static-content {
+  max-width: 1300px;
+  color: #FFFFFF;
+  text-align: center;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-hero-montserrat-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: clamp(48px, 5.8vw, 84px);
+  font-weight: 800;
+  line-height: 1.1;
+  color: #FFFFFF;
+  letter-spacing: -0.5px;
+  margin-bottom: 22px;
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.65);
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-hero-poppins-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(18px, 1.75vw, 23px);
+  font-weight: 400;
+  line-height: 1.7;
+  color: #FFFFFF;
+  margin-bottom: 0;
+  max-width: 980px;
+  text-shadow: 0 2px 14px rgba(0, 0, 0, 0.6);
+  text-align: center;
+  text-wrap: balance;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.btn-poppins-readmore {
+  font-family: 'Poppins', sans-serif;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 9999px;
+  color: #FFFFFF;
+  font-size: 16px;
+  font-weight: 400;
+  padding: 12px 32px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  display: inline-block;
+}
+
+.btn-poppins-readmore:hover {
+  background: rgba(255, 255, 255, 0.45);
+  border-color: #FFFFFF;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+/* =========================================================
+   2. KENAPA PILIH KRIPIK TEMPE LAKSTARI SECTION
+   ========================================================= */
+.why-choose-section {
+  padding: 48px 0 54px 0;
+  background-color: #EFF7F4;
+}
+
+.why-choose-header {
+  text-align: center;
+  max-width: 750px;
+  margin: 0 auto 28px auto;
+}
+
+.why-choose-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28.8px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.title-dark {
+  display: inline;
+  color: #172138;
+}
+
+.title-yellow {
+  display: inline;
+  color: #F8BD63;
+  margin-left: 6px;
+}
+
+.why-choose-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #64748B;
+  margin-top: 12px;
+  line-height: 1.65;
+}
+
+.why-choose-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.why-card {
+  background: #FFFFFF;
+  border-radius: 24px;
+  padding: 42px 24px 38px 24px;
+  text-align: center;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.why-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+  border-color: rgba(248, 189, 99, 0.4);
+}
+
+.why-card-icon {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 22px;
+  transition: transform 0.3s ease;
+}
+
+.why-card:hover .why-card-icon {
+  transform: scale(1.08);
+}
+
+.why-card-icon.mint {
+  background-color: #E6F8F3;
+  color: #0D9488;
+}
+
+.why-card-icon.purple {
+  background-color: #ECEEF8;
+  color: #3B4861;
+}
+
+.why-card-icon.yellow {
+  background-color: #FFF2E2;
+  color: #D97706;
+}
+
+.why-card-icon.teal {
+  background-color: #E6F8F6;
+  color: #0D9488;
+}
+
+.why-card h3 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 17.6px;
+  font-weight: 400;
+  color: #1E293B;
+  margin-bottom: 12px;
+}
+
+.why-card p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: #64748B;
+  margin: 0;
+}
+
+/* =========================================================
+   3. CERITA DARI OWNER SECTION (Full-Width Background & Frosted Cards)
+   ========================================================= */
+.about-owner-story-section {
+  position: relative;
+  width: 100%;
+  padding: 55px 0 60px 0;
+  background-image: url('/images/hero/hero-tempeh.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #FFFFFF;
+  overflow: hidden;
+}
+
+.about-owner-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 23, 42, 0.82);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  z-index: 1;
+}
+
+.about-owner-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.about-owner-content {
+  text-align: center;
+}
+
+.about-owner-heading {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28.8px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 18px;
+  letter-spacing: -0.3px;
+  text-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.about-owner-paragraphs {
+  max-width: 840px;
+  margin: 0 auto 30px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.about-owner-paragraphs p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.75;
+  color: #E2E8F0;
+  margin: 0;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+}
+
+/* 2 Frosted Glass Feature Cards */
+.about-owner-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  max-width: 780px;
+  margin: 0 auto;
+}
+
+.owner-glass-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 20px;
+  padding: 28px 26px;
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  text-align: left;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.25);
+  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+
+.owner-glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(250, 172, 48, 0.5);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.owner-glass-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: rgba(250, 172, 48, 0.16);
+  border: 1px solid rgba(250, 172, 48, 0.35);
+  color: #FAAC30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.owner-glass-text h4 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 17.6px;
+  font-weight: 600;
+  color: #FFFFFF;
+  margin-bottom: 6px;
+}
+
+.owner-glass-text p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #CBD5E1;
+  margin: 0;
+}
+
+/* =========================================================
+   4. MOMEN BERSAMA LAKSTARI SECTION (Auto-Play Slider Showcase)
+   ========================================================= */
+.about-moments-section {
+  padding: 40px 0 24px 0;
+  background-color: #FAFAFB;
+  overflow: hidden;
+}
+
+.moments-container-wide {
+  max-width: 98.5% !important;
+  width: 98.5%;
+  margin: 0 auto;
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.about-moments-header {
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 20px auto;
+}
+
+.about-moments-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 28.8px;
+  font-weight: 600;
+  color: #172138;
+  letter-spacing: -0.3px;
+  margin-bottom: 6px;
+}
+
+.about-moments-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: #64748B;
+  margin: 0;
+}
+
+.moments-slider-wrapper {
+  --slider-gap: 20px;
+  --visible-slides: 4;
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  padding: 4px 0 10px 0;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: pan-y;
+}
+
+.moments-slider-wrapper.is-dragging {
+  cursor: grabbing;
+}
+
+.moments-slider-track {
+  display: flex;
+  gap: var(--slider-gap);
+  will-change: transform;
+}
+
+.moment-slide-card {
+  flex: 0 0 calc((100% - (var(--slider-gap) * (var(--visible-slides) - 1))) / var(--visible-slides));
+  max-width: calc((100% - (var(--slider-gap) * (var(--visible-slides) - 1))) / var(--visible-slides));
+  height: 560px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.07);
+  border: 1px solid rgba(226, 232, 240, 0.7);
+  background-color: #F8FAFC;
+}
+
+.moment-img-wrapper {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1F5F9;
+}
+
+.moment-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+/* Interactive Clickable Pagination Dots */
+.moments-dots-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.moments-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #CBD5E1;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.moments-dot:hover {
+  background-color: #94A3B8;
+  transform: scale(1.2);
+}
+
+.moments-dot.active {
+  background-color: #0284C7;
+  width: 12px;
+  height: 12px;
+  box-shadow: 0 0 10px rgba(2, 132, 199, 0.5);
+}
+
+/* =========================================================
+   5. LOKASI TOKO & GOOGLE MAPS SECTION
+   ========================================================= */
+.about-location-section {
+  padding: 16px 0 10px 0;
+  background-color: #FAFAFB;
+  position: relative;
+}
+
+.about-location-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.about-location-title {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 6px;
+  letter-spacing: -0.5px;
+}
+
+.about-location-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 15px;
+  color: var(--text-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.about-location-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.35fr;
+  gap: 36px;
+  align-items: stretch;
+}
+
+.location-info-card {
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 40px 36px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.location-brand-name {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 24px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.location-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.location-item-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #F1F5F9;
+  color: #1E293B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.location-item-text h4 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  margin-bottom: 4px;
+}
+
+.location-item-text p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 14px;
+  color: #4A5568;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.location-subtext {
+  display: block;
+  font-family: 'Poppins', sans-serif;
+  font-size: 12.5px;
+  color: #718096;
+  margin-top: 3px;
+}
+
+.btn-open-maps {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background-color: var(--primary-dark);
+  color: #FFFFFF;
+  font-family: 'Poppins', sans-serif;
+  font-size: 14.5px;
+  font-weight: 600;
+  padding: 14px 24px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  margin-top: 10px;
+  box-shadow: 0 4px 14px rgba(35, 43, 69, 0.2);
+}
+
+.btn-open-maps:hover {
+  background-color: #171E33;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(35, 43, 69, 0.35);
+}
+
+.location-map-frame {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  min-height: 440px;
+  background: #E2E8F0;
+}
+
+.location-map-frame iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 440px;
+}
+
+/* =========================================================
+   RESPONSIVE MEDIA QUERIES
+   ========================================================= */
+@media (max-width: 1280px) {
+  .moments-slider-wrapper {
+    --slider-gap: 18px;
+    --visible-slides: 3;
+  }
+
+  .moment-slide-card {
+    height: 500px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .about-hero-static {
+    height: 65vh;
+    min-height: 480px;
+  }
+
+  .about-hero-montserrat-title {
+    font-size: 54px;
+  }
+
+  .about-hero-poppins-subtitle {
+    font-size: 16px;
+  }
+
+  .why-choose-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .moments-slider-wrapper {
+    --slider-gap: 16px;
+    --visible-slides: 2.5;
+  }
+
+  .moment-slide-card {
+    height: 460px;
+    border-radius: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-hero-static {
+    height: 55vh;
+    min-height: 380px;
+  }
+
+  .about-hero-bottom-wave {
+    height: 45px;
+  }
+
+  .about-hero-static-content {
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+  }
+
+  .about-hero-static-overlay {
+    background: linear-gradient(180deg,
+        rgba(15, 23, 42, 0.35) 0%,
+        rgba(15, 23, 42, 0.72) 50%,
+        rgba(15, 23, 42, 0.92) 100%);
+  }
+
+  .about-hero-montserrat-title {
+    font-size: 38px;
+    letter-spacing: -0.5px;
+    text-align: center;
+    white-space: normal;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .about-hero-poppins-subtitle {
+    font-size: 15px;
+    margin-bottom: 0;
+    text-align: center;
+    text-wrap: balance;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .why-choose-section {
+    padding: 40px 0 45px 0;
+  }
+
+  .why-choose-title {
+    font-size: 20px;
+    white-space: nowrap;
+  }
+
+  .why-choose-subtitle {
+    font-size: 13.5px;
+    margin-top: 6px;
+  }
+
+  .why-choose-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .about-owner-story-section {
+    padding: 45px 0 50px 0;
+  }
+
+  .about-owner-heading {
+    font-size: 26px;
+  }
+
+  .about-owner-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .owner-glass-card {
+    padding: 16px 12px;
+    border-radius: 14px;
+    gap: 10px;
+  }
+
+  .owner-glass-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .owner-glass-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .owner-glass-text h4 {
+    font-size: 13.5px;
+    margin-bottom: 4px;
+  }
+
+  .owner-glass-text p {
+    font-size: 11.5px;
+    line-height: 1.4;
+  }
+
+  .about-moments-section {
+    padding: 28px 0 16px 0;
+  }
+
+  .about-moments-title {
+    font-size: 24px;
+  }
+
+  .moments-slider-wrapper {
+    --slider-gap: 12px;
+    --visible-slides: 2;
+  }
+
+  .moment-slide-card {
+    height: 320px;
+    border-radius: 10px;
+  }
+
+  .about-location-section {
+    padding: 14px 0 10px 0;
+  }
+
+  .about-location-header {
+    margin-bottom: 18px;
+  }
+
+  .about-location-title {
+    font-size: 24px;
+  }
+
+  .about-location-subtitle {
+    font-size: 13.5px;
+  }
+
+  .about-location-grid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .location-info-card {
+    padding: 22px 18px;
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .location-brand-name {
+    font-size: 18px;
+    margin-bottom: 14px;
+    padding-bottom: 8px;
+  }
+
+  .location-item {
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .location-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+  }
+
+  .location-item-icon svg {
+    width: 17px;
+    height: 17px;
+  }
+
+  .location-item-text h4 {
+    font-size: 13.5px;
+    margin-bottom: 2px;
+  }
+
+  .location-item-text p {
+    font-size: 12.5px;
+    line-height: 1.4;
+  }
+
+  .location-subtext {
+    font-size: 11px;
+  }
+
+  .btn-open-maps {
+    padding: 11px 18px;
+    font-size: 13px;
+    border-radius: 10px;
+    gap: 8px;
+    margin-top: 6px;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .btn-open-maps svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .location-map-frame {
+    min-height: 240px;
+    height: 240px;
+    border-radius: 16px;
+  }
+
+  .location-map-frame iframe {
+    min-height: 240px;
+    height: 240px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-hero-static {
+    height: 52vh;
+    min-height: 330px;
+  }
+
+  .about-hero-bottom-wave {
+    height: 30px;
+  }
+
+  .about-hero-static-content {
+    margin: 0 auto;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0 12px;
+  }
+
+  .about-hero-montserrat-title {
+    font-size: 32px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .about-hero-poppins-subtitle {
+    font-size: 14px;
+    margin-bottom: 0;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .why-choose-title {
+    font-size: clamp(14px, 4.3vw, 18.5px);
+    white-space: nowrap;
+  }
+
+  .why-choose-subtitle {
+    font-size: 12px;
+    margin-top: 5px;
+  }
+
+  .why-choose-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .why-card {
+    padding: 20px 12px;
+    border-radius: 16px;
+  }
+
+  .why-card-icon {
+    width: 46px;
+    height: 46px;
+    margin-bottom: 12px;
+  }
+
+  .why-card h3 {
+    font-size: 14px;
+    margin-bottom: 6px;
+  }
+
+  .why-card p {
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  .about-owner-heading {
+    font-size: 22px;
+  }
+
+  .about-owner-paragraphs p {
+    font-size: 13.5px;
+    line-height: 1.7;
+  }
+
+  .owner-glass-card {
+    padding: 14px 10px;
+  }
+
+  .about-moments-title {
+    font-size: 22px;
+  }
+
+  .moments-container-wide {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .moments-slider-wrapper {
+    --slider-gap: 10px;
+    --visible-slides: 2;
+    padding: 4px 0 12px 0;
+  }
+
+  .moment-slide-card {
+    height: 250px;
+    border-radius: 10px;
+  }
+
+  .moments-dots-container {
+    margin-top: 14px;
+  }
+}

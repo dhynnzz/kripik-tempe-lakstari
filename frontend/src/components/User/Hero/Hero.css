@@ -64,18 +64,22 @@
 }
 
 .hero h1 {
-  font-size: clamp(28px, 3.5vw, 48px);
-  line-height: 1.15;
+  font-family: 'Montserrat', sans-serif;
+  font-size:55px;
+  font-weight: 700;
+  line-height: 1.1;
   color: var(--primary-dark);
   margin-bottom: 20px;
   text-align: left;
   width: 100%;
-  white-space: nowrap;
+  letter-spacing: -0.5px;
 }
 
 .hero p {
+  font-family: 'Poppins', sans-serif;
   color: var(--text-light);
   font-size: 16px;
+  font-weight: 400;
   line-height: 1.6;
   max-width: 520px;
   text-align: left;
