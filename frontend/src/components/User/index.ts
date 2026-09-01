@@ -7,3 +7,4 @@ export { default as CartDrawer } from './CartDrawer/CartDrawer';
 export { default as FloatingCart } from './FloatingCart/FloatingCart';
 export { default as CustomSelect } from './CustomSelect/CustomSelect';
 export { default as OrderTracking } from './OrderTracking/OrderTracking';
+export { default as AboutUs } from './AboutUs/AboutUs';

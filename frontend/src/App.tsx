@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import './App.css';
-import { Header, Hero, PaymentBanner, ProductList, Footer, FloatingCart, CartDrawer, OrderTracking } from './components/User';
+import { Header, Hero, PaymentBanner, ProductList, Footer, FloatingCart, CartDrawer, OrderTracking, AboutUs } from './components/User';
 import { AdminLayout } from './components/Admin';
 import { CartProvider } from './context/CartContext';
 import { ProductProvider } from './context/ProductContext';
@@ -13,7 +13,7 @@ function App() {
     return window.location.pathname.startsWith('/admin') ? 'admin' : 'user';
   });
 
-  const [currentView, setCurrentView] = useState<'home' | 'track-order'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'about' | 'track-order'>('home');
 
   const handleSwitchToAdmin = () => {
     setRole('admin');
@@ -42,15 +42,39 @@ function App() {
                     onNavigate={(view) => setCurrentView(view)}
                     currentView={currentView}
                   />
-                  {currentView === 'home' ? (
+
+                  {currentView === 'home' && (
                     <>
                       <Hero />
                       <PaymentBanner />
-                      <ProductList />
-                      <Footer />
+                      <div id="katalog">
+                        <ProductList />
+                      </div>
+                      <Footer onNavigate={(view) => setCurrentView(view)} />
                     </>
-                  ) : (
-                    <OrderTracking />
+                  )}
+
+                  {currentView === 'about' && (
+                    <>
+                      <AboutUs 
+                        onBack={() => setCurrentView('home')} 
+                        onNavigateToCatalog={() => {
+                          setCurrentView('home');
+                          setTimeout(() => {
+                            const el = document.getElementById('katalog');
+                            if (el) el.scrollIntoView({ behavior: 'smooth' });
+                          }, 150);
+                        }}
+                      />
+                      <Footer onNavigate={(view) => setCurrentView(view)} />
+                    </>
+                  )}
+
+                  {currentView === 'track-order' && (
+                    <>
+                      <OrderTracking onBack={() => setCurrentView('home')} />
+                      <Footer onNavigate={(view) => setCurrentView(view)} />
+                    </>
                   )}
                 </div>
 

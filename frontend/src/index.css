@@ -8,9 +8,28 @@
   --bg-main: #ffffff;
   --bg-light: #F9F9F9;
   
-  /* Typography */
-  --font-heading: 'Outfit', sans-serif;
-  --font-body: 'Nunito', sans-serif;
+  /* Typography Tokens */
+  --font-display: 'Montserrat', sans-serif;
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Poppins', sans-serif;
+  
+  /* Standard Sizes & Weights */
+  --h1-size: 72px;
+  --h1-weight: 700;
+  --h2-size: 28.8px;
+  --h2-weight: 600;
+  --h3-size: 17.6px;
+  --h3-weight: 400;
+  --body-size: 16px;
+  --body-weight: 400;
+  --nav-size: 15px;
+  --nav-weight: 400;
+  --btn-size: 16px;
+  --btn-weight: 400;
+  --caption-size: 14px;
+  --caption-weight: 400;
+  --code-size: 13px;
+  --code-weight: 400;
   
   /* Layout */
   --container-width: 1440px;
@@ -36,27 +55,66 @@ body.cart-open {
 
 body {
   font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: var(--body-weight);
   color: var(--text-main);
   background-color: var(--bg-main);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--h1-size);
+  font-weight: var(--h1-weight);
+  line-height: 1.15;
+}
+
+h2 {
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-size: var(--h2-size);
+  font-weight: var(--h2-weight);
+  line-height: 1.25;
+}
+
+h3 {
+  font-family: var(--font-heading);
+  font-size: var(--h3-size);
+  font-weight: var(--h3-weight);
+  line-height: 1.35;
+}
+
+p {
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  font-weight: var(--body-weight);
 }
 
 a {
   text-decoration: none;
   color: inherit;
+  font-family: var(--font-body);
 }
 
 button {
   font-family: var(--font-body);
+  font-size: var(--btn-size);
+  font-weight: var(--btn-weight);
   cursor: pointer;
   border: none;
   outline: none;
+}
+
+small, .caption {
+  font-family: var(--font-body);
+  font-size: var(--caption-size);
+  font-weight: var(--caption-weight);
+}
+
+code, pre, .mono {
+  font-family: var(--font-body);
+  font-size: var(--code-size);
+  font-weight: var(--code-weight);
 }
 
 img {
