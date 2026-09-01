@@ -249,6 +249,121 @@
   font-weight: 800;
 }
 
+/* =========================================
+   TRACKING TIMELINE (LIVE TRACKING)
+   ========================================= */
+.tracking-timeline-container {
+  margin-top: 25px;
+  padding-top: 25px;
+  border-top: 1px dashed #E2E8F0;
+}
+
+.tracking-timeline-container h4 {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+  color: var(--primary-dark);
+  font-family: var(--font-heading);
+}
+
+.tracking-timeline {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding-left: 10px;
+}
+
+/* Garis vertikal timeline */
+.tracking-timeline::before {
+  content: '';
+  position: absolute;
+  left: 17px;
+  top: 8px;
+  bottom: 0;
+  width: 2px;
+  background-color: #E2E8F0;
+  z-index: 1;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 15px;
+  position: relative;
+  z-index: 2;
+  margin-bottom: 20px;
+}
+
+.timeline-item:last-child {
+  margin-bottom: 0;
+}
+
+.timeline-dot {
+  width: 16px;
+  height: 16px;
+  background-color: #CBD5E1;
+  border: 3px solid #FFFFFF;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px #E2E8F0;
+  margin-top: 4px;
+}
+
+/* Titik terbaru (warna primer/orange) */
+.timeline-item.latest.on-progress .timeline-dot {
+  background-color: #F59E0B; /* Orange */
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+}
+
+/* Titik terbaru jika sudah delivered (warna hijau) */
+.timeline-item.latest.delivered .timeline-dot {
+  background-color: #10B981; /* Green */
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+}
+
+.timeline-content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.timeline-time {
+  font-size: 12px;
+  color: #64748B;
+  font-weight: 500;
+}
+
+.timeline-item.latest .timeline-time {
+  color: #F59E0B;
+  font-weight: 700;
+}
+
+.timeline-item.latest.delivered .timeline-time {
+  color: #10B981;
+}
+
+.timeline-note {
+  font-size: 13.5px;
+  color: #334155;
+  line-height: 1.5;
+}
+
+.timeline-item.latest .timeline-note {
+  font-weight: 700;
+  color: #1E293B;
+}
+
+/* Sembunyikan sisa garis di item terakhir */
+.timeline-item:last-child::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  top: 20px;
+  bottom: -30px;
+  width: 4px;
+  background-color: white;
+  z-index: -1;
+}
+
 .receipt-header h3 span {
   color: #64748b;
   font-weight: 500;

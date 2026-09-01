@@ -37,6 +37,7 @@ interface ProductContextType {
   deleteProduct: (id: number) => void;
   updateProductsCategory: (oldCat: string, newCat: string) => void;
   refreshProducts: () => void;
+  isLoadingProducts: boolean;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -75,8 +76,10 @@ export const normalizeProductImage = (img?: string): string => {
 
 export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<ProductItem[]>([]);
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
   const fetchProducts = async () => {
+    setIsLoadingProducts(true);
     try {
       const rawProducts = await apiService.getProducts();
       // Map data backend ke format frontend
@@ -108,6 +111,8 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
       setProducts(formatted);
     } catch (error) {
       console.error('Gagal mengambil data produk:', error);
+    } finally {
+      setIsLoadingProducts(false);
     }
   };
   const lastFetchTime = useRef<number>(0);
@@ -217,7 +222,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   return (
-    <ProductContext.Provider value={{ products, updateProductStock, updateProductPrice, updateProduct, toggleProductStatus, addProduct, deleteProduct, updateProductsCategory, refreshProducts }}>
+    <ProductContext.Provider value={{ products, updateProductStock, updateProductPrice, updateProduct, toggleProductStatus, addProduct, deleteProduct, updateProductsCategory, refreshProducts, isLoadingProducts }}>
       {children}
     </ProductContext.Provider>
   );

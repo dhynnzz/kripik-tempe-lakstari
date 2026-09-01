@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Swal from 'sweetalert2';
 import './AdminLayout.css';
 import { Lakstari21stSidebar } from './sidebar-component';
 import DashboardHome from '../DashboardHome/DashboardHome';
@@ -72,7 +73,18 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
   }, []);
 
   const handleLogout = async () => {
-    if (window.confirm('Apakah Anda yakin ingin keluar dari Portal Admin?')) {
+    const result = await Swal.fire({
+      title: 'Keluar dari Portal?',
+      text: 'Apakah Anda yakin ingin keluar dari Portal Admin?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonColor: '#DC2626',
+      cancelButtonColor: '#64748B',
+      confirmButtonText: 'Ya, Keluar',
+      cancelButtonText: 'Batal'
+    });
+    
+    if (result.isConfirmed) {
       await apiService.logoutAdmin();
       setIsAuthenticated(false);
     }

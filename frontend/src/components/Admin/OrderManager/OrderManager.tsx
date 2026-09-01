@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { apiService } from '../../../services/api';
 import './OrderManager.css';
+import '../ShipmentManager/ShipmentManager.css';
+
 
 const OrderManager: React.FC = () => {
   const [orders, setOrders] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<string>('Semua');
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -11,6 +14,7 @@ const OrderManager: React.FC = () => {
   const [selectedOrderDetail, setSelectedOrderDetail] = useState<any | null>(null);
 
   const fetchOrders = async (page: number = 1) => {
+    setIsLoading(true);
     const data = await apiService.getOrders(page);
     if (data && data.data) {
       setOrders(data.data);
@@ -20,6 +24,7 @@ const OrderManager: React.FC = () => {
     } else {
       setOrders(Array.isArray(data) ? data : []);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -38,9 +43,9 @@ const OrderManager: React.FC = () => {
   };
 
   return (
-    <div className="order-manager">
-      <div className="om-header">
-        <div>
+    <div className="order-manager shipment-manager-container">
+      <div className="shipment-header-bar">
+        <div className="shipment-header-title">
           <h2>Daftar Pesanan Masuk</h2>
           <p>Pantau transaksi masuk, konfirmasi pembayaran, dan ubah status pengiriman paket.</p>
         </div>
@@ -60,9 +65,9 @@ const OrderManager: React.FC = () => {
       </div>
 
       {/* Orders Table */}
-      <div className="admin-card om-card">
+      <div className="shipment-table-card">
         <div className="table-responsive">
-          <table className="admin-table">
+          <table className="shipment-table">
             <thead>
               <tr>
                 <th>No. Pesanan</th>
@@ -77,7 +82,18 @@ const OrderManager: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {filteredOrders.map((order: any) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '60px 0' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', color: '#64748b' }}>
+                      <div style={{ width: '36px', height: '36px', border: '3px solid #e2e8f0', borderTopColor: 'var(--primary-dark)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                      <span style={{ fontWeight: 600, fontSize: '14px' }}>Memuat data pesanan...</span>
+                      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                    </div>
+                  </td>
+                </tr>
+              ) : filteredOrders.length > 0 ? (
+                filteredOrders.map((order: any) => (
                 <tr key={order.id_transaksi}>
                   <td className="font-bold">{order.nomor_invoice}</td>
                   <td>
@@ -87,9 +103,9 @@ const OrderManager: React.FC = () => {
                     </div>
                   </td>
                   <td>
-                    {order.details && order.details.map((d: any) => `${d.product?.nama_product || 'Produk'} x${d.qty}`).join(', ')}
+                    {order.details && order.details.map((d: any) => `${d.product?.nama_product || d.nama_product || 'Produk'} x${d.jumlah || d.qty || 1}`).join(', ')}
                   </td>
-                  <td className="font-bold">Rp {order.total_pembayaran?.toLocaleString('id-ID')}</td>
+                  <td className="font-bold">Rp {Number(order.total_pembayaran).toLocaleString('id-ID')}</td>
                   <td><span className="date-text">{new Date(order.tanggal_transaksi).toLocaleDateString('id-ID')}</span></td>
                   <td>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
@@ -111,7 +127,7 @@ const OrderManager: React.FC = () => {
                   </td>
                   <td>
                     <select
-                      className="status-dropdown"
+                      className="status-select"
                       value={order.status_transaksi}
                       onChange={(e) => handleStatusChange(order.id_transaksi, e.target.value)}
                     >
@@ -133,7 +149,11 @@ const OrderManager: React.FC = () => {
                     </button>
                   </td>
                 </tr>
-              ))}
+              ))) : (
+                <tr>
+                  <td colSpan={9} style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>Belum ada data pesanan.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

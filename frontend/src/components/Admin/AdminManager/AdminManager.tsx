@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { apiService } from '../../../services/api';
+import Swal from 'sweetalert2';
 import './AdminManager.css';
 
 const AdminManager: React.FC = () => {

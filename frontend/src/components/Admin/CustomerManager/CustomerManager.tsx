@@ -4,10 +4,13 @@ import './CustomerManager.css';
 
 const CustomerManager: React.FC = () => {
   const [customers, setCustomers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchCustomers = async () => {
+    setIsLoading(true);
     const data = await apiService.getCustomers();
     setCustomers(data.data ? data.data : data);
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -41,7 +44,18 @@ const CustomerManager: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {customers.map((c: any) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={5} style={{ textAlign: 'center', padding: '60px 0' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', color: '#64748b' }}>
+                      <div style={{ width: '36px', height: '36px', border: '3px solid #e2e8f0', borderTopColor: 'var(--primary-dark)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                      <span style={{ fontWeight: 600, fontSize: '14px' }}>Memuat data pelanggan...</span>
+                      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                    </div>
+                  </td>
+                </tr>
+              ) : customers.length > 0 ? (
+                customers.map((c: any) => (
                 <tr key={c.id_pelanggan}>
                   <td className="font-bold">{c.nama_pelanggan}</td>
                   <td>
@@ -67,10 +81,9 @@ const CustomerManager: React.FC = () => {
                     </select>
                   </td>
                 </tr>
-              ))}
-              {customers.length === 0 && (
+              ))) : (
                 <tr>
-                  <td colSpan={5} style={{textAlign: 'center', padding: '20px'}}>Belum ada pelanggan terdaftar.</td>
+                  <td colSpan={5} style={{textAlign: 'center', padding: '40px', color: '#64748b'}}>Belum ada pelanggan terdaftar.</td>
                 </tr>
               )}
             </tbody>

@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import { apiService } from '../../../services/api';
 import './ShipmentManager.css';
+import Swal from 'sweetalert2';
+
 
 const ShipmentManager: React.FC = () => {
   const [shipments, setShipments] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedShipment, setSelectedShipment] = useState<any | null>(null);
   const [selectedShipmentDetail, setSelectedShipmentDetail] = useState<any | null>(null);
   const [resiInput, setResiInput] = useState('');
@@ -12,6 +15,7 @@ const ShipmentManager: React.FC = () => {
   const [totalShipments, setTotalShipments] = useState(0);
 
   const fetchShipments = async (page: number = 1) => {
+    setIsLoading(true);
     const data = await apiService.getShipments(page);
     if (data && data.data) {
       setShipments(data.data);
@@ -21,6 +25,7 @@ const ShipmentManager: React.FC = () => {
     } else {
       setShipments(Array.isArray(data) ? data : []);
     }
+    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -32,12 +37,35 @@ const ShipmentManager: React.FC = () => {
     if(success) fetchShipments(currentPage);
   };
 
-  const handleUpdateResi = async (id: number) => {
-    if(!resiInput) return;
-    const success = await apiService.updateShipment(id, { nomor_resi: resiInput });
+  const handleSaveChanges = async () => {
+    if (!selectedShipment) return;
+
+    if (selectedShipment.status_pengiriman === 'dibatalkan' || selectedShipment.status_pengiriman === 'Dibatalkan') {
+      const result = await Swal.fire({
+        title: 'Batalkan Pengiriman?',
+        text: 'Pesanan di Biteship akan dibatalkan otomatis.',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#DC2626',
+        cancelButtonColor: '#64748B',
+        confirmButtonText: 'Ya, Batalkan',
+        cancelButtonText: 'Kembali'
+      });
+      if (!result.isConfirmed) return; // Batal simpan jika tidak yakin
+    }
+
+    const payload = {
+      status_pengiriman: selectedShipment.status_pengiriman,
+      nomor_resi: resiInput
+    };
+    const success = await apiService.updateShipment(selectedShipment.id_pengiriman, payload);
     if(success) {
-      alert('Resi berhasil diperbarui');
-      setResiInput('');
+      Swal.fire({
+        title: 'Berhasil',
+        text: 'Perubahan berhasil disimpan',
+        icon: 'success',
+        confirmButtonColor: 'var(--primary-dark)'
+      });
       setSelectedShipment(null);
       fetchShipments(currentPage);
     }
@@ -67,7 +95,18 @@ const ShipmentManager: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {shipments.map((s: any) => (
+            {isLoading ? (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '60px 0' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', color: '#64748b' }}>
+                      <div style={{ width: '36px', height: '36px', border: '3px solid #e2e8f0', borderTopColor: 'var(--primary-dark)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
+                      <span style={{ fontWeight: 600, fontSize: '14px' }}>Memuat data pengiriman...</span>
+                      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                    </div>
+                  </td>
+                </tr>
+            ) : shipments.length > 0 ? (
+                shipments.map((s: any) => (
               <tr key={s.id_pengiriman}>
                 <td><strong style={{ color: 'var(--primary-dark)' }}>{s.transaksi?.nomor_invoice}</strong></td>
                 <td>{s.transaksi?.pelanggan?.nama_pelanggan}</td>
@@ -77,21 +116,24 @@ const ShipmentManager: React.FC = () => {
                 <td><code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: '4px' }}>{s.nomor_resi || 'Belum diisi'}</code></td>
                 <td>
                   <span style={{
-                    background: s.status_pengiriman === 'Terkirim' ? '#DCFCE7' : s.status_pengiriman === 'Dalam Perjalanan' ? '#DBEAFE' : '#FEF3C7',
-                    color: s.status_pengiriman === 'Terkirim' ? '#166534' : s.status_pengiriman === 'Dalam Perjalanan' ? '#1E40AF' : '#92400E',
+                    background: (s.status_pengiriman === 'terkirim' || s.status_pengiriman === 'Selesai') ? '#DCFCE7' : s.status_pengiriman === 'dalam_perjalanan' ? '#DBEAFE' : s.status_pengiriman === 'dibatalkan' ? '#FEE2E2' : '#FEF3C7',
+                    color: (s.status_pengiriman === 'terkirim' || s.status_pengiriman === 'Selesai') ? '#166534' : s.status_pengiriman === 'dalam_perjalanan' ? '#1E40AF' : s.status_pengiriman === 'dibatalkan' ? '#DC2626' : '#92400E',
                     padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 700
                   }}>
-                    {s.status_pengiriman || 'Menunggu Pickup'}
+                    {s.status_pengiriman === 'dibatalkan' ? 'Dibatalkan' : s.status_pengiriman === 'terkirim' ? 'Terkirim' : s.status_pengiriman === 'dalam_perjalanan' ? 'Dalam Perjalanan' : 'Menunggu Pickup'}
                   </span>
                 </td>
                 <td>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                     <button 
-                      onClick={() => setSelectedShipment(s)}
+                      onClick={() => {
+                        setSelectedShipment(s);
+                        setResiInput(s.nomor_resi || '');
+                      }}
                       style={{
-                        background: 'var(--primary-dark)',
-                        color: 'var(--primary-accent)',
-                        border: 'none',
+                        background: '#e2e8f0',
+                        color: '#334155',
+                        border: '1px solid #cbd5e1',
                         padding: '6px 12px',
                         borderRadius: '8px',
                         fontWeight: 700,
@@ -104,9 +146,9 @@ const ShipmentManager: React.FC = () => {
                     <button 
                       onClick={() => setSelectedShipmentDetail(s)}
                       style={{
-                        background: '#e2e8f0',
-                        color: '#334155',
-                        border: '1px solid #cbd5e1',
+                        background: 'var(--primary-dark)',
+                        color: 'var(--primary-accent)',
+                        border: 'none',
                         padding: '6px 12px',
                         borderRadius: '8px',
                         fontWeight: 700,
@@ -119,10 +161,9 @@ const ShipmentManager: React.FC = () => {
                   </div>
                 </td>
               </tr>
-            ))}
-            {shipments.length === 0 && (
+            ))) : (
                 <tr>
-                  <td colSpan={6} style={{textAlign: 'center', padding: '20px'}}>Belum ada data pengiriman.</td>
+                  <td colSpan={6} style={{textAlign: 'center', padding: '40px', color: '#64748b'}}>Belum ada data pengiriman.</td>
                 </tr>
             )}
           </tbody>
@@ -174,7 +215,6 @@ const ShipmentManager: React.FC = () => {
                 <label style={{display: 'block', fontSize: '12px', marginBottom: '5px', fontWeight: 'bold'}}>Input Nomor Resi Baru</label>
                 <div style={{display: 'flex', gap: '10px'}}>
                   <input type="text" value={resiInput} onChange={e => setResiInput(e.target.value)} placeholder="Misal: JT8899001122" style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
-                  <button onClick={() => handleUpdateResi(selectedShipment.id_pengiriman)} style={{ background: 'var(--primary-green)', color: '#fff', border: 'none', padding: '0 15px', borderRadius: '6px', cursor: 'pointer' }}>Simpan Resi</button>
                 </div>
               </div>
             </div>
@@ -185,18 +225,19 @@ const ShipmentManager: React.FC = () => {
                   style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
                   value={selectedShipment.status_pengiriman}
                   onChange={(e) => {
-                     handleStatusChange(selectedShipment.id_pengiriman, e.target.value);
                      setSelectedShipment({...selectedShipment, status_pengiriman: e.target.value});
                   }}
                >
-                  <option value="Menunggu Pickup">Menunggu Pickup</option>
-                  <option value="Dalam Perjalanan">Dalam Perjalanan</option>
-                  <option value="Terkirim">Terkirim</option>
+                  <option value="menunggu_pickup">Menunggu Pickup</option>
+                  <option value="dalam_perjalanan">Dalam Perjalanan</option>
+                  <option value="terkirim">Terkirim</option>
+                  <option value="dibatalkan">Dibatalkan</option>
                </select>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-               <button onClick={() => setSelectedShipment(null)} style={{ background: '#E2E8F0', color: '#1E293B', border: 'none', padding: '8px 20px', borderRadius: '8px', cursor: 'pointer' }}>Tutup</button>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
+               <button onClick={() => setSelectedShipment(null)} style={{ background: '#E2E8F0', color: '#1E293B', border: 'none', padding: '8px 20px', borderRadius: '8px', cursor: 'pointer' }}>Batal</button>
+               <button onClick={handleSaveChanges} style={{ background: 'var(--primary-dark)', color: 'var(--primary-accent)', border: 'none', padding: '8px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Simpan</button>
             </div>
           </div>
         </div>

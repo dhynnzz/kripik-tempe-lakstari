@@ -54,6 +54,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Admin Reports Dashboard
     Route::get('/admin/reports/dashboard', [\App\Http\Controllers\ReportController::class, 'dashboardStats']);
+    Route::get('/admin/reports/analytics', [\App\Http\Controllers\ReportController::class, 'analyticsReport']);
 
     // Admin Accounts Management
     Route::get('/admin/accounts', [\App\Http\Controllers\AdminAccountController::class, 'index']);

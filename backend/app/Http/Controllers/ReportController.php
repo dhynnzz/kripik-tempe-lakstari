@@ -76,4 +76,110 @@ class ReportController extends Controller
             ]
         ]);
     }
+
+    public function analyticsReport(Request $request)
+    {
+        $period = $request->query('period', 'bulan'); // hari, minggu, bulan, tahun
+        
+        $query = Transaksi::query();
+        
+        $now = Carbon::now();
+        if ($period === 'hari') {
+            $query->whereDate('tanggal_transaksi', $now->toDateString());
+        } elseif ($period === 'minggu') {
+            $query->whereBetween('tanggal_transaksi', [$now->startOfWeek()->toDateString(), $now->endOfWeek()->toDateString()]);
+        } elseif ($period === 'bulan') {
+            $query->whereMonth('tanggal_transaksi', $now->month)
+                  ->whereYear('tanggal_transaksi', $now->year);
+        } elseif ($period === 'tahun') {
+            $query->whereYear('tanggal_transaksi', $now->year);
+        }
+
+        // 1. Total Omset Penjualan (hanya pesanan yang dibayar/selesai)
+        $omsetQuery = clone $query;
+        $totalOmset = $omsetQuery->whereIn('status_pembayaran', ['paid', 'settlement'])->sum('total_pembayaran');
+
+        // 2. Total Transaksi Selesai (atau dibayar)
+        $transaksiSelesaiQuery = clone $query;
+        $totalTransaksiSelesai = $transaksiSelesaiQuery->where('status_transaksi', 'selesai')->count();
+        $totalSemuaTransaksi = (clone $query)->count();
+        $persenValid = $totalSemuaTransaksi > 0 ? round(($totalTransaksiSelesai / $totalSemuaTransaksi) * 100, 1) : 0;
+
+        // 3. Rata-rata Nilai Transaksi
+        $rataRata = $totalTransaksiSelesai > 0 ? $totalOmset / $totalTransaksiSelesai : 0;
+
+        // 4. Laporan Produk Terlaris & 5. Total Produk Terjual
+        // Perlu join ke detail transaksi
+        $produkTerjual = \DB::table('detail_transaksi')
+            ->join('transaksi', 'detail_transaksi.id_transaksi', '=', 'transaksi.id_transaksi')
+            ->join('products', 'detail_transaksi.id_product', '=', 'products.id_product')
+            ->leftJoin('categories', 'products.id_category', '=', 'categories.id_category')
+            ->select('products.nama_product', 'categories.nama_category as kategori', \DB::raw('SUM(detail_transaksi.jumlah) as total_terjual'))
+            ->whereIn('transaksi.status_pembayaran', ['paid', 'settlement']);
+            
+        if ($period === 'hari') {
+            $produkTerjual->whereDate('transaksi.tanggal_transaksi', $now->toDateString());
+        } elseif ($period === 'minggu') {
+            $produkTerjual->whereBetween('transaksi.tanggal_transaksi', [$now->copy()->startOfWeek()->toDateString(), $now->copy()->endOfWeek()->toDateString()]);
+        } elseif ($period === 'bulan') {
+            $produkTerjual->whereMonth('transaksi.tanggal_transaksi', $now->month)
+                          ->whereYear('transaksi.tanggal_transaksi', $now->year);
+        } elseif ($period === 'tahun') {
+            $produkTerjual->whereYear('transaksi.tanggal_transaksi', $now->year);
+        }
+        
+        $produkTerlaris = $produkTerjual->groupBy('products.id_product', 'products.nama_product', 'categories.nama_category')
+            ->orderByDesc('total_terjual')
+            ->take(5)
+            ->get();
+            
+        $totalProdukTerjual = $produkTerlaris->sum('total_terjual'); // ini cuma top 5, untuk total asli hitung dari db:
+        $totalProdukTerjualAsli = \DB::table('detail_transaksi')
+            ->join('transaksi', 'detail_transaksi.id_transaksi', '=', 'transaksi.id_transaksi')
+            ->whereIn('transaksi.status_pembayaran', ['paid', 'settlement']);
+        
+        if ($period === 'hari') {
+            $totalProdukTerjualAsli->whereDate('transaksi.tanggal_transaksi', $now->toDateString());
+        } elseif ($period === 'minggu') {
+            $totalProdukTerjualAsli->whereBetween('transaksi.tanggal_transaksi', [$now->copy()->startOfWeek()->toDateString(), $now->copy()->endOfWeek()->toDateString()]);
+        } elseif ($period === 'bulan') {
+            $totalProdukTerjualAsli->whereMonth('transaksi.tanggal_transaksi', $now->month)
+                                   ->whereYear('transaksi.tanggal_transaksi', $now->year);
+        } elseif ($period === 'tahun') {
+            $totalProdukTerjualAsli->whereYear('transaksi.tanggal_transaksi', $now->year);
+        }
+        $totalBungkus = $totalProdukTerjualAsli->sum('jumlah');
+
+        // 6. Rekap Status Pengiriman
+        $pengiriman = \DB::table('pengiriman')
+            ->join('transaksi', 'pengiriman.id_transaksi', '=', 'transaksi.id_transaksi')
+            ->select('pengiriman.status_pengiriman', \DB::raw('COUNT(pengiriman.id_pengiriman) as jumlah_transaksi'));
+            
+        if ($period === 'hari') {
+            $pengiriman->whereDate('transaksi.tanggal_transaksi', $now->toDateString());
+        } elseif ($period === 'minggu') {
+            $pengiriman->whereBetween('transaksi.tanggal_transaksi', [$now->copy()->startOfWeek()->toDateString(), $now->copy()->endOfWeek()->toDateString()]);
+        } elseif ($period === 'bulan') {
+            $pengiriman->whereMonth('transaksi.tanggal_transaksi', $now->month)
+                       ->whereYear('transaksi.tanggal_transaksi', $now->year);
+        } elseif ($period === 'tahun') {
+            $pengiriman->whereYear('transaksi.tanggal_transaksi', $now->year);
+        }
+        
+        $rekapPengiriman = $pengiriman->groupBy('pengiriman.status_pengiriman')
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'total_omset' => $totalOmset,
+                'total_transaksi_selesai' => $totalTransaksiSelesai,
+                'persen_valid' => $persenValid,
+                'total_produk_terjual' => $totalBungkus,
+                'rata_rata_transaksi' => $rataRata,
+                'produk_terlaris' => $produkTerlaris,
+                'rekap_pengiriman' => $rekapPengiriman
+            ]
+        ]);
+    }
 }

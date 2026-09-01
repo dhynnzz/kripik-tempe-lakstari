@@ -476,5 +476,17 @@ export const apiService = {
       console.error('Error update admin status:', error);
       return false;
     }
+  },
+
+  getAnalyticsReport: async (period: string = 'bulan'): Promise<any> => {
+    try {
+      const response = await apiFetch(`/admin/reports/analytics?period=${period}`);
+      if (!response.ok) throw new Error('Gagal mengambil report analytics');
+      const json = await response.json();
+      return json.data;
+    } catch (error) {
+      console.error('Error fetching analytics report:', error);
+      return null;
+    }
   }
 };

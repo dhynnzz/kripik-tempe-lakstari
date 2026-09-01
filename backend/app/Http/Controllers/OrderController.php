@@ -270,8 +270,9 @@ class OrderController extends Controller
 
         // Auto-Sync khusus untuk localhost/testing dimana webhook tidak tertangkap
         foreach ($orders as $order) {
-            // Hanya cek yang masih pending/belum lunas
-            if (in_array($order->status_pembayaran, ['pending', 'failed']) || $order->status_transaksi === 'menunggu_pembayaran') {
+            $pengiriman = $order->pengiriman;
+            // Cek jika pending ATAU (sudah lunas tapi belum masuk biteship)
+            if (in_array($order->status_pembayaran, ['pending', 'failed']) || $order->status_transaksi === 'menunggu_pembayaran' || ($order->status_pembayaran === 'paid' && $pengiriman && !$pengiriman->betship_order_id)) {
                 try {
                     $status = \Midtrans\Transaction::status($order->nomor_invoice);
                     
@@ -332,16 +333,20 @@ class OrderController extends Controller
 
         if ($request->has('status_pembayaran')) {
             $transaksi->status_pembayaran = $request->status_pembayaran;
-            if ($request->status_pembayaran == 'Paid') {
+            if (strtolower($request->status_pembayaran) == 'paid') {
                 $transaksi->paid_at = now();
-                if ($transaksi->status_transaksi == 'Menunggu Pembayaran') {
-                    $transaksi->status_transaksi = 'Diproses';
+                if (strtolower($transaksi->status_transaksi) == 'menunggu_pembayaran' || strtolower($transaksi->status_transaksi) == 'menunggu pembayaran') {
+                    $transaksi->status_transaksi = 'diproses';
                 }
+                \App\Http\Controllers\BiteshipController::createOrder($transaksi);
             }
         }
 
         if ($request->has('status_transaksi')) {
             $transaksi->status_transaksi = $request->status_transaksi;
+            if (strtolower($request->status_transaksi) == 'diproses') {
+                \App\Http\Controllers\BiteshipController::createOrder($transaksi);
+            }
         }
 
         $transaksi->save();
@@ -540,9 +545,27 @@ class OrderController extends Controller
             }
         }
 
+        // Ambil data tracking dari Biteship jika resi sudah ada
+        $trackingHistory = null;
+        if ($order->pengiriman && $order->pengiriman->nomor_resi) {
+            $biteshipData = \App\Http\Controllers\BiteshipController::getTrackingData(
+                $order->pengiriman->nomor_resi, 
+                $order->pengiriman->kurir
+            );
+            
+            if ($biteshipData && isset($biteshipData['success']) && $biteshipData['success']) {
+                $trackingHistory = $biteshipData['history'] ?? null;
+            }
+        }
+
+        $orderData = $order->toArray();
+        if ($trackingHistory && isset($orderData['pengiriman'])) {
+            $orderData['pengiriman']['history'] = $trackingHistory;
+        }
+
         return response()->json([
             'success' => true,
-            'data' => $order
+            'data' => $orderData
         ]);
     }
 }

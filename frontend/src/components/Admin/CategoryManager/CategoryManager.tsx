@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { apiService } from '../../../services/api';
+import Swal from 'sweetalert2';
 import './CategoryManager.css';
 import { useCategory } from '../../../context/CategoryContext';
 import { useProducts } from '../../../context/ProductContext';
@@ -27,9 +29,21 @@ const CategoryManager: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleDeleteCategory = (id: number, name: string) => {
-    if (window.confirm(`Yakin ingin menghapus kategori "${name}"?`)) {
+  const handleDelete = async (id: number, name: string) => {
+    const result = await Swal.fire({
+      title: 'Hapus Kategori?',
+      text: `Yakin ingin menghapus kategori "${name}"?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#DC2626',
+      cancelButtonColor: '#64748B',
+      confirmButtonText: 'Ya, Hapus',
+      cancelButtonText: 'Batal'
+    });
+    
+    if (result.isConfirmed) {
       deleteCategory(id);
+      Swal.fire('Terhapus!', 'Kategori berhasil dihapus.', 'success');
     }
   };
 
@@ -214,7 +228,7 @@ const CategoryManager: React.FC = () => {
                             <button
                               className="danger"
                               onClick={() => {
-                                if (cat.id !== undefined) handleDeleteCategory(cat.id, cat.name);
+                                if (cat.id !== undefined) handleDelete(cat.id, cat.name);
                                 setActiveMenuId(null);
                               }}
                             >

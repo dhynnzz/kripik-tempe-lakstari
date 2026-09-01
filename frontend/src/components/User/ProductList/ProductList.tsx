@@ -21,7 +21,7 @@ const Spiral = ({ style }: { style: React.CSSProperties }) => (
 );
 
 const ProductList = () => {
-  const { products: allProducts } = useProducts();
+  const { products: allProducts, isLoadingProducts } = useProducts();
   const { addToCart } = useCart();
 
   // Hanya sembunyikan produk yang statusnya 'nonaktif' (produk dengan stok 0 / status 'habis' tetap tampil)
@@ -109,7 +109,19 @@ const ProductList = () => {
         <Spiral style={{ top: '96%', right: '5%', width: '85px', transform: 'rotate(80deg)' }} />
 
         <div className="products-grid-2x2">
-          {displayProducts.length === 0 ? (
+          {isLoadingProducts ? (
+            <div className="product-category-section skeleton-section">
+              <div className="skeleton-title"></div>
+              <div className="product-card-large skeleton-card">
+                <div className="skeleton-img"></div>
+                <div className="product-info">
+                  <div className="skeleton-line-title"></div>
+                  <div className="skeleton-line-desc"></div>
+                  <div className="skeleton-line-btn"></div>
+                </div>
+              </div>
+            </div>
+          ) : displayProducts.length === 0 ? (
             <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px', background: '#fff', borderRadius: '16px' }}>
               <h3>Belum Ada Produk Tersedia</h3>
               <p style={{ color: '#64748B' }}>Saat ini belum ada produk aktif yang siap dipesan.</p>
