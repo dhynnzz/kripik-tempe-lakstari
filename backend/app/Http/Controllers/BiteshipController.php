@@ -35,8 +35,8 @@ class BiteshipController extends Controller
         }
 
         $payload = [
-            'origin_postal_code' => $originPostalCode,
-            'destination_postal_code' => $request->destination_postal_code,
+            'origin_postal_code' => (int) $originPostalCode,
+            'destination_postal_code' => (int) $request->destination_postal_code,
             'couriers' => 'jne,jnt,sicepat', // default couriers
             'items' => $biteshipItems
         ];
@@ -90,8 +90,8 @@ class BiteshipController extends Controller
         }
 
         $payload = [
-            'origin_postal_code' => $originPostalCode,
-            'destination_postal_code' => $destinationPostalCode,
+            'origin_postal_code' => (int) $originPostalCode,
+            'destination_postal_code' => (int) $destinationPostalCode,
             'couriers' => strtolower($kurir),
             'items' => $biteshipItems
         ];
@@ -106,7 +106,7 @@ class BiteshipController extends Controller
                 $data = $response->json();
                 if (isset($data['pricing']) && is_array($data['pricing'])) {
                     foreach ($data['pricing'] as $pricing) {
-                        if (strtolower($pricing['courier_service_code']) === strtolower($layanan) || 
+                        if (strtolower($pricing['courier_service_code']) === strtolower($layanan) && 
                             strtolower($pricing['courier_name']) === strtolower($kurir)) {
                             
                             $actualCost = $pricing['price'];
@@ -165,11 +165,15 @@ class BiteshipController extends Controller
                 'shipper_contact_email' => 'admin@lakstari.com',
                 'shipper_organization' => 'Kripik Tempe Lakstari',
                 
+                // Referensi untuk pencarian di Dashboard Biteship
+                'reference_id' => $transaksi->nomor_invoice,
+                'invoice_id' => $transaksi->nomor_invoice,
+
                 // Data Asal Penjemputan (Origin)
                 'origin_contact_name' => 'Kripik Tempe Lakstari',
                 'origin_contact_phone' => '081234567890', // Bisa disesuaikan
                 'origin_address' => 'Toko Kripik Tempe Lakstari',
-                'origin_postal_code' => (int) env('BITESHIP_ORIGIN_POSTAL_CODE', 12440),
+                'origin_postal_code' => (int) env('BITESHIP_ORIGIN_POSTAL_CODE', 65311),
                 
                 // Data Penerima (Destination)
                 'destination_contact_name' => $alamat->nama_penerima ?? $pelanggan->nama_pelanggan,
@@ -180,9 +184,7 @@ class BiteshipController extends Controller
                 // Informasi Kurir
                 'courier_company' => strtolower($pengiriman->kurir),
                 'courier_type' => strtolower($pengiriman->layanan_kurir),
-                'delivery_type' => 'later',
-                'delivery_date' => date('Y-m-d', strtotime('+1 day')), // Besok
-                'delivery_time' => '09:00',
+                'delivery_type' => 'now',
                 
                 // Produk
                 'items' => $items,
@@ -212,6 +214,60 @@ class BiteshipController extends Controller
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Biteship Create Order Exception: ' . $e->getMessage());
             return false;
+        }
+    }
+
+    /**
+     * Membatalkan pesanan di Biteship
+     */
+    public static function cancelOrder(\App\Models\Pengiriman $pengiriman)
+    {
+        if (!$pengiriman->betship_order_id) return true; // Tidak ada yang perlu dibatalkan di Biteship
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => env('BITESHIP_API_KEY'),
+                'Content-Type' => 'application/json'
+            ])->delete('https://api.biteship.com/v1/orders/' . $pengiriman->betship_order_id, [
+                'cancellation_reason' => 'Dibatalkan oleh Admin Toko'
+            ]);
+
+            if ($response->successful()) {
+                // Berhasil dibatalkan di Biteship
+                $pengiriman->betship_order_id = null; // Bisa dikosongkan atau biarkan saja
+                $pengiriman->save();
+                return true;
+            }
+
+            \Illuminate\Support\Facades\Log::error('Biteship Cancel Order Error: ' . $response->body());
+            return false;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Biteship Cancel Order Exception: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Mengambil data pelacakan resi langsung dari Biteship
+     */
+    public static function getTrackingData($waybill_id, $courier_code)
+    {
+        try {
+            $apiKey = env('BITESHIP_API_KEY');
+            if (!$apiKey) return null;
+
+            $response = Http::withHeaders([
+                'Authorization' => $apiKey
+            ])->get("https://api.biteship.com/v1/trackings/{$waybill_id}/couriers/" . strtolower($courier_code));
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            return null;
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Biteship Tracking Error: ' . $e->getMessage());
+            return null;
         }
     }
 }

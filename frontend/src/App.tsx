@@ -50,7 +50,7 @@ function App() {
                       <Footer />
                     </>
                   ) : (
-                    <OrderTracking onBack={() => setCurrentView('home')} />
+                    <OrderTracking />
                   )}
                 </div>
 

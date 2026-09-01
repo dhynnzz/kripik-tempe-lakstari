@@ -28,8 +28,20 @@ class ShipmentController extends Controller
         
         if ($request->has('status_pengiriman')) {
             $pengiriman->status_pengiriman = $request->status_pengiriman;
+            
             if ($request->status_pengiriman == 'Terkirim' || $request->status_pengiriman == 'Selesai') {
                 $pengiriman->completed_at = now();
+            }
+
+            // Jika status diubah jadi Dibatalkan, batalkan juga di Biteship
+            if ($request->status_pengiriman == 'Dibatalkan') {
+                \App\Http\Controllers\BiteshipController::cancelOrder($pengiriman);
+                
+                // Ubah juga status transaksi induknya jika perlu
+                if ($pengiriman->transaksi) {
+                    $pengiriman->transaksi->status_transaksi = 'dibatalkan';
+                    $pengiriman->transaksi->save();
+                }
             }
         }
 

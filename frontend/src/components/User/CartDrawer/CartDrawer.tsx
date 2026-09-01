@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../../../context/CartContext';
+import Swal from 'sweetalert2';
 import './CartDrawer.css';
 import { apiService } from '../../../services/api';
 import { regionService, formatRegionName, type RegionItem } from '../../../services/regionService';
@@ -180,14 +181,14 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedTerms) {
-      alert('Silakan setujui Syarat & Ketentuan serta Kebijakan Privasi terlebih dahulu.');
+      Swal.fire({ title: 'Perhatian', text: 'Silakan setujui Syarat & Ketentuan serta Kebijakan Privasi terlebih dahulu.', icon: 'warning' });
       return;
     }
 
     setIsSubmitting(true);
     
     if (ongkir === 0) {
-      alert('Silakan cek dan pilih metode pengiriman terlebih dahulu.');
+      Swal.fire({ title: 'Perhatian', text: 'Silakan cek dan pilih metode pengiriman terlebih dahulu.', icon: 'warning' });
       setIsSubmitting(false);
       return;
     }
@@ -253,19 +254,19 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
             setCheckoutStep(2);
           },
           onError: function(_result: any) {
-            alert('Pembayaran gagal atau terjadi kesalahan.');
+            Swal.fire({ title: 'Gagal', text: 'Pembayaran gagal atau terjadi kesalahan.', icon: 'error' });
           },
           onClose: function() {
             // User closes popup without finishing
           }
         });
       } else {
-        alert("Gagal memproses pesanan: " + (res?.message || "Kesalahan server"));
+        Swal.fire({ title: 'Gagal', text: "Gagal memproses pesanan: " + (res?.message || "Kesalahan server"), icon: 'error' });
       }
     } catch (err: any) {
       setIsSubmitting(false);
       console.error(err);
-      alert("Terjadi kesalahan sistem di frontend: " + err.toString());
+      Swal.fire({ title: 'Error Sistem', text: "Terjadi kesalahan sistem di frontend: " + err.toString(), icon: 'error' });
     }
   };
 
@@ -275,7 +276,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
 
   const fetchShippingRates = async () => {
     if (!formData.kode_pos || formData.kode_pos.length < 5) {
-      alert('Masukkan kode pos yang valid (5 digit) untuk mengecek ongkir.');
+      Swal.fire({ title: 'Perhatian', text: 'Masukkan kode pos yang valid (5 digit) untuk mengecek ongkir.', icon: 'warning' });
       return;
     }
     setIsLoadingRates(true);
@@ -299,11 +300,11 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
         setShippingOptions(res.data.pricing);
       } else {
         const errMsg = res?.error?.error || res?.message || 'Pastikan kode pos benar atau area didukung.';
-        alert(`Gagal mengambil daftar ongkir: ${errMsg}`);
+        Swal.fire({ title: 'Gagal', text: `Gagal mengambil daftar ongkir: ${errMsg}`, icon: 'error' });
       }
     } catch (err: any) {
       console.error(err);
-      alert(`Terjadi kesalahan saat memuat ongkir: ${err.message || ''}`);
+      Swal.fire({ title: 'Error', text: `Terjadi kesalahan saat memuat ongkir: ${err.message || ''}`, icon: 'error' });
     } finally {
       setIsLoadingRates(false);
     }

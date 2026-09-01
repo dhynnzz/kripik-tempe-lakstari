@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useProducts, type ProductItem } from '../../../context/ProductContext';
 import { useCategory } from '../../../context/CategoryContext';
 import ImageCropperModal from './ImageCropperModal';
+import Swal from 'sweetalert2';
 import './ProductManager.css';
 
 const ProductManager: React.FC = () => {
@@ -130,9 +131,21 @@ const ProductManager: React.FC = () => {
   };
 
   // Delete product
-  const handleDeleteProduct = (id: number, name: string) => {
-    if (window.confirm(`Apakah Anda yakin ingin menghapus produk "${name}" dari katalog?`)) {
+  const handleDeleteProduct = async (id: number, name: string) => {
+    const result = await Swal.fire({
+      title: 'Hapus Produk?',
+      text: `Apakah Anda yakin ingin menghapus produk "${name}" dari katalog?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#DC2626',
+      cancelButtonColor: '#64748B',
+      confirmButtonText: 'Ya, Hapus',
+      cancelButtonText: 'Batal'
+    });
+    
+    if (result.isConfirmed) {
       deleteProduct(id);
+      Swal.fire('Terhapus!', 'Produk berhasil dihapus.', 'success');
     }
   };
 

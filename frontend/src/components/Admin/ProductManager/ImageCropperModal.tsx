@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import Cropper from 'react-easy-crop';
+import Swal from 'sweetalert2';
 import './ImageCropperModal.css';
 
 interface ImageCropperModalProps {
@@ -60,7 +61,8 @@ const ImageCropperModal: React.FC<ImageCropperModalProps> = ({ imageSrc, onCropC
       onCropComplete(base64Image);
     } catch (e) {
       console.error(e);
-      alert('Gagal memproses & mengompres gambar.');
+      Swal.fire({ title: 'Error', text: 'Gagal memproses & mengompres gambar.', icon: 'error' });
+    } finally {
       onCancel();
     }
   };

@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
 import { apiService } from '../../../services/api';
+import Swal from 'sweetalert2';
 import './OrderTracking.css';
 
-interface OrderTrackingProps {
-  onBack: () => void;
-}
+interface OrderTrackingProps {}
 
-const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
+const OrderTracking: React.FC<OrderTrackingProps> = () => {
   const [invoice, setInvoice] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
@@ -45,27 +44,25 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
     if (orderData && orderData.snap_token) {
       (window as any).snap.pay(orderData.snap_token, {
         onSuccess: function(_result: any) {
-          alert('Pembayaran berhasil!');
+          Swal.fire({ title: 'Berhasil', text: 'Pembayaran berhasil!', icon: 'success' });
           handleTrack({ preventDefault: () => {} } as any); // Refresh status
         },
         onPending: function(_result: any) {
           // Boleh direfresh atau dibiarkan
         },
         onError: function(_result: any) {
-          alert('Terjadi kesalahan saat memproses pembayaran.');
+          Swal.fire({ title: 'Gagal', text: 'Terjadi kesalahan saat memproses pembayaran.', icon: 'error' });
         }
       });
     } else {
-      alert('Gagal memuat popup pembayaran. Token tidak ditemukan.');
+      Swal.fire({ title: 'Gagal', text: 'Gagal memuat popup pembayaran. Token tidak ditemukan.', icon: 'error' });
     }
   };
 
   return (
     <div className="order-tracking-container">
       <div className="ot-header">
-        <button onClick={onBack} className="ot-back-btn" style={{ background: 'none', border: 'none', color: '#666', cursor: 'pointer', marginBottom: '10px', display: 'flex', alignItems: 'center', gap: '5px' }}>
-          &larr; Kembali
-        </button>
+
         <h2>Lacak Pesanan Anda</h2>
         <p>Ketahui status terkini pesanan Anda atau lanjutkan pembayaran.</p>
       </div>
@@ -158,6 +155,32 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
                   <span>Total Tagihan</span>
                   <strong>Rp {Number(orderData.total_pembayaran || 0).toLocaleString('id-ID')}</strong>
                 </div>
+
+                {orderData.pengiriman?.history && orderData.pengiriman.history.length > 0 && (
+                  <div className="tracking-timeline-container">
+                    <h4>Riwayat Perjalanan Paket</h4>
+                    <div className="tracking-timeline">
+                      {orderData.pengiriman.history.map((hist: any, index: number) => {
+                        const isLatest = index === 0;
+                        const statusClass = hist.status === 'delivered' ? 'delivered' : 'on-progress';
+                        return (
+                          <div key={index} className={`timeline-item ${isLatest ? 'latest' : ''} ${statusClass}`}>
+                            <div className="timeline-dot"></div>
+                            <div className="timeline-content">
+                              <div className="timeline-time">
+                                {new Date(hist.updated_at).toLocaleString('id-ID', {
+                                  day: '2-digit', month: 'short', year: 'numeric',
+                                  hour: '2-digit', minute: '2-digit'
+                                })}
+                              </div>
+                              <div className="timeline-note">{hist.note}</div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
 
                 {orderData.status_transaksi === 'menunggu_pembayaran' && (
                   <div className="action-box">
