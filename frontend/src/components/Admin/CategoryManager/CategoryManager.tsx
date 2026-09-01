@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { apiService } from '../../../services/api';
 import Swal from 'sweetalert2';
 import './CategoryManager.css';
 import { useCategory } from '../../../context/CategoryContext';

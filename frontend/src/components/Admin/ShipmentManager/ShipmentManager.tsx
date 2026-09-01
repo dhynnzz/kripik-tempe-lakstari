@@ -32,11 +32,6 @@ const ShipmentManager: React.FC = () => {
     fetchShipments(currentPage);
   }, [currentPage]);
 
-  const handleStatusChange = async (id: number, newStatus: string) => {
-    const success = await apiService.updateShipment(id, { status_pengiriman: newStatus });
-    if(success) fetchShipments(currentPage);
-  };
-
   const handleSaveChanges = async () => {
     if (!selectedShipment) return;
 

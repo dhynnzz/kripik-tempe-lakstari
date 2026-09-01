@@ -3,9 +3,11 @@ import { apiService } from '../../../services/api';
 import Swal from 'sweetalert2';
 import './OrderTracking.css';
 
-interface OrderTrackingProps {}
+interface OrderTrackingProps {
+  onBack?: () => void;
+}
 
-const OrderTracking: React.FC<OrderTrackingProps> = () => {
+const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
   const [invoice, setInvoice] = useState('');
   const [phone, setPhone] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,7 +64,30 @@ const OrderTracking: React.FC<OrderTrackingProps> = () => {
   return (
     <div className="order-tracking-container">
       <div className="ot-header">
-
+        {onBack && (
+          <button
+            type="button"
+            className="ot-back-btn"
+            onClick={onBack}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '6px',
+              marginBottom: '12px',
+              padding: '6px 14px',
+              borderRadius: '8px',
+              background: '#f1f5f9',
+              border: '1px solid #e2e8f0',
+              color: '#475569',
+              fontSize: '13px',
+              fontWeight: 500,
+              cursor: 'pointer',
+              transition: 'all 0.2s'
+            }}
+          >
+            &larr; Kembali ke Beranda
+          </button>
+        )}
         <h2>Lacak Pesanan Anda</h2>
         <p>Ketahui status terkini pesanan Anda atau lanjutkan pembayaran.</p>
       </div>
