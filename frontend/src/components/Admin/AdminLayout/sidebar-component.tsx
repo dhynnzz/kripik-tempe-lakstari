@@ -96,15 +96,7 @@ function IconPanelLeftClose() {
     </svg>
   );
 }
-function IconPanelLeftOpen() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="18" height="18" x="3" y="3" rx="2" />
-      <path d="M9 3v18" />
-      <path d="m14 9 3 3-3 3" />
-    </svg>
-  );
-}
+
 function IconChevronDown() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -116,24 +108,13 @@ function IconChevronDown() {
 /* ─── Brand Logo ─── */
 function BrandLogo() {
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-      <div style={{
-        width: "36px", height: "36px", borderRadius: "8px",
-        background: "#FAAC30",
-        display: "flex", alignItems: "center", justifyContent: "center"
-      }}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#232B45" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 6h18M3 12h18M3 18h18" />
-        </svg>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <span style={{ fontSize: "16px", fontWeight: 700, color: "#ffffff", lineHeight: 1.2 }}>
-          Lakstari
-        </span>
-        <span style={{ fontSize: "12px", color: "#94A3B8", lineHeight: 1.2 }}>
-          Admin Portal
-        </span>
-      </div>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <span style={{ fontSize: "17px", fontWeight: 800, color: "#ffffff", letterSpacing: "0.02em", lineHeight: 1.2 }}>
+        Lakstari
+      </span>
+      <span style={{ fontSize: "11.5px", color: "#94A3B8", fontWeight: 500, lineHeight: 1.2, marginTop: "2px" }}>
+        Admin Portal
+      </span>
     </div>
   );
 }
@@ -211,8 +192,8 @@ export function Lakstari21stSidebar({
 
   return (
     <>
-      {/* Backdrop hanya untuk mobile (layar kecil) saat sidebar terbuka sebagai overlay */}
-      {isOpen && typeof window !== 'undefined' && window.innerWidth <= 1024 && (
+      {/* Backdrop overlay saat sidebar terbuka di layar mobile / tablet */}
+      {isOpen && (
         <div
           className="lakstari-sidebar-backdrop"
           onClick={toggleSidebar}
@@ -394,12 +375,6 @@ export function Lakstari21stSidebar({
                   padding: "12px 12px 4px",
                   marginTop: "6px",
                 }}>
-                  <div style={{
-                    width: "36px", height: "36px", borderRadius: "50%", flexShrink: 0,
-                    background: "rgba(250,172,48,0.15)", border: "1px solid rgba(250,172,48,0.4)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: "15px", fontWeight: 800, color: "#FAAC30"
-                  }}>A</div>
                   <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
                     <span style={{ fontSize: "14px", fontWeight: 600, color: "#E2E8F0", lineHeight: 1.3 }}>Admin Lakstari</span>
                     <span style={{ fontSize: "12px", color: "#64748B", lineHeight: 1.3 }}>Pemilik Toko</span>
@@ -412,27 +387,6 @@ export function Lakstari21stSidebar({
             </>
           )}
         </aside>
-
-        {/* Floating Toggle Button when sidebar is closed */}
-        {!isOpen && (
-          <button
-            onClick={toggleSidebar}
-            style={{
-              position: "absolute", left: "8px", top: "16px",
-              background: "#232B45", border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px", padding: "8px",
-              cursor: "pointer", color: "#94A3B8",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              zIndex: 110, boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-              transition: "color 0.2s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.color = "#FAAC30"}
-            onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.color = "#94A3B8"}
-            title="Buka Sidebar"
-          >
-            <IconPanelLeftOpen />
-          </button>
-        )}
       </div>
     </>
   );

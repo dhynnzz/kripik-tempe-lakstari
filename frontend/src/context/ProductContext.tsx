@@ -31,10 +31,10 @@ interface ProductContextType {
   products: ProductItem[];
   updateProductStock: (id: number, newStock: number) => void;
   updateProductPrice: (id: number, newPrice: number) => void;
-  updateProduct: (updated: ProductItem) => void;
+  updateProduct: (updated: ProductItem) => Promise<boolean>;
   toggleProductStatus: (id: number) => void;
-  addProduct: (product: Omit<ProductItem, 'id'>) => void;
-  deleteProduct: (id: number) => void;
+  addProduct: (product: Omit<ProductItem, 'id'>) => Promise<boolean>;
+  deleteProduct: (id: number) => Promise<boolean>;
   updateProductsCategory: (oldCat: string, newCat: string) => void;
   refreshProducts: () => void;
   isLoadingProducts: boolean;
@@ -52,9 +52,11 @@ export const normalizeProductImage = (img?: string): string => {
 
   if (img.startsWith('data:') || img.startsWith('http://') || img.startsWith('https://')) return img;
   
-  if (img.startsWith('/storage/')) {
+  const cleanImg = img.trim();
+  if (cleanImg.startsWith('/storage/') || cleanImg.startsWith('storage/')) {
     const baseUrl = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', '') : 'http://localhost:8000';
-    return `${baseUrl}${img}`;
+    const storagePath = cleanImg.startsWith('/') ? cleanImg : `/${cleanImg}`;
+    return `${baseUrl}${storagePath}`;
   }
 
   if (img.startsWith('/images/')) return img;
@@ -192,24 +194,54 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
     }
   };
 
-  const updateProduct = async (updated: ProductItem) => {
+  const updateProduct = async (updated: ProductItem): Promise<boolean> => {
     const stock = Math.max(0, updated.stock);
-    const autoStatus = stock === 0 ? 'habis' : (updated.status === 'habis' ? 'aktif' : updated.status);
-    const payload = { ...updated, stock, status: autoStatus };
+    const autoStatus: 'aktif' | 'nonaktif' | 'habis' = stock === 0 ? 'habis' : (updated.status === 'habis' ? 'aktif' : (updated.status || 'aktif'));
+    const payload: ProductItem = { ...updated, stock, status: autoStatus };
+
+    // Optimistic UI Update: langsung perbarui state di frontend tanpa jeda
+    setProducts(prev => prev.map(p => p.id === updated.id ? {
+      ...p,
+      ...payload,
+      priceStr: `Rp ${payload.priceNum.toLocaleString('id-ID')}`
+    } : p));
+
     if (updated.id !== undefined) {
       const success = await apiService.updateProduct(updated.id, payload);
-      if (success) fetchProducts();
+      if (success) {
+        await fetchProducts();
+        return true;
+      } else {
+        await fetchProducts();
+        return false;
+      }
     }
+    return false;
   };
 
-  const addProduct = async (productData: Omit<ProductItem, 'id'>) => {
+  const addProduct = async (productData: Omit<ProductItem, 'id'>): Promise<boolean> => {
     const added = await apiService.addProduct(productData);
-    if (added) fetchProducts();
+    if (added) {
+      await fetchProducts();
+      return true;
+    }
+    return false;
   };
 
-  const deleteProduct = async (id: number) => {
+  const deleteProduct = async (id: number): Promise<boolean> => {
+    // Optimistic UI Update: langsung singkirkan produk dari UI agar instan
+    const previous = [...products];
+    setProducts(prev => prev.filter(p => p.id !== id));
+
     const success = await apiService.deleteProduct(id);
-    if (success) fetchProducts();
+    if (success) {
+      await fetchProducts();
+      return true;
+    } else {
+      // Revert jika gagal di server
+      setProducts(previous);
+      return false;
+    }
   };
 
   const updateProductsCategory = async (oldCat: string, newCat: string) => {

@@ -179,6 +179,35 @@ export const SalesAreaChart: React.FC<SalesAreaChartProps> = ({ refreshTrigger =
     setHoveredIndex(null);
   };
 
+  // Touch interaction for mobile finger scrubbing
+  const handleTouchMove = (e: React.TouchEvent<SVGSVGElement>) => {
+    if (!svgRef.current || !chartCoordinates.length) return;
+    const touch = e.touches[0];
+    if (!touch) return;
+    const rect = svgRef.current.getBoundingClientRect();
+    const clientX = touch.clientX - rect.left;
+    const svgX = (clientX / rect.width) * svgWidth;
+
+    let closestIdx = 0;
+    let minDistance = Infinity;
+
+    chartCoordinates.forEach((coord, idx) => {
+      const dist = Math.abs(coord.x - svgX);
+      if (dist < minDistance) {
+        minDistance = dist;
+        closestIdx = idx;
+      }
+    });
+
+    setHoveredIndex(closestIdx);
+  };
+
+  const handleTouchEnd = () => {
+    setTimeout(() => {
+      setHoveredIndex(null);
+    }, 2000);
+  };
+
   const activeCoord = hoveredIndex !== null ? chartCoordinates[hoveredIndex] : null;
 
   // Decide X-axis labels to display to avoid cluttering on monthly (30 days)
@@ -294,6 +323,9 @@ export const SalesAreaChart: React.FC<SalesAreaChartProps> = ({ refreshTrigger =
               className="dh-sales-svg"
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
+              onTouchStart={handleTouchMove}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
             >
               <defs>
                 {/* Ambient Stroke Glow Filter */}

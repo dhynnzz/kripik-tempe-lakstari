@@ -52,7 +52,7 @@ const ProductManager: React.FC = () => {
     return matchSearch && matchCategory && matchStatus;
   });
 
-  const handleAddProduct = (e: React.FormEvent) => {
+  const handleAddProduct = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProductName.trim()) return;
 
@@ -61,11 +61,11 @@ const ProductManager: React.FC = () => {
     const formattedPrice = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(priceNum);
 
     const selectedCat = categories.find(c => c.name === newProductCategory);
-    const catId = selectedCat ? selectedCat.id : 1;
+    const catId = selectedCat ? (selectedCat.id || selectedCat.id_category || 1) : 1;
 
-    addProduct({
+    const success = await addProduct({
       name: newProductName,
-      category: newProductCategory,
+      category: newProductCategory || 'Kripik Tempe',
       categoryId: catId,
       flavor: newProductFlavor,
       price: formattedPrice,
@@ -79,8 +79,23 @@ const ProductManager: React.FC = () => {
       desc: newProductDesc || 'Produk olahan Kripik tempe Lakstari lezat & berkualitas.'
     });
 
-    setIsAddModalOpen(false);
-    resetNewForm();
+    if (success) {
+      setIsAddModalOpen(false);
+      resetNewForm();
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil Ditambahkan!',
+        text: `Produk "${newProductName}" berhasil masuk ke katalog.`,
+        timer: 1600,
+        showConfirmButton: false
+      });
+    } else {
+      Swal.fire({
+        icon: 'error',
+        title: 'Gagal Menambahkan',
+        text: 'Terjadi kendala saat menyimpan produk ke server.',
+      });
+    }
   };
 
   const resetNewForm = () => {
@@ -95,7 +110,7 @@ const ProductManager: React.FC = () => {
   };
 
   // Handle Save Full Edit
-  const handleSaveEdit = (e: React.FormEvent) => {
+  const handleSaveEdit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProduct) return;
 
@@ -108,8 +123,18 @@ const ProductManager: React.FC = () => {
     const stockNum = Math.max(0, parseInt(editingProduct.stock as any, 10) || 0);
     const autoStatus = stockNum === 0 ? 'habis' : (editingProduct.status === 'habis' ? 'aktif' : editingProduct.status);
 
-    updateProduct({ ...editingProduct, stock: stockNum, status: autoStatus, categoryId: finalCatId });
+    const success = await updateProduct({ ...editingProduct, stock: stockNum, status: autoStatus, categoryId: finalCatId });
     setEditingProduct(null);
+
+    if (success) {
+      Swal.fire({
+        icon: 'success',
+        title: 'Berhasil Disimpan!',
+        text: `Stok dan data produk "${editingProduct.name}" berhasil diperbarui.`,
+        timer: 1500,
+        showConfirmButton: false
+      });
+    }
   };
 
   // Quick Price Save
@@ -144,8 +169,22 @@ const ProductManager: React.FC = () => {
     });
     
     if (result.isConfirmed) {
-      deleteProduct(id);
-      Swal.fire('Terhapus!', 'Produk berhasil dihapus.', 'success');
+      const ok = await deleteProduct(id);
+      if (ok) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Terhapus!',
+          text: `Produk "${name}" berhasil dihapus dari katalog.`,
+          timer: 1600,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Menghapus',
+          text: 'Terjadi kendala saat menghapus produk dari server.',
+        });
+      }
     }
   };
 
@@ -221,7 +260,13 @@ const ProductManager: React.FC = () => {
                       {/* Produk (Foto + Nama + Rasa/Berat) */}
                       <td>
                         <div className="pm-compact-product">
-                          <img src={product.image} alt={product.name} className="pm-compact-img" onClick={() => setDetailProduct(product)} />
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="pm-compact-img"
+                            onClick={() => setDetailProduct(product)}
+                            onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/flavor-original.png'; }}
+                          />
                           <div className="pm-compact-info">
                             <span className="pm-compact-name" onClick={() => setDetailProduct(product)}>{product.name}</span>
                             <span className="pm-compact-desc">{product.flavor || product.category} • {product.weight || '100 gram'}</span>
@@ -319,6 +364,104 @@ const ProductManager: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Product Cards (Visible on mobile <= 768px, No Horizontal Scroll) */}
+        <div className="pm-mobile-card-list">
+          {filteredProducts.length === 0 ? (
+            <div className="pm-mob-empty">
+              Tidak ada produk yang cocok dengan pencarian / filter Anda.
+            </div>
+          ) : (
+            filteredProducts.map((product: ProductItem) => {
+              const currentStatus = product.stock === 0 ? 'habis' : (product.status === 'habis' ? 'aktif' : product.status);
+              return (
+                <div key={product.id} className="pm-mob-card">
+                  {/* Top: Image, Name, Badge, and Action Button */}
+                  <div className="pm-mob-card-header">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="pm-mob-img"
+                      onClick={() => setDetailProduct(product)}
+                      onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/flavor-original.png'; }}
+                    />
+                    <div className="pm-mob-info" onClick={() => setDetailProduct(product)}>
+                      <span className="pm-mob-name">{product.name}</span>
+                      <div className="pm-mob-meta">
+                        <span className="pm-mob-cat">{product.category}</span>
+                        <span className="pm-mob-dot">•</span>
+                        <span>{product.flavor || 'Original'}</span>
+                        <span className="pm-mob-dot">•</span>
+                        <span>{product.weight || '100 gram'}</span>
+                      </div>
+                    </div>
+
+                    <div className="pm-mob-action-wrap">
+                      {/* Status Toggle in Header */}
+                      {currentStatus === 'habis' ? (
+                        <span className="st-habis pm-mob-status-pill" title="Stok habis">Habis</span>
+                      ) : (
+                        <label className="pm-mob-status-toggle" title="Klik untuk ubah status produk">
+                          <input
+                            type="checkbox"
+                            checked={currentStatus === 'aktif'}
+                            onChange={() => product.id !== undefined && toggleProductStatus(product.id)}
+                          />
+                          <span className={`pm-mob-status-pill ${currentStatus === 'aktif' ? 'is-active' : 'is-inactive'}`}>
+                            <span className="pm-mob-status-dot"></span>
+                            <span>{currentStatus === 'aktif' ? 'Aktif' : 'Nonaktif'}</span>
+                          </span>
+                        </label>
+                      )}
+
+                      <button
+                        className="pm-dots-btn"
+                        onClick={() => setActiveMenuId(activeMenuId === product.id ? null : (product.id ?? null))}
+                        aria-label="Menu Opsi"
+                      >
+                        ⋮
+                      </button>
+
+                      {activeMenuId === product.id && (
+                        <React.Fragment>
+                          <div className="pm-dropdown-overlay" onClick={() => setActiveMenuId(null)}></div>
+                          <div className="pm-action-dropdown pm-mob-dropdown">
+                            <button onClick={() => { setEditingProduct({ ...product }); setActiveMenuId(null); }}>
+                              Edit Produk
+                            </button>
+                            <button className="danger" onClick={() => { if (product.id !== undefined) handleDeleteProduct(product.id, product.name); setActiveMenuId(null); }}>
+                              Hapus Produk
+                            </button>
+                          </div>
+                        </React.Fragment>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Divider */}
+                  <div className="pm-mob-divider" />
+
+                  {/* Bottom: Price and Stock */}
+                  <div className="pm-mob-card-footer">
+                    {/* Price */}
+                    <div className="pm-mob-col">
+                      <span className="pm-mob-label">Harga Satuan</span>
+                      <span className="pm-mob-val price">{product.priceStr}</span>
+                    </div>
+
+                    {/* Stock */}
+                    <div className="pm-mob-col stock">
+                      <span className="pm-mob-label">Stok Tersedia</span>
+                      <span className={`pm-mob-val ${product.stock === 0 ? 'text-red' : ''}`}>
+                        {product.stock} pcs
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 
@@ -522,7 +665,7 @@ const ProductManager: React.FC = () => {
                   <label>Stok Barang</label>
                   <input
                     type="text"
-                    value={editingProduct.stock ? editingProduct.stock.toLocaleString('id-ID') : ''}
+                    value={editingProduct.stock !== undefined ? editingProduct.stock : 0}
                     onChange={(e) => {
                       const raw = e.target.value.replace(/[^0-9]/g, '');
                       setEditingProduct({ ...editingProduct, stock: raw ? parseInt(raw, 10) : 0 });
@@ -580,7 +723,11 @@ const ProductManager: React.FC = () => {
 
             <div className="pm-detail-content">
               <div className="pm-detail-image">
-                <img src={detailProduct.image} alt={detailProduct.name} />
+                <img
+                  src={detailProduct.image}
+                  alt={detailProduct.name}
+                  onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/flavor-original.png'; }}
+                />
               </div>
 
               <div className="pm-detail-info">
@@ -623,7 +770,7 @@ const ProductManager: React.FC = () => {
               </div>
             </div>
 
-            <div className="modal-actions" style={{ marginTop: '20px' }}>
+            <div className="modal-actions pm-detail-actions">
               <button type="button" className="save-btn" onClick={() => setDetailProduct(null)}>Tutup Detail</button>
             </div>
           </div>

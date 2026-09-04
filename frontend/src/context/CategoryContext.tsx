@@ -13,10 +13,10 @@ export interface CategoryItem {
 
 interface CategoryContextType {
   categories: CategoryItem[];
-  addCategory: (name: string) => void;
-  updateCategory: (id: number, name: string) => void;
-  deleteCategory: (id: number) => void;
-  toggleCategoryStatus: (id: number) => void;
+  addCategory: (name: string) => Promise<{ success: boolean; message?: string }>;
+  updateCategory: (id: number, name: string) => Promise<{ success: boolean; message?: string }>;
+  deleteCategory: (id: number) => Promise<{ success: boolean; message?: string }>;
+  toggleCategoryStatus: (id: number) => Promise<boolean>;
   refreshCategories: () => void;
 }
 
@@ -27,18 +27,18 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const fetchCategories = async () => {
     try {
-      // Kita perlu tambahkan getCategories di api.ts jika belum ada, atau panggil fetch langsung
-      const response = await fetch('http://localhost:8000/api/categories');
-      if (response.ok) {
-        const data = await response.json();
-        const formatted = data.map((c: any) => ({
-          id: c.id_category,
-          name: c.nama_category,
-          status: c.status_category,
-          products_count: c.products_count
-        }));
-        setCategories(formatted);
-      }
+      const res: any = await apiService.getCategories();
+      const rawList: any[] = Array.isArray(res) ? res : (res?.data || []);
+      const formatted = rawList.map((c: any) => ({
+        id: c.id_category,
+        id_category: c.id_category,
+        name: c.nama_category,
+        nama_category: c.nama_category,
+        status: c.status_category || 'aktif',
+        status_category: c.status_category || 'aktif',
+        products_count: c.products_count ?? 0
+      }));
+      setCategories(formatted);
     } catch (err) {
       console.error('Gagal mengambil kategori:', err);
     }
@@ -70,27 +70,56 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
     fetchCategories();
   };
 
-  const addCategory = async (name: string) => {
-    const success = await apiService.addCategory(name);
-    if (success) fetchCategories();
+  const addCategory = async (name: string): Promise<{ success: boolean; message?: string }> => {
+    const res = await apiService.addCategory(name);
+    if (res.success) {
+      await fetchCategories();
+    }
+    return res;
   };
 
-  const updateCategory = async (id: number, name: string) => {
-    const success = await apiService.updateCategory(id, { nama_category: name });
-    if (success) fetchCategories();
+  const updateCategory = async (id: number, name: string): Promise<{ success: boolean; message?: string }> => {
+    // Optimistic UI update
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, name, nama_category: name } : c));
+    const res = await apiService.updateCategory(id, { nama_category: name });
+    if (res.success) {
+      await fetchCategories();
+    } else {
+      await fetchCategories();
+    }
+    return res;
   };
 
-  const deleteCategory = async (id: number) => {
-    const success = await apiService.deleteCategory(id);
-    if (success) fetchCategories();
+  const deleteCategory = async (id: number): Promise<{ success: boolean; message?: string }> => {
+    const previous = [...categories];
+    // Optimistic UI update
+    setCategories(prev => prev.filter(c => c.id !== id));
+
+    const res = await apiService.deleteCategory(id);
+    if (res.success) {
+      await fetchCategories();
+    } else {
+      // Revert if server rejected (e.g., category has products)
+      setCategories(previous);
+    }
+    return res;
   };
 
-  const toggleCategoryStatus = async (id: number) => {
+  const toggleCategoryStatus = async (id: number): Promise<boolean> => {
     const cat = categories.find(c => c.id === id);
-    if (!cat) return;
-    const newStatus = cat.status === 'aktif' ? 'nonaktif' : 'aktif';
-    const success = await apiService.updateCategory(id, { status_category: newStatus });
-    if (success) fetchCategories();
+    if (!cat) return false;
+    const newStatus: 'aktif' | 'nonaktif' = cat.status === 'aktif' ? 'nonaktif' : 'aktif';
+    
+    // Optimistic UI Update
+    setCategories(prev => prev.map(c => c.id === id ? { ...c, status: newStatus, status_category: newStatus } : c));
+
+    const res = await apiService.updateCategory(id, { status_category: newStatus });
+    if (!res.success) {
+      // Revert
+      setCategories(prev => prev.map(c => c.id === id ? { ...c, status: cat.status, status_category: cat.status } : c));
+      return false;
+    }
+    return true;
   };
 
   return (

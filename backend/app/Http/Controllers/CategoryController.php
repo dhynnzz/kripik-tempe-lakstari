@@ -29,8 +29,9 @@ class CategoryController extends Controller
             'nama_category' => $request->nama_category,
             'status_category' => $request->status_category ?? 'aktif'
         ]);
+        $category->products_count = 0;
 
-        return response()->json(['success' => true, 'message' => 'Kategori berhasil ditambahkan', 'data' => $category]);
+        return response()->json(['success' => true, 'message' => 'Kategori berhasil ditambahkan', 'data' => $category], 201);
     }
 
     public function update(Request $request, $id)
@@ -61,8 +62,20 @@ class CategoryController extends Controller
             return response()->json(['success' => false, 'message' => 'Kategori tidak ditemukan'], 404);
         }
 
-        $category->delete();
+        $productCount = $category->products()->count();
+        if ($productCount > 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "Kategori \"{$category->nama_category}\" tidak dapat dihapus karena masih digunakan oleh {$productCount} produk aktif. Silakan ubah kategori produk terkait terlebih dahulu."
+            ], 422);
+        }
 
-        return response()->json(['success' => true, 'message' => 'Kategori berhasil dihapus']);
+        try {
+            $category->delete();
+            return response()->json(['success' => true, 'message' => 'Kategori berhasil dihapus']);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal menghapus kategori: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus kategori dari database.'], 500);
+        }
     }
 }

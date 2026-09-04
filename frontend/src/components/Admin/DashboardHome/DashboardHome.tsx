@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { normalizeProductImage } from '../../../context/ProductContext';
 import './DashboardHome.css';
 
 /* ── Summary Card Icons (Lucide-style SVG, Clean & Monochromatic) ── */
@@ -68,14 +69,6 @@ const orderStatusColors: Record<string, string> = {
   'Dibatalkan': '#64748B',
 };
 
-/* ════════════════════════════════════════
-   C. RINGKASAN PEMBAYARAN
-════════════════════════════════════════ */
-const payStatusColors: Record<string, string> = {
-  'Paid': 'py-paid',
-  'Pending': 'py-pending',
-  'Failed': 'py-failed',
-};
 
 const payBadge: Record<string,string> = {
   Paid:'b-paid', Pending:'b-pending', Failed:'b-failed',
@@ -87,6 +80,7 @@ const txBadge: Record<string,string> = {
 };
 import { apiService } from '../../../services/api';
 import { SalesAreaChart } from './SalesAreaChart';
+import { printReceipt } from '../../../utils/printReceipt';
 
 export default function DashboardHome() {
   const [stats, setStats] = useState<any>(null);
@@ -99,7 +93,6 @@ export default function DashboardHome() {
   const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [hoveredBar, setHoveredBar] = useState<number | null>(null);
-  const [hoveredSlice, setHoveredSlice] = useState<string | null>(null);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshCounter, setRefreshCounter] = useState(0);
@@ -145,6 +138,9 @@ export default function DashboardHome() {
   };
 
   // Filter & Sort Pipeline
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 5;
+
   const recentOrders = stats?.recentOrders || [];
   const stockLow = stats?.stokMenipis || [];
   const stockEmpty = stats?.stokHabis || [];
@@ -165,6 +161,26 @@ export default function DashboardHome() {
       if (sortKey === 'name-asc')    return (a.pelanggan?.nama_pelanggan || '').localeCompare(b.pelanggan?.nama_pelanggan || '');
       return 0;
     });
+
+  const totalPages = Math.ceil(filtered.length / pageSize) || 1;
+  const paginatedOrders = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
+  const getPageNumbers = (current: number, total: number): (number | string)[] => {
+    if (total <= 7) {
+      return Array.from({ length: total }, (_, i) => i + 1);
+    }
+    if (current <= 4) {
+      return [1, 2, 3, 4, 5, '...', total];
+    }
+    if (current >= total - 3) {
+      return [1, '...', total - 4, total - 3, total - 2, total - 1, total];
+    }
+    return [1, '...', current - 1, current, current + 1, '...', total];
+  };
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, filterStatus, sortKey]);
 
   const summaryCards = [
     { 
@@ -223,30 +239,12 @@ export default function DashboardHome() {
     name, count: count as number, color: orderStatusColors[name] || '#64748B'
   })) : [];
 
-  const payStatuses = stats ? Object.entries(stats.payStatuses).map(([name, count]) => ({
-    name, count: count as number, badgeCls: payStatusColors[name] || 'py-pending'
-  })) : [];
-
-  const getPieCoords = (percent: number) => {
-    const x = Math.cos(2 * Math.PI * percent);
-    const y = Math.sin(2 * Math.PI * percent);
-    return [x, y];
-  };
-
-  const springConfig = { type: "spring" as const, stiffness: 300, damping: 20 };
-  const payTotal = payStatuses.reduce((a: number, b: any) => a + b.count, 0);
-  
-  let cumulativePercent = 0;
-  const pieData = payStatuses.map((p: any) => {
-    const pct = payTotal > 0 ? (p.count / payTotal) * 100 : 0;
-    return {
-      label: p.name,
-      count: p.count,
-      value: Math.round(pct),
-      rawPct: pct / 100,
-      color: p.name === 'Paid' ? '#10B981' : p.name === 'Pending' ? '#F59E0B' : '#EF4444'
-    };
-  });
+  // Top 5 Produk & Varian Terlaris
+  const topProducts: any[] = stats?.topProducts || [];
+  const maxSold = topProducts.length > 0
+    ? Math.max(...topProducts.map((p: any) => Number(p.total_terjual) || 0), 1)
+    : 1;
+  const totalUnitsSold = topProducts.reduce((sum: number, p: any) => sum + (Number(p.total_terjual) || 0), 0);
 
   return (
     <div className="dh-root" onClick={() => { setActiveMenuInv(null); setShowSortMenu(false); setShowFilterMenu(false); }}>
@@ -369,144 +367,108 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        {/* C: Ringkasan Pembayaran (Bento Donut / Pie Chart) */}
+        {/* C: Produk & Varian Terlaris (Top 5 Best Selling Products) */}
         <div className="dh-panel">
           <div className="dh-panel-head">
-            <p className="dh-panel-title">Ringkasan Pembayaran</p>
-            <span className="dh-panel-count">Total {payTotal} transaksi</span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <p className="dh-panel-title">Produk & Varian Terlaris</p>
+              <span className="dh-badge-top-selling">Top 5</span>
+            </div>
+            <span className="dh-panel-count">
+              {totalUnitsSold > 0 ? `${totalUnitsSold} pcs terjual (Lunas)` : 'Berdasarkan transaksi lunas'}
+            </span>
           </div>
 
-          <div className="dh-bento-donut-container">
-            <div className="dh-donut-visual-wrap">
-              <div className="dh-donut-svg-box">
-                <motion.svg
-                  viewBox="-1.2 -1.2 2.4 2.4"
-                  className="dh-donut-svg"
-                  initial={{ rotate: -180, scale: 0 }}
-                  animate={{ rotate: -90, scale: 1 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 100,
-                    damping: 20,
-                    delay: 0.1,
-                  }}
-                >
-                  {pieData.map((slice: any) => {
-                    const startPercent = cumulativePercent;
-                    const endPercent = cumulativePercent + (slice.rawPct || 0);
-                    cumulativePercent = endPercent;
-
-                    if (slice.rawPct === 0) return null;
-
-                    const [startX, startY] = getPieCoords(startPercent);
-                    const [endX, endY] = getPieCoords(endPercent);
-                    const largeArcFlag = slice.rawPct > 0.5 ? 1 : 0;
-                    const pathData = [
-                      `M ${startX} ${startY}`,
-                      `A 1 1 0 ${largeArcFlag} 1 ${endX} ${endY}`,
-                      `L 0 0`,
-                    ].join(" ");
-                    const isHovered = hoveredSlice === slice.label;
-                    const isDimmed = hoveredSlice !== null && !isHovered;
-
-                    return (
-                      <motion.path
-                        key={slice.label}
-                        d={pathData}
-                        fill={slice.color}
-                        className="dh-donut-slice"
-                        stroke="#ffffff"
-                        strokeWidth="0.03"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        animate={{
-                          translateX: isHovered ? (startX + endX) * 0.08 : 0,
-                          translateY: isHovered ? (startY + endY) * 0.08 : 0,
-                          scale: isHovered ? 1.05 : 1,
-                          opacity: isDimmed ? 0.35 : 1,
-                        }}
-                        transition={springConfig}
-                        onMouseEnter={() => setHoveredSlice(slice.label)}
-                        onMouseLeave={() => setHoveredSlice(null)}
-                      />
-                    );
-                  })}
-                  <motion.circle
-                    cx="0"
-                    cy="0"
-                    r="0.58"
-                    className="dh-donut-center-circle"
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ delay: 0.3, ...springConfig }}
-                  />
-                </motion.svg>
-
-                {/* Center Percentage / Total Text */}
-                <div className="dh-donut-center-text">
-                  <AnimatePresence mode="popLayout">
-                    {hoveredSlice ? (
-                      <motion.div
-                        key="hover-content"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className="dh-donut-center-val"
-                      >
-                        <span className="dh-donut-pct">
-                          {pieData.find((d: any) => d.label === hoveredSlice)?.value}%
-                        </span>
-                        <span className="dh-donut-sub">
-                          {hoveredSlice}
-                        </span>
-                      </motion.div>
-                    ) : (
-                      <motion.div
-                        key="default-content"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                        className="dh-donut-center-val"
-                      >
-                        <span className="dh-donut-pct">
-                          {payTotal}
-                        </span>
-                        <span className="dh-donut-sub">
-                          TOTAL
-                        </span>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+          <div className="dh-top-products-container">
+            {topProducts.length === 0 ? (
+              <div className="dh-top-products-empty">
+                <div className="dh-top-empty-icon">🏆</div>
+                <p className="dh-top-empty-text">Belum ada transaksi lunas untuk menampilkan produk terlaris.</p>
               </div>
+            ) : (
+              <div className="dh-top-products-list">
+                {topProducts.map((item: any, idx: number) => {
+                  const soldCount = Number(item.total_terjual) || 0;
+                  const pct = Math.round((soldCount / maxSold) * 100);
+                  const omset = Number(item.total_omset) || (soldCount * Number(item.harga_product || 0));
 
-              {/* Legend List */}
-              <div className="dh-donut-legend">
-                {pieData.map((item: any) => (
-                  <motion.div
-                    key={item.label}
-                    onMouseEnter={() => setHoveredSlice(item.label)}
-                    onMouseLeave={() => setHoveredSlice(null)}
-                    animate={{
-                      opacity: hoveredSlice && hoveredSlice !== item.label ? 0.4 : 1,
-                      scale: hoveredSlice === item.label ? 1.03 : 1,
-                    }}
-                    className="dh-legend-item"
-                  >
-                    <div className="dh-legend-left">
-                      <div className="dh-legend-dot" style={{ backgroundColor: item.color }} />
-                      <span className="dh-legend-name">{item.label}</span>
-                    </div>
-                    <div className="dh-legend-right">
-                      <span className="dh-legend-count">{item.count}</span>
-                      <span className="dh-legend-pct">({item.value}%)</span>
-                    </div>
-                  </motion.div>
-                ))}
+                  const rankStyles = [
+                    { bg: '#FEF3C7', color: '#B45309', border: '#FDE68A' }, // Gold
+                    { bg: '#F1F5F9', color: '#475569', border: '#CBD5E1' }, // Silver
+                    { bg: '#FFEDD5', color: '#C2410C', border: '#FED7AA' }, // Bronze
+                    { bg: '#F8FAFC', color: '#64748B', border: '#E2E8F0' },
+                    { bg: '#F8FAFC', color: '#64748B', border: '#E2E8F0' },
+                  ];
+                  const rStyle = rankStyles[idx] || rankStyles[3];
+
+                  return (
+                    <motion.div
+                      key={item.id_product || idx}
+                      className="dh-top-product-item"
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.05, type: 'spring', stiffness: 260, damping: 20 }}
+                    >
+                      <div className="dh-top-row">
+                        <div className="dh-top-info-wrap">
+                          <div
+                            className="dh-rank-badge"
+                            style={{
+                              backgroundColor: rStyle.bg,
+                              color: rStyle.color,
+                              borderColor: rStyle.border
+                            }}
+                          >
+                            #{idx + 1}
+                          </div>
+
+                          <img
+                            src={normalizeProductImage(item.foto_product || item.varian_rasa || item.nama_product)}
+                            alt={item.nama_product}
+                            className="dh-top-product-thumb"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLImageElement).src = '/images/products/flavor-original.png';
+                            }}
+                          />
+
+                          <div className="dh-top-meta">
+                            <span className="dh-top-name" title={item.nama_product}>
+                              {item.nama_product}
+                            </span>
+                            <div className="dh-top-tags">
+                              {item.varian_rasa && (
+                                <span className="dh-top-flavor-tag">{item.varian_rasa}</span>
+                              )}
+                              {item.kategori && (
+                                <span className="dh-top-cat-tag">{item.kategori}</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="dh-top-numbers">
+                          <span className="dh-top-sold">
+                            <strong>{soldCount}</strong> pcs
+                          </span>
+                          <span className="dh-top-revenue">
+                            {formatRupiah(omset)}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="dh-top-bar-track">
+                        <motion.div
+                          className={`dh-top-bar-fill rank-${idx + 1}`}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ delay: 0.12 + idx * 0.06, type: 'spring', stiffness: 180, damping: 22 }}
+                        />
+                      </div>
+                    </motion.div>
+                  );
+                })}
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
@@ -529,7 +491,14 @@ export default function DashboardHome() {
                 const diff = s.stok_product - s.stok_minimum;
                 return (
                   <div className="dh-stock-card" key={`low-${i}`}>
-                    <img src={s.foto_product || 'https://via.placeholder.com/60'} alt="Produk" className="dh-stock-img" />
+                    <img
+                      src={normalizeProductImage(s.foto_product || s.varian_rasa || s.nama_product)}
+                      alt="Produk"
+                      className="dh-stock-img"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/images/products/flavor-original.png';
+                      }}
+                    />
                     <div className="dh-stock-detail">
                       <div className="dh-stock-name">{s.nama_product}</div>
                       <div className="dh-stock-weight">{s.berat_product} gram</div>
@@ -563,7 +532,14 @@ export default function DashboardHome() {
               stockEmpty.map((s: any, i: number) => {
                 return (
                   <div className="dh-stock-card border-red" key={`empty-${i}`}>
-                    <img src={s.foto_product || 'https://via.placeholder.com/60'} alt="Produk" className="dh-stock-img grayscale" />
+                    <img
+                      src={normalizeProductImage(s.foto_product || s.varian_rasa || s.nama_product)}
+                      alt="Produk"
+                      className="dh-stock-img grayscale"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/images/products/flavor-original.png';
+                      }}
+                    />
                     <div className="dh-stock-detail">
                       <div className="dh-stock-name">{s.nama_product}</div>
                       <div className="dh-stock-weight">{s.berat_product} gram</div>
@@ -590,7 +566,7 @@ export default function DashboardHome() {
             <p className="dh-panel-title">Pesanan Terbaru</p>
             <div style={{ fontSize:11, color:'#64748B', marginTop:2, fontWeight: 500 }}>Transaksi terbaru dari toko Lakstari</div>
           </div>
-          <div style={{ display:'flex', gap:8, alignItems:'center', position: 'relative' }}>
+          <div className="dh-table-tools-wrap">
             <div className="dh-search-box">
               <span style={{ color: '#94A3B8' }}><SearchIcon /></span>
               <input
@@ -650,7 +626,7 @@ export default function DashboardHome() {
           </div>
         </div>
 
-        <div style={{ overflowX:'auto' }}>
+        <div className="dh-table-responsive-wrapper">
           <table className="dh-tbl">
               <thead>
                 <tr>
@@ -664,48 +640,190 @@ export default function DashboardHome() {
                 </tr>
               </thead>
               <tbody>
-                {filtered.map((o: any, i: number) => (
-                  <tr key={i}>
-                    <td><span className="dh-td-inv">{o.nomor_invoice}</span></td>
-                    <td><span className="dh-td-customer">{o.pelanggan?.nama_pelanggan || '-'}</span></td>
-                    <td><span className="dh-td-amount">{formatRupiah(o.total_pembayaran)}</span></td>
-                    <td>
-                      <span className={`dh-badge ${payBadge[o.status_pembayaran] ?? 'b-pending'}`}>
-                        {o.status_pembayaran}
-                      </span>
-                    </td>
-                    <td>
-                      <span className={`dh-badge ${txBadge[o.status_transaksi] ?? 'b-pending'}`}>
-                        {o.status_transaksi}
-                      </span>
-                    </td>
-                    <td><span className="dh-td-date">{new Date(o.tanggal_transaksi).toLocaleDateString('id-ID')}</span></td>
-                    <td style={{ position: 'relative' }}>
-                      <button
-                        className="dh-row-more-btn"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setActiveMenuInv(activeMenuInv === o.nomor_invoice ? null : o.nomor_invoice);
-                        }}
-                      >
-                        ···
-                      </button>
-
-                      {activeMenuInv === o.nomor_invoice && (
-                        <div className="dh-row-menu" onClick={e => e.stopPropagation()}>
-                          <button onClick={() => { setSelectedOrder(o); setActiveMenuInv(null); }}>
-                            👁️ Lihat Detail
-                          </button>
-                          <button onClick={() => { showNotification(`Mencetak Struk Invoice ${o.nomor_invoice}...`); setActiveMenuInv(null); }}>
-                            🖨️ Cetak Struk
-                          </button>
-                        </div>
-                      )}
+                {paginatedOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} style={{ textAlign: 'center', padding: '36px 0', color: '#64748B' }}>
+                      Tidak ada data pesanan yang sesuai dengan filter / pencarian.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  paginatedOrders.map((o: any, i: number) => (
+                    <tr key={o.nomor_invoice || i}>
+                      <td><span className="dh-td-inv">{o.nomor_invoice}</span></td>
+                      <td><span className="dh-td-customer">{o.pelanggan?.nama_pelanggan || '-'}</span></td>
+                      <td><span className="dh-td-amount">{formatRupiah(o.total_pembayaran)}</span></td>
+                      <td>
+                        <span className={`dh-badge ${payBadge[o.status_pembayaran] ?? 'b-pending'}`}>
+                          {o.status_pembayaran}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={`dh-badge ${txBadge[o.status_transaksi] ?? 'b-pending'}`}>
+                          {o.status_transaksi}
+                        </span>
+                      </td>
+                      <td><span className="dh-td-date">{new Date(o.tanggal_transaksi).toLocaleDateString('id-ID')}</span></td>
+                      <td style={{ position: 'relative' }}>
+                        <button
+                          className="dh-row-more-btn"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setActiveMenuInv(activeMenuInv === o.nomor_invoice ? null : o.nomor_invoice);
+                          }}
+                        >
+                          ···
+                        </button>
+
+                        {activeMenuInv === o.nomor_invoice && (
+                          <div className="dh-row-menu" onClick={e => e.stopPropagation()}>
+                            <button onClick={() => { setSelectedOrder(o); setActiveMenuInv(null); }}>
+                              👁️ Lihat Detail
+                            </button>
+                            <button onClick={() => { 
+                              printReceipt(o); 
+                              showNotification(`Mencetak Struk Invoice ${o.nomor_invoice}...`); 
+                              setActiveMenuInv(null); 
+                            }}>
+                              🖨️ Cetak Struk
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
+          </div>
+
+          {/* ── Mobile Order Cards (<= 768px: 100% full-width, zero horizontal scroll) ── */}
+          <div className="dh-mobile-orders-list">
+            {paginatedOrders.length === 0 ? (
+              <div className="dh-mob-order-empty">
+                Tidak ada data pesanan yang sesuai dengan filter / pencarian.
+              </div>
+            ) : (
+              paginatedOrders.map((o: any, i: number) => (
+                <div key={o.nomor_invoice || i} className="dh-mob-order-card">
+                  {/* Header: Invoice & Tanggal */}
+                  <div className="dh-mob-order-header">
+                    <div className="dh-mob-inv-wrap">
+                      <span className="dh-mob-inv-prefix">#</span>
+                      <span className="dh-mob-inv-num">{o.nomor_invoice}</span>
+                    </div>
+                    <span className="dh-mob-order-date">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                      </svg>
+                      {new Date(o.tanggal_transaksi).toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'short',
+                        year: 'numeric'
+                      })}
+                    </span>
+                  </div>
+
+                  {/* Body: Pelanggan & Total Nominal */}
+                  <div className="dh-mob-order-body">
+                    <div className="dh-mob-cust-row">
+                      <div className="dh-mob-cust-info">
+                        <div className="dh-mob-cust-icon">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                          </svg>
+                        </div>
+                        <span className="dh-mob-cust-name">{o.pelanggan?.nama_pelanggan || 'Pelanggan'}</span>
+                      </div>
+                      <span className="dh-mob-order-total">{formatRupiah(o.total_pembayaran)}</span>
+                    </div>
+
+                    {/* Status Badges */}
+                    <div className="dh-mob-badges-row">
+                      <div className="dh-mob-badge-item">
+                        <span className="dh-mob-badge-label">Bayar:</span>
+                        <span className={`dh-badge ${payBadge[o.status_pembayaran] ?? 'b-pending'}`}>
+                          {o.status_pembayaran}
+                        </span>
+                      </div>
+                      <div className="dh-mob-badge-item">
+                        <span className="dh-mob-badge-label">Transaksi:</span>
+                        <span className={`dh-badge ${txBadge[o.status_transaksi] ?? 'b-pending'}`}>
+                          {o.status_transaksi}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Footer Quick Action Buttons */}
+                  <div className="dh-mob-order-footer">
+                    <button
+                      type="button"
+                      className="dh-mob-action-btn detail"
+                      onClick={() => setSelectedOrder(o)}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                      <span>Detail</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="dh-mob-action-btn print"
+                      onClick={() => {
+                        printReceipt(o);
+                        showNotification(`Mencetak Struk Invoice ${o.nomor_invoice}...`);
+                      }}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path>
+                        <rect x="6" y="14" width="12" height="8"></rect>
+                      </svg>
+                      <span>Cetak Struk</span>
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* ── Table Pagination Bar ── */}
+          <div className="dh-table-pagination">
+            <div className="dh-pagination-info">
+              Menampilkan <strong>{filtered.length === 0 ? 0 : (currentPage - 1) * pageSize + 1}</strong>–
+              <strong>{Math.min(currentPage * pageSize, filtered.length)}</strong> dari <strong>{filtered.length}</strong> pesanan terbaru
+            </div>
+            
+            {totalPages > 1 && (
+              <div className="dh-pagination-controls">
+                <div className="dh-page-numbers">
+                  {getPageNumbers(currentPage, totalPages).map((item, idx) => {
+                    if (item === '...') {
+                      return (
+                        <span key={`dots-${idx}`} className="dh-page-ellipsis">
+                          ···
+                        </span>
+                      );
+                    }
+                    const pageNum = Number(item);
+                    return (
+                      <button
+                        key={pageNum}
+                        className={`dh-page-number-btn ${currentPage === pageNum ? 'active' : ''}`}
+                        onClick={() => setCurrentPage(pageNum)}
+                      >
+                        {pageNum}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
@@ -723,7 +841,11 @@ export default function DashboardHome() {
             <div className="dh-modal-body">
               <div className="dh-modal-row">
                 <span>Nama Pelanggan</span>
-                <strong>{selectedOrder.pelanggan?.nama_pelanggan || '-'}</strong>
+                <strong>{selectedOrder.pelanggan?.nama_pelanggan || selectedOrder.alamat?.nama_penerima || '-'}</strong>
+              </div>
+              <div className="dh-modal-row">
+                <span>No. HP</span>
+                <span>{selectedOrder.pelanggan?.no_hp || selectedOrder.alamat?.no_hp_penerima || '-'}</span>
               </div>
               <div className="dh-modal-row">
                 <span>Tanggal Transaksi</span>
@@ -731,23 +853,53 @@ export default function DashboardHome() {
               </div>
               <div className="dh-modal-row">
                 <span>Status Pembayaran</span>
-                <span className={`dh-badge ${payBadge[selectedOrder.status_pembayaran]}`}>
+                <span className={`dh-badge ${payBadge[selectedOrder.status_pembayaran] || 'b-pending'}`}>
                   {selectedOrder.status_pembayaran}
                 </span>
               </div>
               <div className="dh-modal-row">
                 <span>Status Transaksi</span>
-                <span className={`dh-badge ${txBadge[selectedOrder.status_transaksi]}`}>
+                <span className={`dh-badge ${txBadge[selectedOrder.status_transaksi] || 'b-pending'}`}>
                   {selectedOrder.status_transaksi}
                 </span>
               </div>
-              <div className="dh-modal-row highlight">
+              {selectedOrder.details && selectedOrder.details.length > 0 && (
+                <div style={{ margin: '12px 0 6px', borderTop: '1px solid #E2E8F0', paddingTop: '10px' }}>
+                  <div style={{ fontSize: '12px', fontWeight: 600, color: '#64748B', marginBottom: '8px' }}>Rincian Barang:</div>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', maxHeight: '160px', overflowY: 'auto' }}>
+                    {selectedOrder.details.map((item: any, idx: number) => (
+                      <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '13px', background: '#F8FAFC', padding: '6px 10px', borderRadius: '6px' }}>
+                        <div>
+                          <div style={{ fontWeight: 600, color: '#0F172A' }}>{item.nama_product || item.product?.nama_product || 'Kripik Tempe'}</div>
+                          <div style={{ fontSize: '11px', color: '#64748B' }}>{item.jumlah || item.qty || 1} x {formatRupiah(item.harga_product || item.harga_satuan || 0)}</div>
+                        </div>
+                        <strong style={{ color: '#0F172A' }}>{formatRupiah(item.subtotal || 0)}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {selectedOrder.alamat?.alamat_lengkap && (
+                <div style={{ margin: '8px 0', borderTop: '1px solid #E2E8F0', paddingTop: '8px', fontSize: '12px', color: '#475569', lineHeight: 1.4 }}>
+                  <strong style={{ color: '#334155' }}>Alamat Pengiriman:</strong><br />
+                  {selectedOrder.alamat.alamat_lengkap}, {selectedOrder.alamat.kecamatan ? `${selectedOrder.alamat.kecamatan}, ` : ''}{selectedOrder.alamat.kota || ''}
+                  {selectedOrder.pengiriman?.kurir && (
+                    <div style={{ marginTop: '3px', fontSize: '11px', color: '#2563EB', fontWeight: 600 }}>
+                      Kurir: {selectedOrder.pengiriman.kurir.toUpperCase()} {selectedOrder.pengiriman.nomor_resi ? `(${selectedOrder.pengiriman.nomor_resi})` : ''}
+                    </div>
+                  )}
+                </div>
+              )}
+              <div className="dh-modal-row highlight" style={{ marginTop: '10px' }}>
                 <span>Total Pembayaran</span>
                 <strong style={{ fontSize: 16, color: '#232B45' }}>{formatRupiah(selectedOrder.total_pembayaran)}</strong>
               </div>
             </div>
             <div className="dh-modal-footer">
-              <button className="dh-tool-btn" style={{ background: '#F1F5F9' }} onClick={() => showNotification(`Mencetak Struk ${selectedOrder.inv}...`)}>
+              <button className="dh-tool-btn" style={{ background: '#F1F5F9' }} onClick={() => {
+                printReceipt(selectedOrder);
+                showNotification(`Mencetak Struk Invoice ${selectedOrder.nomor_invoice}...`);
+              }}>
                 🖨️ Cetak Struk
               </button>
               <button className="dh-action-btn primary" style={{ padding: '8px 20px' }} onClick={() => setSelectedOrder(null)}>

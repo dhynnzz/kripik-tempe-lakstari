@@ -31,7 +31,7 @@ const CategoryManager: React.FC = () => {
   const handleDelete = async (id: number, name: string) => {
     const result = await Swal.fire({
       title: 'Hapus Kategori?',
-      text: `Yakin ingin menghapus kategori "${name}"?`,
+      text: `Apakah Anda yakin ingin menghapus kategori "${name}"?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#DC2626',
@@ -41,28 +41,74 @@ const CategoryManager: React.FC = () => {
     });
     
     if (result.isConfirmed) {
-      deleteCategory(id);
-      Swal.fire('Terhapus!', 'Kategori berhasil dihapus.', 'success');
+      const res = await deleteCategory(id);
+      if (res.success) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Terhapus!',
+          text: `Kategori "${name}" berhasil dihapus.`,
+          timer: 1600,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Tidak Dapat Menghapus',
+          text: res.message || 'Gagal menghapus kategori dari server.',
+        });
+      }
     }
   };
 
-  const handleSaveCategory = (e: React.FormEvent) => {
+  const handleSaveCategory = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!catName.trim()) return;
 
     if (editingId) {
       const oldCat = categories.find(c => c.id === editingId);
-      updateCategory(editingId, catName);
-      if (oldCat && oldCat.name !== catName) {
-        updateProductsCategory(oldCat.name, catName);
+      const res = await updateCategory(editingId, catName);
+      if (res.success) {
+        if (oldCat && oldCat.name !== catName) {
+          updateProductsCategory(oldCat.name, catName);
+        }
+        setIsModalOpen(false);
+        setCatName('');
+        setEditingId(null);
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil Diperbarui!',
+          text: `Kategori "${catName}" berhasil diperbarui.`,
+          timer: 1600,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Memperbarui',
+          text: res.message || 'Terjadi kendala saat memperbarui kategori.',
+        });
       }
     } else {
-      addCategory(catName);
+      const res = await addCategory(catName);
+      if (res.success) {
+        setIsModalOpen(false);
+        setCatName('');
+        setEditingId(null);
+        Swal.fire({
+          icon: 'success',
+          title: 'Berhasil Ditambahkan!',
+          text: `Kategori "${catName}" berhasil ditambahkan ke daftar.`,
+          timer: 1600,
+          showConfirmButton: false
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Gagal Menambahkan',
+          text: res.message || 'Terjadi kendala saat menyimpan kategori baru.',
+        });
+      }
     }
-
-    setIsModalOpen(false);
-    setCatName('');
-    setEditingId(null);
   };
 
   // Kalkulasi Summary
@@ -250,6 +296,78 @@ const CategoryManager: React.FC = () => {
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* Mobile Category Cards (<= 768px: 100% full-width, zero horizontal scroll) */}
+        <div className="cat-mobile-cards-list">
+          {filteredCategories.length === 0 ? (
+            <div className="cat-mob-empty">
+              Kategori tidak ditemukan.
+            </div>
+          ) : (
+            filteredCategories.map((cat) => {
+              const count = products.filter(p => p.category.toLowerCase() === cat.name.toLowerCase()).length;
+              return (
+                <div key={cat.id} className="cat-mob-card">
+                  {/* Top: Name, ID, & Status Pill */}
+                  <div className="cat-mob-card-header">
+                    <div className="cat-mob-name-wrap">
+                      <span className="cat-mob-id">#{cat.id}</span>
+                      <h4 className="cat-mob-name">{cat.name}</h4>
+                    </div>
+                    <button
+                      type="button"
+                      className={`cat-status-pill ${cat.status === 'aktif' ? 'aktif' : 'nonaktif'}`}
+                      onClick={() => cat.id !== undefined && toggleCategoryStatus(cat.id)}
+                      title="Klik untuk mengubah status"
+                    >
+                      <span className="cat-mob-dot"></span>
+                      {cat.status === 'aktif' ? 'Aktif' : 'Nonaktif'}
+                    </button>
+                  </div>
+
+                  {/* Body: Product Count Badge */}
+                  <div className="cat-mob-card-body">
+                    <div className="cat-mob-count-badge">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="m7.5 4.27 9 5.15" />
+                        <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+                        <path d="m3.3 7 8.7 5 8.7-5" />
+                        <path d="M12 22V12" />
+                      </svg>
+                      <span>{count} Produk Terdaftar</span>
+                    </div>
+                  </div>
+
+                  {/* Footer: Quick Action Buttons */}
+                  <div className="cat-mob-card-footer">
+                    <button
+                      type="button"
+                      className="cat-mob-btn-edit"
+                      onClick={() => cat.id !== undefined && openEditModal(cat.id, cat.name)}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                      </svg>
+                      <span>Edit</span>
+                    </button>
+                    <button
+                      type="button"
+                      className="cat-mob-btn-delete"
+                      onClick={() => cat.id !== undefined && handleDelete(cat.id, cat.name)}
+                    >
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                      </svg>
+                      <span>Hapus</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })
+          )}
         </div>
       </div>
 

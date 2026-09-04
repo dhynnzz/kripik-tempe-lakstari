@@ -122,12 +122,12 @@ export const apiService = {
   },
 
   // 1. Ambil Semua Produk & Stok Real-Time dari Server Backend
-  getProducts: async (page: number = 1): Promise<any> => {
+  getProducts: async (): Promise<any> => {
     try {
-      const response = await apiFetch(`/products?page=${page}`);
+      const response = await apiFetch(`/products`);
       if (!response.ok) throw new Error('Gagal mengambil data dari server');
       const json = await response.json();
-      return json; // Backend returns the array directly
+      return json; // Backend returns { success: true, data: [...] }
     } catch (error) {
       console.error('Koneksi ke Laravel server gagal:', error);
       return [];
@@ -142,10 +142,10 @@ export const apiService = {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ stock })
+        body: JSON.stringify({ stok_product: stock, stock })
       });
       const json = await response.json();
-      return json.success;
+      return !!json.success;
     } catch (error) {
       console.error('Error memperbarui stok ke Laravel server:', error);
       return false;
@@ -157,21 +157,16 @@ export const apiService = {
     try {
       // Mapping ke field backend Laravel
       const payload = {
-        id_category: product.category === 'Lainnya' ? 2 : 1, // fallback default jika tidak ada
+        id_category: product.categoryId || (product.category === 'Lainnya' ? 2 : 1),
         nama_product: product.name,
-        varian_rasa: product.flavor,
-        deskripsi_product: product.desc || 'Deskripsi Produk',
+        varian_rasa: product.flavor || 'Original',
+        deskripsi_product: product.desc || 'Produk olahan Kripik tempe Lakstari lezat & berkualitas.',
         harga_product: product.priceNum,
         stok_product: product.stock,
-        berat_product: parseInt(product.weight) || 100,
+        berat_product: parseInt(product.weight, 10) || 100,
         foto_product: product.image || '/images/products/flavor-original.png',
         status_product: product.status || 'aktif'
       };
-
-      // Idealnya mencari id_category berdasarkan nama category yang di passing
-      if (product.categoryId) {
-        payload.id_category = product.categoryId;
-      }
 
       const response = await apiFetch(`/admin/products`, {
         method: 'POST',
@@ -181,7 +176,11 @@ export const apiService = {
         body: JSON.stringify(payload)
       });
       const json = await response.json();
-      return json.success ? json.data : null;
+      if (!response.ok || !json.success) {
+        console.error('Gagal menambah produk ke Laravel server:', json);
+        return null;
+      }
+      return json.data || json;
     } catch (error) {
       console.error('Error menambah produk ke Laravel server:', error);
       return null;
@@ -193,10 +192,13 @@ export const apiService = {
     try {
       const response = await apiFetch(`/admin/products/${id}`, {
         method: 'DELETE',
-        
       });
       const json = await response.json();
-      return json.success;
+      if (!response.ok || !json.success) {
+        console.error('Gagal menghapus produk di server:', json);
+        return false;
+      }
+      return !!json.success;
     } catch (error) {
       console.error('Error menghapus produk di server:', error);
       return false;
@@ -243,7 +245,19 @@ export const apiService = {
 
   // ================= CATEGORY API =================
 
-  addCategory: async (nama_category: string): Promise<boolean> => {
+  getCategories: async (): Promise<any[]> => {
+    try {
+      const response = await apiFetch(`/categories`);
+      if (!response.ok) throw new Error('Gagal mengambil kategori dari server');
+      const json = await response.json();
+      return json.data || json || [];
+    } catch (error) {
+      console.error('Error fetching categories:', error);
+      return [];
+    }
+  },
+
+  addCategory: async (nama_category: string): Promise<{ success: boolean; data?: any; message?: string }> => {
     try {
       const response = await apiFetch(`/admin/categories`, {
         method: 'POST',
@@ -253,14 +267,14 @@ export const apiService = {
         body: JSON.stringify({ nama_category, status_category: 'aktif' })
       });
       const json = await response.json();
-      return json.success;
-    } catch (error) {
+      return { success: !!json.success, data: json.data, message: json.message };
+    } catch (error: any) {
       console.error('Error menambah kategori di server:', error);
-      return false;
+      return { success: false, message: error?.message || 'Gagal terhubung ke server' };
     }
   },
 
-  updateCategory: async (id: number, data: any): Promise<boolean> => {
+  updateCategory: async (id: number, data: any): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await apiFetch(`/admin/categories/${id}`, {
         method: 'PUT',
@@ -270,24 +284,23 @@ export const apiService = {
         body: JSON.stringify(data)
       });
       const json = await response.json();
-      return json.success;
-    } catch (error) {
+      return { success: !!json.success, message: json.message };
+    } catch (error: any) {
       console.error('Error update kategori di server:', error);
-      return false;
+      return { success: false, message: error?.message || 'Gagal update kategori di server' };
     }
   },
 
-  deleteCategory: async (id: number): Promise<boolean> => {
+  deleteCategory: async (id: number): Promise<{ success: boolean; message?: string }> => {
     try {
       const response = await apiFetch(`/admin/categories/${id}`, {
         method: 'DELETE',
-        
       });
       const json = await response.json();
-      return json.success;
-    } catch (error) {
+      return { success: !!json.success, message: json.message };
+    } catch (error: any) {
       console.error('Error hapus kategori di server:', error);
-      return false;
+      return { success: false, message: error?.message || 'Gagal menghapus kategori di server' };
     }
   },
 

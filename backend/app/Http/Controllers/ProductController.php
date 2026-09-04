@@ -8,24 +8,46 @@ use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->paginate(10);
-        return response()->json($products);
+        $query = Product::with('category');
+
+        if ($request->has('category_id')) {
+            $query->where('id_category', $request->category_id);
+        }
+
+        if ($request->has('status')) {
+            $query->where('status_product', $request->status);
+        }
+
+        // Jika klien secara eksplisit meminta paginasi dengan batas per_page
+        if ($request->has('per_page')) {
+            $perPage = (int) $request->input('per_page', 10);
+            return response()->json($query->orderBy('id_product', 'desc')->paginate($perPage));
+        }
+
+        // Default: kembalikan seluruh katalog produk terbaru di urutan teratas
+        $products = $query->orderBy('id_product', 'desc')->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => $products,
+            'total' => $products->count()
+        ]);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'id_category' => 'required|exists:categories,id_category',
+            'id_category' => 'nullable',
             'nama_product' => 'required|string|max:150',
             'varian_rasa' => 'nullable|string|max:100',
-            'deskripsi_product' => 'required|string',
+            'deskripsi_product' => 'nullable|string',
             'harga_product' => 'required|numeric',
             'stok_product' => 'required|integer',
-            'berat_product' => 'required|integer',
-            'foto_product' => 'required|string',
-            'status_product' => 'in:aktif,nonaktif,habis'
+            'berat_product' => 'nullable|integer',
+            'foto_product' => 'nullable|string',
+            'status_product' => 'nullable|in:aktif,nonaktif,habis'
         ]);
 
         if ($validator->fails()) {
@@ -33,13 +55,34 @@ class ProductController extends Controller
         }
 
         $data = $request->all();
+
+        // Validasi & fallback kategori jika kosong atau tidak valid di database
+        if (empty($data['id_category']) || !\App\Models\Category::where('id_category', $data['id_category'])->exists()) {
+            $fallbackCat = \App\Models\Category::first();
+            $data['id_category'] = $fallbackCat ? $fallbackCat->id_category : 1;
+        }
+
+        if (empty($data['deskripsi_product'])) {
+            $data['deskripsi_product'] = 'Produk olahan Kripik tempe Lakstari lezat & renyah.';
+        }
+        if (empty($data['berat_product'])) {
+            $data['berat_product'] = 100;
+        }
+        if (empty($data['foto_product'])) {
+            $data['foto_product'] = '/images/products/flavor-original.png';
+        }
+        if (empty($data['status_product'])) {
+            $data['status_product'] = ((int)($data['stok_product'] ?? 0)) == 0 ? 'habis' : 'aktif';
+        }
+
         if (isset($data['foto_product'])) {
             $data['foto_product'] = $this->processBase64Image($data['foto_product']);
         }
 
         $product = Product::create($data);
+        $product->load('category');
 
-        return response()->json(['success' => true, 'message' => 'Produk berhasil ditambahkan', 'data' => $product]);
+        return response()->json(['success' => true, 'message' => 'Produk berhasil ditambahkan', 'data' => $product], 201);
     }
 
     public function update(Request $request, $id)
@@ -91,9 +134,13 @@ class ProductController extends Controller
             return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan'], 404);
         }
 
-        $product->delete();
-
-        return response()->json(['success' => true, 'message' => 'Produk berhasil dihapus']);
+        try {
+            $product->delete();
+            return response()->json(['success' => true, 'message' => 'Produk berhasil dihapus']);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Gagal menghapus produk: ' . $e->getMessage());
+            return response()->json(['success' => false, 'message' => 'Gagal menghapus produk dari database.'], 500);
+        }
     }
 
     public function updateStock(Request $request, $id)
@@ -103,15 +150,12 @@ class ProductController extends Controller
             return response()->json(['success' => false, 'message' => 'Produk tidak ditemukan'], 404);
         }
 
-        $validator = Validator::make($request->all(), [
-            'stok_product' => 'required|integer|min:0'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['success' => false, 'errors' => $validator->errors()], 422);
+        $inputStock = $request->input('stok_product', $request->input('stock'));
+        if ($inputStock === null || !is_numeric($inputStock)) {
+            return response()->json(['success' => false, 'message' => 'Stok produk harus berupa angka valid.'], 422);
         }
 
-        $product->stok_product = $request->stok_product;
+        $product->stok_product = max(0, (int)$inputStock);
         if ($product->stok_product == 0) {
             $product->status_product = 'habis';
         } elseif ($product->status_product == 'habis' && $product->stok_product > 0) {

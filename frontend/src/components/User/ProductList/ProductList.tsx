@@ -144,7 +144,11 @@ const ProductList = () => {
                   <div className="product-card-large">
                     <span className="product-label quality-label">QUALITY PREMIUM</span>
                     <div className="product-image-placeholder-large">
-                      <img src={activeItem.image} alt={activeItem.name} />
+                      <img
+                        src={activeItem.image}
+                        alt={activeItem.name}
+                        onError={(e) => { (e.target as HTMLImageElement).src = '/images/products/flavor-original.png'; }}
+                      />
                     </div>
                     <div className="product-info">
                       <div className="title-price-row">
