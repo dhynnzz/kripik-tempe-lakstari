@@ -156,7 +156,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
         onTabChange={handleTabSelect}
         onLogout={handleLogout}
         isSidebarOpen={isSidebarOpen}
-        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+        onToggleSidebar={() => setIsSidebarOpen(prev => !prev)}
       />
 
       {/* Main Content Area */}
@@ -179,29 +179,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
           {/* Left: Toggle + Breadcrumb */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              style={{
-                background: 'transparent', border: 'none',
-                borderRadius: '6px', padding: '6px',
-                cursor: 'pointer', color: '#64748B',
-                display: 'flex', alignItems: 'center',
-                transition: 'color 0.2s, background 0.2s',
-              }}
-              onMouseEnter={(e) => {
-                (e.currentTarget as HTMLElement).style.background = 'rgba(0,0,0,0.05)';
-                (e.currentTarget as HTMLElement).style.color = '#232B45';
-              }}
-              onMouseLeave={(e) => {
-                (e.currentTarget as HTMLElement).style.background = 'transparent';
-                (e.currentTarget as HTMLElement).style.color = '#64748B';
-              }}
-              title="Toggle Menu Sidebar"
+              className="admin-topbar-toggle-btn"
+              onClick={() => setIsSidebarOpen(prev => !prev)}
+              aria-label="Buka/Tutup Menu Sidebar"
+              title="Buka/Tutup Menu Sidebar"
             >
               <PanelLeftOpenIcon />
             </button>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
-              <span style={{ color: '#94A3B8' }}>Lakstari</span>
-              <span style={{ color: '#CBD5E1' }}>/</span>
+            <div className="admin-topbar-breadcrumb" style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px' }}>
+              <span className="admin-breadcrumb-brand" style={{ color: '#94A3B8' }}>Lakstari</span>
+              <span className="admin-breadcrumb-slash" style={{ color: '#CBD5E1' }}>/</span>
               <span style={{ color: isDark ? '#F1F5F9' : '#232B45', fontWeight: 600 }}>{tabLabels[activeTab] || 'Dashboard'}</span>
             </div>
           </div>
@@ -215,15 +202,20 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
                 <line x1="8" y1="2" x2="8" y2="6" />
                 <line x1="3" y1="10" x2="21" y2="10" />
               </svg>
-              <span>{new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}</span>
+              <span className="admin-date-full">
+                {new Date().toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
+              <span className="admin-date-short">
+                {new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+              </span>
             </div>
 
             <ThemeToggle isDark={isDark} onToggle={() => setIsDark(!isDark)} />
 
             <div className="admin-header-divider" />
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div className="admin-header-user-text" style={{ display: 'flex', flexDirection: 'column' }}>
+            <div className="admin-header-user">
+              <div className="admin-header-user-text">
                 <span style={{ fontSize: '12px', fontWeight: 700, color: isDark ? '#F1F5F9' : '#1E293B', lineHeight: 1.3 }}>Admin Lakstari</span>
                 <span style={{ fontSize: '10px', color: '#94A3B8', lineHeight: 1.3 }}>Pemilik Toko</span>
               </div>

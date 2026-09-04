@@ -96,15 +96,7 @@ function IconPanelLeftClose() {
     </svg>
   );
 }
-function IconPanelLeftOpen() {
-  return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="18" height="18" x="3" y="3" rx="2" />
-      <path d="M9 3v18" />
-      <path d="m14 9 3 3-3 3" />
-    </svg>
-  );
-}
+
 function IconChevronDown() {
   return (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -200,8 +192,8 @@ export function Lakstari21stSidebar({
 
   return (
     <>
-      {/* Backdrop hanya untuk mobile (layar kecil) saat sidebar terbuka sebagai overlay */}
-      {isOpen && typeof window !== 'undefined' && window.innerWidth <= 1024 && (
+      {/* Backdrop overlay saat sidebar terbuka di layar mobile / tablet */}
+      {isOpen && (
         <div
           className="lakstari-sidebar-backdrop"
           onClick={toggleSidebar}
@@ -395,27 +387,6 @@ export function Lakstari21stSidebar({
             </>
           )}
         </aside>
-
-        {/* Floating Toggle Button when sidebar is closed */}
-        {!isOpen && (
-          <button
-            onClick={toggleSidebar}
-            style={{
-              position: "absolute", left: "8px", top: "16px",
-              background: "#232B45", border: "1px solid rgba(255,255,255,0.1)",
-              borderRadius: "8px", padding: "8px",
-              cursor: "pointer", color: "#94A3B8",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              zIndex: 110, boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-              transition: "color 0.2s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget as HTMLElement).style.color = "#FAAC30"}
-            onMouseLeave={(e) => (e.currentTarget as HTMLElement).style.color = "#94A3B8"}
-            title="Buka Sidebar"
-          >
-            <IconPanelLeftOpen />
-          </button>
-        )}
       </div>
     </>
   );

@@ -525,6 +525,14 @@
   white-space: nowrap;
 }
 
+.admin-date-full {
+  display: inline;
+}
+
+.admin-date-short {
+  display: none;
+}
+
 .admin-dark-mode .admin-header-date-pill {
   background: #1E293B;
   border-color: #334155;
@@ -542,9 +550,86 @@
 }
 
 /* ════════════════════════════════════════
+   TOPBAR TOGGLE BUTTON (Mobile & Desktop)
+════════════════════════════════════════ */
+.admin-topbar-toggle-btn {
+  width: 38px;
+  height: 38px;
+  min-width: 38px;
+  min-height: 38px;
+  border-radius: 9px;
+  border: 1px solid rgba(0, 0, 0, 0.09);
+  background: #F8FAFC;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.admin-topbar-toggle-btn:hover {
+  background: #EEF2F6;
+  border-color: #CBD5E1;
+  color: #0F172A;
+  transform: translateY(-1px);
+}
+
+.admin-topbar-toggle-btn:active {
+  transform: scale(0.92);
+  background: #E2E8F0;
+}
+
+.admin-dark-mode .admin-topbar-toggle-btn {
+  background: #1E293B;
+  border-color: #334155;
+  color: #CBD5E1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+.admin-dark-mode .admin-topbar-toggle-btn:hover {
+  background: #334155;
+  border-color: #475569;
+  color: #FAAC30;
+}
+
+.admin-dark-mode .admin-topbar-toggle-btn:active {
+  background: #0F172A;
+}
+
+/* Backdrop base (hidden on desktop) */
+.lakstari-sidebar-backdrop {
+  display: none;
+}
+
+/* ════════════════════════════════════════
    RESPONSIVE SIDEBAR DRAWER (iPad, iOS, Android)
 ════════════════════════════════════════ */
 @media (max-width: 1024px) {
+  .admin-topbar-toggle-btn {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+  }
+
+  .lakstari-sidebar-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 999;
+    animation: fadeInBackdrop 0.25s ease;
+  }
   .lakstari-sidebar-wrapper {
     position: fixed !important;
     top: 0 !important;
@@ -564,16 +649,6 @@
     box-shadow: 4px 0 30px rgba(0, 0, 0, 0.35) !important;
     max-width: 85vw;
   }
-
-  .lakstari-sidebar-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(15, 23, 42, 0.65);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 999;
-    animation: fadeInBackdrop 0.25s ease;
-  }
 }
 
 @keyframes fadeInBackdrop {
@@ -592,6 +667,17 @@
   }
 }
 
+.admin-header-user {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.admin-header-user-text {
+  display: flex;
+  flex-direction: column;
+}
+
 @media (max-width: 768px) {
   .admin-main-content {
     padding: 16px 12px !important;
@@ -601,30 +687,50 @@
     padding: 0 14px !important;
     height: 52px !important;
   }
+
+  .admin-header-user,
+  .admin-header-user-text,
+  .admin-header-divider {
+    display: none !important;
+  }
 }
 
 @media (max-width: 640px) {
+  .admin-date-full {
+    display: none !important;
+  }
+
+  .admin-date-short {
+    display: inline !important;
+  }
+
   .admin-header-date-pill {
     padding: 5px 10px;
     font-size: 11px;
-  }
-
-  .admin-header-user-text {
-    display: none;
+    gap: 6px;
   }
 }
 
 @media (max-width: 480px) {
-  .admin-header-date-pill span {
-    display: none;
+  .admin-topbar {
+    padding: 0 10px !important;
+    height: 50px !important;
+    gap: 8px !important;
+  }
+
+  .admin-breadcrumb-brand,
+  .admin-breadcrumb-slash {
+    display: none !important;
   }
 
   .admin-header-date-pill {
-    padding: 6px 8px;
+    padding: 5px 9px;
+    font-size: 11px;
+    gap: 5px;
   }
 
   .admin-main-content {
-    padding: 12px 8px !important;
+    padding: 12px 10px !important;
   }
 }
 

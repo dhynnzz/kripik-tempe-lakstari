@@ -53,9 +53,37 @@ class ReportController extends Controller
         ];
 
         // 7. Pesanan Terbaru
-        $recentOrders = Transaksi::with('pelanggan')
+        $recentOrders = Transaksi::with(['pelanggan', 'alamat', 'details.product', 'pengiriman'])
             ->orderBy('tanggal_transaksi', 'desc')
-            ->take(10)
+            ->take(30)
+            ->get();
+
+        // 8. Top 5 Produk Terlaris (Hanya transaksi lunas / dibayar)
+        $topProducts = \DB::table('detail_transaksi')
+            ->join('transaksi', 'detail_transaksi.id_transaksi', '=', 'transaksi.id_transaksi')
+            ->join('products', 'detail_transaksi.id_product', '=', 'products.id_product')
+            ->leftJoin('categories', 'products.id_category', '=', 'categories.id_category')
+            ->select(
+                'products.id_product',
+                'products.nama_product',
+                'products.foto_product',
+                'products.harga_product',
+                'products.varian_rasa',
+                'categories.nama_category as kategori',
+                \DB::raw('SUM(detail_transaksi.jumlah) as total_terjual'),
+                \DB::raw('SUM(detail_transaksi.subtotal) as total_omset')
+            )
+            ->whereIn('transaksi.status_pembayaran', ['paid', 'settlement'])
+            ->groupBy(
+                'products.id_product',
+                'products.nama_product',
+                'products.foto_product',
+                'products.harga_product',
+                'products.varian_rasa',
+                'categories.nama_category'
+            )
+            ->orderByDesc('total_terjual')
+            ->take(5)
             ->get();
 
         return response()->json([
@@ -73,6 +101,7 @@ class ReportController extends Controller
                 'payStatuses' => $payStatuses,
                 'orderStatuses' => $orderStatuses,
                 'recentOrders' => $recentOrders,
+                'topProducts' => $topProducts,
             ]
         ]);
     }
