@@ -223,14 +223,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
             <div className="admin-header-divider" />
 
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{
-                width: '32px', height: '32px', borderRadius: '50%',
-                background: 'rgba(250,172,48,0.12)',
-                border: '1px solid rgba(250,172,48,0.3)',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '12px', fontWeight: 800, color: '#FAAC30',
-                flexShrink: 0
-              }}>A</div>
               <div className="admin-header-user-text" style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={{ fontSize: '12px', fontWeight: 700, color: isDark ? '#F1F5F9' : '#1E293B', lineHeight: 1.3 }}>Admin Lakstari</span>
                 <span style={{ fontSize: '10px', color: '#94A3B8', lineHeight: 1.3 }}>Pemilik Toko</span>
