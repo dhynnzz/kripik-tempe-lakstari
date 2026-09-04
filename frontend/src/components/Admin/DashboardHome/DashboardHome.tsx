@@ -2,12 +2,48 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import './DashboardHome.css';
 
-/* ── Summary Card Icons (Lucide-style SVG, matches sidebar) ── */
-const IcTag      = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg>;
-const IcUsers    = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>;
-const IcClipboard= () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M12 11h4"/><path d="M12 16h4"/><path d="M8 11h.01"/><path d="M8 16h.01"/></svg>;
-const IcZap      = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>;
-const IcWallet   = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg>;
+/* ── Summary Card Icons (Lucide-style SVG, Clean & Monochromatic) ── */
+const IcPackage = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="m7.5 4.27 9 5.15" />
+    <path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
+    <path d="m3.3 7 8.7 5 8.7-5" />
+    <path d="M12 22V12" />
+  </svg>
+);
+
+const IcUsers = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+  </svg>
+);
+
+const IcShoppingBag = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" />
+    <line x1="3" y1="6" x2="21" y2="6" />
+    <path d="M16 10a4 4 0 0 1-8 0" />
+  </svg>
+);
+
+const IcClock = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10" />
+    <polyline points="12 6 12 12 16 14" />
+  </svg>
+);
+
+const IcBanknote = () => (
+  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="20" height="12" x="2" y="6" rx="2" />
+    <circle cx="12" cy="12" r="2" />
+    <line x1="6" y1="12" x2="6.01" y2="12" />
+    <line x1="18" y1="12" x2="18.01" y2="12" />
+  </svg>
+);
 
 /* ── SVG Icons ── */
 const SearchIcon  = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>;
@@ -50,6 +86,7 @@ const txBadge: Record<string,string> = {
   'Siap Dikirim':'b-ready', 'Dikirim':'b-shipped', 'Selesai':'b-done', 'Dibatalkan':'b-cancel',
 };
 import { apiService } from '../../../services/api';
+import { SalesAreaChart } from './SalesAreaChart';
 
 export default function DashboardHome() {
   const [stats, setStats] = useState<any>(null);
@@ -65,9 +102,11 @@ export default function DashboardHome() {
   const [hoveredSlice, setHoveredSlice] = useState<string | null>(null);
 
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshCounter, setRefreshCounter] = useState(0);
 
   const fetchStats = async () => {
     setIsRefreshing(true);
+    setRefreshCounter((prev) => prev + 1);
     try {
       const data = await apiService.getDashboardStats();
       if (data) setStats(data);
@@ -131,9 +170,9 @@ export default function DashboardHome() {
     { 
       label: 'Total Produk',      
       value: stats?.summary?.totalProduk || '0',           
-      Icon: IcTag,       
+      Icon: IcPackage,       
       cls: 'card-prod',
-      iconCls: 'ic-blue',
+      iconCls: 'ic-neutral',
       badge: `${stats?.summary?.totalProduk || 0} Aktif`, 
       badgeType: 'badge-neutral',
       desc: 'Katalog terdaftar' 
@@ -143,17 +182,17 @@ export default function DashboardHome() {
       value: stats?.summary?.totalPelanggan || '0',        
       Icon: IcUsers,     
       cls: 'card-cust',
-      iconCls: 'ic-purple',
+      iconCls: 'ic-neutral',
       badge: `+${stats?.summary?.totalPelanggan || 0} User`, 
-      badgeType: 'badge-positive',
+      badgeType: 'badge-neutral',
       desc: 'Pelanggan aktif' 
     },
     { 
       label: 'Total Pesanan',     
       value: stats?.summary?.totalPesanan || '0',          
-      Icon: IcClipboard, 
+      Icon: IcShoppingBag, 
       cls: 'card-orders',
-      iconCls: 'ic-amber',
+      iconCls: 'ic-neutral',
       badge: `${stats?.summary?.totalPesanan || 0} Invoice`, 
       badgeType: 'badge-neutral',
       desc: 'Semua transaksi' 
@@ -161,21 +200,21 @@ export default function DashboardHome() {
     { 
       label: 'Pesanan Hari Ini',  
       value: stats?.summary?.pesananHariIni || '0',        
-      Icon: IcZap,       
+      Icon: IcClock,       
       cls: 'card-today',
-      iconCls: 'ic-orange',
+      iconCls: 'ic-neutral',
       badge: `${stats?.summary?.pesananHariIni || 0} Baru`, 
-      badgeType: stats?.summary?.pesananHariIni > 0 ? 'badge-warning' : 'badge-neutral',
+      badgeType: 'badge-neutral',
       desc: 'Perlu diproses' 
     },
     { 
       label: 'Total Pendapatan',  
       value: formatRupiah(stats?.summary?.pendapatan || 0),
-      Icon: IcWallet,    
+      Icon: IcBanknote,    
       cls: 'card-rev',
-      iconCls: 'ic-green',
+      iconCls: 'ic-neutral',
       badge: 'Live Sync', 
-      badgeType: 'badge-positive',
+      badgeType: 'badge-neutral',
       desc: 'Penjualan lunas' 
     },
   ];
@@ -215,10 +254,6 @@ export default function DashboardHome() {
       {/* ── Modern Page Header ── */}
       <div className="dh-page-header">
         <div className="dh-header-left">
-          <div className="dh-header-badge">
-            <span className="dh-live-dot"></span>
-            <span>Dashboard Lakstari</span>
-          </div>
           <h1>Ringkasan Penjualan & Toko</h1>
           <p>Pantau performa bisnis, pergerakan stok, dan pesanan pelanggan secara langsung.</p>
         </div>
@@ -268,7 +303,10 @@ export default function DashboardHome() {
         ))}
       </div>
 
-      {/* ══ B & C: Status Pesanan (Bar Chart) + Ringkasan Pembayaran (Pie/Donut Chart) ══ */}
+      {/* ══ B. GRAFIK TREN PENJUALAN TOKO (Smooth Area / Line Chart) ══ */}
+      <SalesAreaChart refreshTrigger={refreshCounter} />
+
+      {/* ══ C & D: Status Pesanan (Bar Chart) + Ringkasan Pembayaran (Pie/Donut Chart) ══ */}
       <div className="dh-mid-grid">
 
         {/* B: Ringkasan Status Pesanan (Bento Bar Chart) */}

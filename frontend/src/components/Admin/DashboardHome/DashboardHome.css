@@ -61,8 +61,17 @@
 }
 
 @keyframes pulseDot {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.2); opacity: 0.8; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.8;
+  }
 }
 
 .dh-page-header h1 {
@@ -131,8 +140,13 @@
 }
 
 @keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ── Summary Cards (Modern SaaS Metrics) ── */
@@ -160,26 +174,32 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
   }
+
   .dh-sum-card:last-child {
     grid-column: span 2;
   }
+
   .dh-sum-card {
     padding: 12px 10px;
     min-height: 124px;
     border-radius: 12px;
   }
+
   .dh-sum-value {
     font-size: 22px;
     margin: 8px 0;
   }
+
   .dh-sum-value.is-currency {
     font-size: 17px;
   }
+
   .dh-sum-icon {
     width: 32px;
     height: 32px;
     border-radius: 8px;
   }
+
   .dh-sum-icon svg {
     width: 16px;
     height: 16px;
@@ -230,18 +250,30 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: transform 0.2s ease;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #475569;
+  transition: all 0.2s ease;
 }
 
 .dh-sum-card:hover .dh-sum-icon {
+  background: #E2E8F0;
+  color: #1E293B;
+  border-color: #CBD5E1;
   transform: scale(1.05);
 }
 
-.ic-blue   { background: #EFF6FF; color: #2563EB; border: 1px solid #DBEAFE; }
-.ic-purple { background: #FAF5FF; color: #7C3AED; border: 1px solid #EDE9FE; }
-.ic-amber  { background: #FFFBEB; color: #D97706; border: 1px solid #FEF3C7; }
-.ic-orange { background: #FFF7ED; color: #EA580C; border: 1px solid #FFEDD5; }
-.ic-green  { background: #F0FDF4; color: #16A34A; border: 1px solid #DCFCE7; }
+/* Monochromatic / Neutral Icon Box (tidak warna-warni) */
+.ic-blue,
+.ic-purple,
+.ic-amber,
+.ic-orange,
+.ic-green,
+.ic-neutral {
+  background: #F8FAFC;
+  color: #475569;
+  border: 1px solid #E2E8F0;
+}
 
 .dh-sum-value {
   font-size: 26px;
@@ -310,24 +342,43 @@
   grid-template-columns: 1fr 1fr;
   gap: 16px;
 }
-@media (max-width: 900px) { .dh-mid-grid { grid-template-columns: 1fr; } }
+
+@media (max-width: 900px) {
+  .dh-mid-grid {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ── Panel Cards with Header & Item Dividers ── */
 .dh-panel {
   background: #ffffff;
   border: 1px solid #CBD5E1;
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
   overflow: hidden;
 }
+
 .dh-panel-head {
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 14px 18px;
   background: #F8FAFC;
   border-bottom: 1px solid #E2E8F0;
 }
-.dh-panel-title { font-size: 13px; font-weight: 700; color: #0F172A; margin: 0; }
-.dh-panel-count { font-size: 11px; color: #64748B; font-weight: 600; }
+
+.dh-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0F172A;
+  margin: 0;
+}
+
+.dh-panel-count {
+  font-size: 11px;
+  color: #64748B;
+  font-weight: 600;
+}
 
 /* ════════════════════════════════════════
    B. BENTO BAR CHART (Status Pesanan)
@@ -580,6 +631,7 @@
   grid-template-columns: 1fr 1fr;
   gap: 20px;
 }
+
 @media (max-width: 900px) {
   .dh-stock-container {
     grid-template-columns: 1fr;
@@ -590,7 +642,7 @@
   background: #ffffff;
   border: 1px solid #E2E8F0;
   border-radius: 16px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.02);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -618,8 +670,16 @@
   padding: 4px 10px;
   border-radius: 12px;
 }
-.dh-stock-badge.count-low { background: #FEF3C7; color: #B45309; }
-.dh-stock-badge.count-empty { background: #FFE4E6; color: #BE123C; }
+
+.dh-stock-badge.count-low {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.dh-stock-badge.count-empty {
+  background: #FFE4E6;
+  color: #BE123C;
+}
 
 .dh-stock-list-new {
   display: flex;
@@ -650,10 +710,12 @@
   gap: 16px;
   transition: all 0.2s ease;
 }
+
 .dh-stock-card:hover {
   border-color: #CBD5E1;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
+
 .dh-stock-card.border-red {
   border-color: #FECDD3;
   background: #FFF1F2;
@@ -667,6 +729,7 @@
   border: 1px solid #E2E8F0;
   background: #F1F5F9;
 }
+
 .dh-stock-img.grayscale {
   filter: grayscale(100%) opacity(70%);
 }
@@ -715,6 +778,7 @@
   background: #FEF3C7;
   color: #D97706;
 }
+
 .dh-badge-empty {
   font-size: 11px;
   font-weight: 700;
@@ -735,78 +799,200 @@
   cursor: pointer;
   transition: all 0.2s;
 }
-.dh-btn-add-stock:hover { background: #DBEAFE; }
+
+.dh-btn-add-stock:hover {
+  background: #DBEAFE;
+}
 
 .dh-btn-add-stock.red {
   color: #DC2626;
   background: #FEF2F2;
   border-color: #FECACA;
 }
-.dh-btn-add-stock.red:hover { background: #FEE2E2; }
+
+.dh-btn-add-stock.red:hover {
+  background: #FEE2E2;
+}
 
 /* E: Recent orders table */
 .dh-table-toolbar {
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
 }
+
 .dh-search-box {
-  display: flex; align-items: center; gap: 6px;
-  background: #fff; border: 1px solid #CBD5E1; border-radius: 8px;
-  padding: 5px 10px; min-width: 170px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #fff;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  padding: 5px 10px;
+  min-width: 170px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
+
 .dh-search-box input {
-  border: none; outline: none; background: transparent;
-  font-size: 12px; color: #334155; width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 12px;
+  color: #334155;
+  width: 100%;
 }
-.dh-toolbar-right { display: flex; gap: 6px; }
+
+.dh-toolbar-right {
+  display: flex;
+  gap: 6px;
+}
+
 .dh-tool-btn {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 6px 10px; border: 1px solid #CBD5E1; border-radius: 8px;
-  background: #fff; font-size: 12px; font-weight: 600; color: #334155;
-  cursor: pointer; transition: background 0.15s, border-color 0.15s;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
-.dh-tool-btn:hover { background: #F8FAFC; border-color: #94A3B8; }
 
-.dh-tbl { width: 100%; border-collapse: collapse; font-size: 12.5px; table-layout: auto; }
-.dh-tbl th {
-  text-align: left; font-size: 10.5px; font-weight: 700; color: #64748B;
-  padding: 10px 12px; border-bottom: 1px solid #E2E8F0;
+.dh-tool-btn:hover {
   background: #F8FAFC;
-  white-space: nowrap; text-transform: uppercase; letter-spacing: 0.04em;
+  border-color: #94A3B8;
 }
-.dh-tbl td { padding: 10px 12px; border-bottom: 1px solid #E2E8F0; color: #334155; vertical-align: middle; white-space: nowrap; }
-.dh-tbl tr:nth-child(even) td { background: #F8FAFC; }
-.dh-tbl tr:hover td { background: #F1F5F9; }
-.dh-tbl tr:last-child td { border-bottom: none; }
 
-.dh-td-inv { font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace; font-size: 11.5px; font-weight: 700; color: #232B45; white-space: nowrap; }
-.dh-td-customer { font-weight: 600; color: #0F172A; white-space: nowrap; }
-.dh-td-amount  { font-weight: 700; color: #0F172A; white-space: nowrap; }
-.dh-td-date    { font-size: 11.5px; color: #64748B; white-space: nowrap; }
-
-.dh-pay-badge, .dh-badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 3px 8px; border-radius: 20px; font-size: 10.5px; font-weight: 600; white-space: nowrap;
-  border: 1px solid transparent; text-align: center;
+.dh-tbl {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  table-layout: auto;
 }
-.dh-pay-badge svg, .dh-badge svg { flex-shrink: 0; }
+
+.dh-tbl th {
+  text-align: left;
+  font-size: 10.5px;
+  font-weight: 700;
+  color: #64748B;
+  padding: 10px 12px;
+  border-bottom: 1px solid #E2E8F0;
+  background: #F8FAFC;
+  white-space: nowrap;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dh-tbl td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #E2E8F0;
+  color: #334155;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.dh-tbl tr:nth-child(even) td {
+  background: #F8FAFC;
+}
+
+.dh-tbl tr:hover td {
+  background: #F1F5F9;
+}
+
+.dh-tbl tr:last-child td {
+  border-bottom: none;
+}
+
+.dh-td-inv {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #232B45;
+  white-space: nowrap;
+}
+
+.dh-td-customer {
+  font-weight: 600;
+  color: #0F172A;
+  white-space: nowrap;
+}
+
+.dh-td-amount {
+  font-weight: 700;
+  color: #0F172A;
+  white-space: nowrap;
+}
+
+.dh-td-date {
+  font-size: 11.5px;
+  color: #64748B;
+  white-space: nowrap;
+}
+
+.dh-pay-badge,
+.dh-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 20px;
+  font-size: 10.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  text-align: center;
+}
+
+.dh-pay-badge svg,
+.dh-badge svg {
+  flex-shrink: 0;
+}
 
 /* 1. Success (Paid, Selesai, Siap Dikirim) */
-.py-paid, .b-paid, .b-done, .b-ready {
-  background: #F0FDF4; color: #15803D; border-color: #BBF7D0;
+.py-paid,
+.b-paid,
+.b-done,
+.b-ready {
+  background: #F0FDF4;
+  color: #15803D;
+  border-color: #BBF7D0;
 }
+
 /* 2. Pending (Pending, Menunggu Pembayaran) */
-.py-pending, .b-pending {
-  background: #FFFBEB; color: #B45309; border-color: #FDE68A;
+.py-pending,
+.b-pending {
+  background: #FFFBEB;
+  color: #B45309;
+  border-color: #FDE68A;
 }
+
 /* 3. In Progress (Diproses, Dikemas, Dikirim, Refunded) */
-.py-refunded, .b-process, .b-packed, .b-shipped {
-  background: rgba(35, 43, 69, 0.08); color: #232B45; border-color: rgba(35, 43, 69, 0.18);
+.py-refunded,
+.b-process,
+.b-packed,
+.b-shipped {
+  background: rgba(35, 43, 69, 0.08);
+  color: #232B45;
+  border-color: rgba(35, 43, 69, 0.18);
 }
+
 /* 4. Neutral / Inactive (Failed, Expired, Cancelled) */
-.py-failed, .py-expired, .py-cancelled, .b-failed, .b-cancel, .b-expired {
-  background: #F8FAFC; color: #475569; border-color: #E2E8F0;
+.py-failed,
+.py-expired,
+.py-cancelled,
+.b-failed,
+.b-cancel,
+.b-expired {
+  background: #F8FAFC;
+  color: #475569;
+  border-color: #E2E8F0;
 }
 
 /* ── Dropdown Menu for Sort & Filter ── */
@@ -828,8 +1014,15 @@
 }
 
 @keyframes dhFadeIn {
-  from { opacity: 0; transform: translateY(-4px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dh-dropdown-header {
@@ -868,8 +1061,16 @@
   color: #FAAC30;
 }
 
-.dh-row-more { color: #94A3B8; cursor: pointer; font-size: 14px; letter-spacing: 1px; }
-.dh-row-more:hover { color: #334155; }
+.dh-row-more {
+  color: #94A3B8;
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.dh-row-more:hover {
+  color: #334155;
+}
 
 /* ── Row Action Menu (3 Dots) ── */
 .dh-row-more-btn {
@@ -883,6 +1084,7 @@
   border-radius: 6px;
   transition: all 0.15s;
 }
+
 .dh-row-more-btn:hover {
   background: #E2E8F0;
   color: #232B45;
@@ -904,6 +1106,7 @@
   gap: 2px;
   animation: dhFadeIn 0.15s ease-out;
 }
+
 .dh-row-menu button {
   display: flex;
   align-items: center;
@@ -920,6 +1123,7 @@
   text-align: left;
   transition: background 0.15s;
 }
+
 .dh-row-menu button:hover {
   background: #F1F5F9;
   color: #232B45;
@@ -938,6 +1142,7 @@
   padding: 16px;
   animation: dhFadeIn 0.15s ease-out;
 }
+
 .dh-modal-card {
   width: 100%;
   max-width: 440px;
@@ -947,6 +1152,7 @@
   overflow: hidden;
   border: 1px solid rgba(250, 172, 48, 0.3);
 }
+
 .dh-modal-header {
   display: flex;
   align-items: center;
@@ -955,10 +1161,22 @@
   padding: 18px 22px;
   color: #ffffff;
 }
-.dh-modal-header h3 { font-size: 16px; font-weight: 700; margin: 0; }
-.dh-modal-header p { font-size: 12px; color: #FAAC30; margin: 2px 0 0; font-family: monospace; }
+
+.dh-modal-header h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.dh-modal-header p {
+  font-size: 12px;
+  color: #FAAC30;
+  margin: 2px 0 0;
+  font-family: monospace;
+}
+
 .dh-modal-close {
-  background: rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
   border: none;
   color: #ffffff;
   width: 28px;
@@ -969,9 +1187,18 @@
   align-items: center;
   justify-content: center;
 }
-.dh-modal-close:hover { background: rgba(255,255,255,0.25); }
 
-.dh-modal-body { padding: 20px 22px; display: flex; flex-direction: column; gap: 12px; }
+.dh-modal-close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.dh-modal-body {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .dh-modal-row {
   display: flex;
   justify-content: space-between;
@@ -981,6 +1208,7 @@
   padding-bottom: 8px;
   border-bottom: 1px dashed #E2E8F0;
 }
+
 .dh-modal-row.highlight {
   border-bottom: none;
   background: #F8FAFC;
@@ -988,6 +1216,7 @@
   border-radius: 8px;
   margin-top: 4px;
 }
+
 .dh-modal-footer {
   display: flex;
   justify-content: flex-end;
@@ -1064,6 +1293,32 @@
 .admin-dark .dh-sum-label,
 [data-theme="dark"] .dh-sum-label {
   color: #94A3B8;
+}
+
+.admin-dark .dh-sum-icon,
+[data-theme="dark"] .dh-sum-icon,
+.admin-dark .ic-blue,
+[data-theme="dark"] .ic-blue,
+.admin-dark .ic-purple,
+[data-theme="dark"] .ic-purple,
+.admin-dark .ic-amber,
+[data-theme="dark"] .ic-amber,
+.admin-dark .ic-orange,
+[data-theme="dark"] .ic-orange,
+.admin-dark .ic-green,
+[data-theme="dark"] .ic-green,
+.admin-dark .ic-neutral,
+[data-theme="dark"] .ic-neutral {
+  background: #18233C;
+  border-color: #23304A;
+  color: #94A3B8;
+}
+
+.admin-dark .dh-sum-card:hover .dh-sum-icon,
+[data-theme="dark"] .dh-sum-card:hover .dh-sum-icon {
+  background: #232B45;
+  border-color: #334155;
+  color: #F8FAFC;
 }
 
 .admin-dark .dh-sum-value,
@@ -1211,4 +1466,503 @@
 [data-theme="dark"] .dh-modal-footer {
   background: #18233C;
   border-top-color: #23304A;
+}
+
+/* ═══════════════════════════════════════════
+   SALES AREA / LINE CHART COMPONENT STYLES
+   Smooth Area Chart with Warm Gold / Orange
+═══════════════════════════════════════════ */
+
+.dh-chart-panel {
+  background: #ffffff;
+  border: 1px solid #CBD5E1;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.dh-chart-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 24px 28px 16px;
+  flex-wrap: wrap;
+  gap: 16px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.dh-chart-title-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dh-chart-title-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748B;
+  letter-spacing: 0.02em;
+}
+
+.dh-chart-heading {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0F172A;
+  margin: 2px 0 0;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}
+
+.dh-chart-sub {
+  font-size: 13px;
+  color: #64748B;
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Period Dropdown Selector */
+.dh-period-dropdown-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: #F8FAFC;
+  border: 1px solid #CBD5E1;
+  border-radius: 10px;
+  padding: 0 12px;
+  transition: all 0.2s ease;
+  height: 38px;
+}
+
+.dh-period-dropdown-wrap:hover {
+  border-color: #94A3B8;
+  background: #F1F5F9;
+}
+
+.dh-period-dropdown-wrap:focus-within {
+  border-color: #FAAC30;
+  box-shadow: 0 0 0 3px rgba(250, 172, 48, 0.18);
+}
+
+.dh-dropdown-icon {
+  color: #64748B;
+  margin-right: 8px;
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+.dh-period-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background: transparent;
+  border: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+  padding: 8px 22px 8px 0;
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+}
+
+.dh-period-select option {
+  background: #ffffff;
+  color: #1E293B;
+  font-weight: 500;
+}
+
+.dh-dropdown-chevron {
+  position: absolute;
+  right: 10px;
+  color: #64748B;
+  pointer-events: none;
+  transition: transform 0.2s ease;
+}
+
+.dh-period-dropdown-wrap:focus-within .dh-dropdown-chevron {
+  transform: rotate(180deg);
+  color: #FAAC30;
+}
+
+/* Period Tabs (Fallback) */
+.dh-period-tabs {
+  display: inline-flex;
+  align-items: center;
+  background: #F1F5F9;
+  padding: 4px;
+  border-radius: 12px;
+  gap: 4px;
+  border: 1px solid #E2E8F0;
+}
+
+.dh-period-btn {
+  background: transparent;
+  border: none;
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748B;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dh-period-btn:hover {
+  color: #1E293B;
+}
+
+.dh-period-btn.is-active {
+  background: #ffffff;
+  color: #232B45;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+}
+
+/* Chart Canvas Area */
+.dh-chart-canvas-container {
+  padding: 16px 20px 10px;
+  position: relative;
+  min-height: 280px;
+  width: 100%;
+}
+
+.dh-svg-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.dh-sales-svg {
+  width: 100%;
+  height: auto;
+  min-height: 250px;
+  max-height: 320px;
+  display: block;
+  cursor: crosshair;
+  overflow: visible;
+}
+
+.dh-grid-line {
+  stroke: #E2E8F0;
+  stroke-dasharray: 4 4;
+  stroke-width: 1;
+}
+
+.dh-axis-line {
+  stroke: #CBD5E1;
+  stroke-width: 1.2;
+}
+
+.dh-ytick-text {
+  font-size: 11px;
+  font-weight: 600;
+  fill: #94A3B8;
+  font-family: inherit;
+}
+
+.dh-xtick-text {
+  font-size: 11px;
+  font-weight: 600;
+  fill: #64748B;
+  font-family: inherit;
+  transition: fill 0.15s ease;
+}
+
+.dh-xtick-text.is-active-label {
+  fill: #D97706;
+  font-weight: 800;
+  font-size: 11.5px;
+}
+
+.dh-crosshair-line {
+  stroke: #FAAC30;
+  stroke-width: 1.5;
+  stroke-dasharray: 3 3;
+  pointer-events: none;
+}
+
+.dh-chart-dot {
+  cursor: pointer;
+  transition: r 0.2s ease, stroke-width 0.2s ease;
+}
+
+.dh-pulse-ring {
+  animation: pulseRing 1.4s infinite cubic-bezier(0.25, 1, 0.5, 1);
+  pointer-events: none;
+}
+
+@keyframes pulseRing {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.9;
+  }
+
+  50% {
+    transform: scale(1.3);
+    opacity: 0.4;
+  }
+
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* Floating Glassmorphism Tooltip */
+.dh-chart-tooltip {
+  position: absolute;
+  transform: translate(-50%, -125%);
+  pointer-events: none;
+  z-index: 60;
+  background: rgba(15, 23, 42, 0.94);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(250, 172, 48, 0.5);
+  border-radius: 10px;
+  padding: 10px 14px;
+  color: #ffffff;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(250, 172, 48, 0.2);
+  min-width: 170px;
+  white-space: nowrap;
+}
+
+.dh-tooltip-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+}
+
+.dh-tooltip-date {
+  font-size: 11px;
+  font-weight: 700;
+  color: #CBD5E1;
+  text-transform: capitalize;
+}
+
+.dh-tooltip-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dh-tooltip-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.dh-tooltip-label {
+  color: #94A3B8;
+  font-size: 11.5px;
+}
+
+.dh-tooltip-rev {
+  color: #FAAC30;
+  font-weight: 800;
+  font-size: 13.5px;
+}
+
+.dh-tooltip-orders {
+  color: #38BDF8;
+  font-weight: 600;
+  font-size: 11.5px;
+}
+
+/* Chart Loading & Empty State */
+.dh-chart-loading,
+.dh-chart-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 260px;
+  color: #64748B;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.dh-chart-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #E2E8F0;
+  border-top-color: #FAAC30;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Footer Insight */
+.dh-chart-footer {
+  padding: 14px 28px 18px;
+  background: transparent;
+  border-top: 1px solid #F1F5F9;
+}
+
+.dh-footer-insight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: #64748B;
+  line-height: 1.5;
+}
+
+.dh-footer-insight strong {
+  color: #1E293B;
+  font-weight: 600;
+}
+
+/* ── Dark Mode for SalesAreaChart ── */
+.admin-dark .dh-chart-panel,
+[data-theme="dark"] .dh-chart-panel {
+  background: #131B2E;
+  border-color: #23304A;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.admin-dark .dh-chart-top,
+[data-theme="dark"] .dh-chart-top {
+  border-bottom-color: #1E2A42;
+}
+
+.admin-dark .dh-chart-title-label,
+[data-theme="dark"] .dh-chart-title-label {
+  color: #94A3B8;
+}
+
+.admin-dark .dh-chart-heading,
+[data-theme="dark"] .dh-chart-heading {
+  color: #F8FAFC;
+}
+
+.admin-dark .dh-chart-sub,
+[data-theme="dark"] .dh-chart-sub {
+  color: #94A3B8;
+}
+
+.admin-dark .dh-period-dropdown-wrap,
+[data-theme="dark"] .dh-period-dropdown-wrap {
+  background: #18233C;
+  border-color: #2D3D5E;
+}
+
+.admin-dark .dh-period-dropdown-wrap:hover,
+[data-theme="dark"] .dh-period-dropdown-wrap:hover {
+  border-color: #475569;
+  background: #1F2C4A;
+}
+
+.admin-dark .dh-period-select,
+[data-theme="dark"] .dh-period-select {
+  color: #F1F5F9;
+}
+
+.admin-dark .dh-period-select option,
+[data-theme="dark"] .dh-period-select option {
+  background: #131B2E;
+  color: #F1F5F9;
+}
+
+.admin-dark .dh-dropdown-icon,
+[data-theme="dark"] .dh-dropdown-icon,
+.admin-dark .dh-dropdown-chevron,
+[data-theme="dark"] .dh-dropdown-chevron {
+  color: #94A3B8;
+}
+
+.admin-dark .dh-period-tabs,
+[data-theme="dark"] .dh-period-tabs {
+  background: #18233C;
+  border-color: #23304A;
+}
+
+.admin-dark .dh-period-btn,
+[data-theme="dark"] .dh-period-btn {
+  color: #94A3B8;
+}
+
+.admin-dark .dh-period-btn:hover,
+[data-theme="dark"] .dh-period-btn:hover {
+  color: #F1F5F9;
+}
+
+.admin-dark .dh-period-btn.is-active,
+[data-theme="dark"] .dh-period-btn.is-active {
+  background: #232B45;
+  color: #FAAC30;
+  border-color: rgba(250, 172, 48, 0.3);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.admin-dark .dh-grid-line,
+[data-theme="dark"] .dh-grid-line {
+  stroke: #1E2A42;
+}
+
+.admin-dark .dh-axis-line,
+[data-theme="dark"] .dh-axis-line {
+  stroke: #23304A;
+}
+
+.admin-dark .dh-ytick-text,
+[data-theme="dark"] .dh-ytick-text {
+  fill: #64748B;
+}
+
+.admin-dark .dh-xtick-text,
+[data-theme="dark"] .dh-xtick-text {
+  fill: #94A3B8;
+}
+
+.admin-dark .dh-chart-dot,
+[data-theme="dark"] .dh-chart-dot {
+  fill: #131B2E;
+}
+
+.admin-dark .dh-chart-footer,
+[data-theme="dark"] .dh-chart-footer {
+  background: transparent;
+  border-top-color: #1E2A42;
+}
+
+.admin-dark .dh-footer-insight,
+[data-theme="dark"] .dh-footer-insight {
+  color: #94A3B8;
+}
+
+.admin-dark .dh-footer-insight strong,
+[data-theme="dark"] .dh-footer-insight strong {
+  color: #F8FAFC;
+}
+
+@media (max-width: 768px) {
+  .dh-chart-top {
+    padding: 18px 18px 12px;
+  }
+
+  .dh-chart-heading {
+    font-size: 23px;
+  }
+
+  .dh-period-tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .dh-period-btn {
+    flex: 1;
+    padding: 6px 8px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .dh-chart-canvas-container {
+    padding: 12px 10px 8px;
+  }
 }

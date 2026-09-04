@@ -182,4 +182,176 @@ class ReportController extends Controller
             ]
         ]);
     }
+
+    public function salesChart(Request $request)
+    {
+        $period = $request->query('period', 'weekly'); // weekly, monthly, yearly
+        $now = Carbon::now();
+        $points = [];
+        $previousRevenue = 0;
+
+        if ($period === 'yearly') {
+            $year = (int) $request->query('year', $now->year);
+
+            $salesData = Transaksi::whereIn('status_pembayaran', ['paid', 'settlement'])
+                ->whereYear('tanggal_transaksi', $year)
+                ->selectRaw('MONTH(tanggal_transaksi) as m, SUM(total_pembayaran) as rev, COUNT(id_transaksi) as orders')
+                ->groupBy('m')
+                ->pluck('rev', 'm')
+                ->all();
+
+            $ordersData = Transaksi::whereIn('status_pembayaran', ['paid', 'settlement'])
+                ->whereYear('tanggal_transaksi', $year)
+                ->selectRaw('MONTH(tanggal_transaksi) as m, COUNT(id_transaksi) as orders')
+                ->groupBy('m')
+                ->pluck('orders', 'm')
+                ->all();
+
+            $monthNames = [
+                1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr',
+                5 => 'Mei', 6 => 'Jun', 7 => 'Jul', 8 => 'Agu',
+                9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des'
+            ];
+
+            $monthFullNames = [
+                1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+                5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+                9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            ];
+
+            for ($m = 1; $m <= 12; $m++) {
+                $rev = (float) ($salesData[$m] ?? 0);
+                $ord = (int) ($ordersData[$m] ?? 0);
+                $points[] = [
+                    'key' => (string) $m,
+                    'label' => $monthNames[$m],
+                    'full_label' => $monthFullNames[$m] . ' ' . $year,
+                    'revenue' => $rev,
+                    'orders' => $ord,
+                ];
+            }
+
+            $previousRevenue = (float) Transaksi::whereIn('status_pembayaran', ['paid', 'settlement'])
+                ->whereYear('tanggal_transaksi', $year - 1)
+                ->sum('total_pembayaran');
+
+        } elseif ($period === 'monthly') {
+            $startDate = $now->copy()->subDays(29)->startOfDay();
+            $endDate = $now->copy()->endOfDay();
+
+            $salesData = Transaksi::whereIn('status_pembayaran', ['paid', 'settlement'])
+                ->whereBetween('tanggal_transaksi', [$startDate->toDateTimeString(), $endDate->toDateTimeString()])
+                ->selectRaw('DATE(tanggal_transaksi) as d, SUM(total_pembayaran) as rev, COUNT(id_transaksi) as orders')
+                ->groupBy('d')
+                ->get()
+                ->keyBy('d');
+
+            $dayIndo = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            $fullDayIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+            $cursor = $startDate->copy();
+            while ($cursor <= $endDate) {
+                $dStr = $cursor->format('Y-m-d');
+                $item = $salesData->get($dStr);
+                $rev = (float) ($item ? $item->rev : 0);
+                $ord = (int) ($item ? $item->orders : 0);
+
+                $dayOfWeek = $cursor->dayOfWeek;
+
+                $points[] = [
+                    'key' => $dStr,
+                    'label' => $cursor->format('d/m'),
+                    'full_label' => $fullDayIndo[$dayOfWeek] . ', ' . $cursor->format('d M Y'),
+                    'revenue' => $rev,
+                    'orders' => $ord,
+                ];
+
+                $cursor->addDay();
+            }
+
+            $prevStart = $startDate->copy()->subDays(30);
+            $prevEnd = $startDate->copy()->subSecond();
+            $previousRevenue = (float) Transaksi::whereIn('status_pembayaran', ['paid', 'settlement'])
+                ->whereBetween('tanggal_transaksi', [$prevStart->toDateTimeString(), $prevEnd->toDateTimeString()])
+                ->sum('total_pembayaran');
+
+        } else {
+            // Weekly: last 7 days
+            $startDate = $now->copy()->subDays(6)->startOfDay();
+            $endDate = $now->copy()->endOfDay();
+
+            $salesData = Transaksi::whereIn('status_pembayaran', ['paid', 'settlement'])
+                ->whereBetween('tanggal_transaksi', [$startDate->toDateTimeString(), $endDate->toDateTimeString()])
+                ->selectRaw('DATE(tanggal_transaksi) as d, SUM(total_pembayaran) as rev, COUNT(id_transaksi) as orders')
+                ->groupBy('d')
+                ->get()
+                ->keyBy('d');
+
+            $dayIndo = ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab'];
+            $fullDayIndo = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+            $cursor = $startDate->copy();
+            while ($cursor <= $endDate) {
+                $dStr = $cursor->format('Y-m-d');
+                $item = $salesData->get($dStr);
+                $rev = (float) ($item ? $item->rev : 0);
+                $ord = (int) ($item ? $item->orders : 0);
+
+                $dayOfWeek = $cursor->dayOfWeek;
+
+                $points[] = [
+                    'key' => $dStr,
+                    'label' => $dayIndo[$dayOfWeek] . ' (' . $cursor->format('d/m') . ')',
+                    'full_label' => $fullDayIndo[$dayOfWeek] . ', ' . $cursor->format('d M Y'),
+                    'revenue' => $rev,
+                    'orders' => $ord,
+                ];
+
+                $cursor->addDay();
+            }
+
+            $prevStart = $startDate->copy()->subDays(7);
+            $prevEnd = $startDate->copy()->subSecond();
+            $previousRevenue = (float) Transaksi::whereIn('status_pembayaran', ['paid', 'settlement'])
+                ->whereBetween('tanggal_transaksi', [$prevStart->toDateTimeString(), $prevEnd->toDateTimeString()])
+                ->sum('total_pembayaran');
+        }
+
+        $totalRevenue = array_sum(array_column($points, 'revenue'));
+        $totalOrders = array_sum(array_column($points, 'orders'));
+        $averageOrder = $totalOrders > 0 ? round($totalRevenue / $totalOrders) : 0;
+
+        $growthRate = 0;
+        if ($previousRevenue > 0) {
+            $growthRate = round((($totalRevenue - $previousRevenue) / $previousRevenue) * 100, 1);
+        } elseif ($totalRevenue > 0) {
+            $growthRate = 100.0;
+        }
+
+        $highestRevenue = 0;
+        $highestLabel = '';
+        foreach ($points as $p) {
+            if ($p['revenue'] > $highestRevenue) {
+                $highestRevenue = $p['revenue'];
+                $highestLabel = $p['full_label'];
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'period' => $period,
+                'points' => $points,
+                'summary' => [
+                    'total_revenue' => $totalRevenue,
+                    'total_orders' => $totalOrders,
+                    'average_order' => $averageOrder,
+                    'growth_rate' => $growthRate,
+                    'previous_revenue' => $previousRevenue,
+                    'highest_revenue' => $highestRevenue,
+                    'highest_label' => $highestLabel,
+                ]
+            ]
+        ]);
+    }
 }
