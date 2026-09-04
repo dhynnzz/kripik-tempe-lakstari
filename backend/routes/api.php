@@ -27,6 +27,7 @@ Route::post('/shipping-rates', [\App\Http\Controllers\BiteshipController::class,
 
 // Protected Routes (Sanctum)
 Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/admin/me', [AuthController::class, 'me']);
     Route::post('/admin/logout', [AuthController::class, 'logout']);
 
     // Admin Category Management
@@ -55,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Reports Dashboard
     Route::get('/admin/reports/dashboard', [\App\Http\Controllers\ReportController::class, 'dashboardStats']);
     Route::get('/admin/reports/analytics', [\App\Http\Controllers\ReportController::class, 'analyticsReport']);
+    Route::get('/admin/reports/sales-chart', [\App\Http\Controllers\ReportController::class, 'salesChart']);
 
     // Admin Accounts Management
     Route::get('/admin/accounts', [\App\Http\Controllers\AdminAccountController::class, 'index']);

@@ -1,23 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy, Suspense } from 'react';
 import Swal from 'sweetalert2';
 import './AdminLayout.css';
 import { Lakstari21stSidebar } from './sidebar-component';
-import DashboardHome from '../DashboardHome/DashboardHome';
-import ProductManager from '../ProductManager/ProductManager';
-import CategoryManager from '../CategoryManager/CategoryManager';
-import OrderManager from '../OrderManager/OrderManager';
-import ShipmentManager from '../ShipmentManager/ShipmentManager';
-import CustomerManager from '../CustomerManager/CustomerManager';
-import ReportManager from '../ReportManager/ReportManager';
-import AdminManager from '../AdminManager/AdminManager';
-import SettingsManager from '../SettingsManager/SettingsManager';
 import ThemeToggle from '../ThemeToggle/ThemeToggle';
-import AdminLogin from '../AdminLogin/AdminLogin';
 import { apiService } from '../../../services/api';
+
+// Lazy loaded Admin modules for optimal memory usage & instant load on low-end devices
+const DashboardHome = lazy(() => import('../DashboardHome/DashboardHome'));
+const ProductManager = lazy(() => import('../ProductManager/ProductManager'));
+const CategoryManager = lazy(() => import('../CategoryManager/CategoryManager'));
+const OrderManager = lazy(() => import('../OrderManager/OrderManager'));
+const ShipmentManager = lazy(() => import('../ShipmentManager/ShipmentManager'));
+const CustomerManager = lazy(() => import('../CustomerManager/CustomerManager'));
+const ReportManager = lazy(() => import('../ReportManager/ReportManager'));
+const AdminManager = lazy(() => import('../AdminManager/AdminManager'));
+const SettingsManager = lazy(() => import('../SettingsManager/SettingsManager'));
+const AdminLogin = lazy(() => import('../AdminLogin/AdminLogin'));
 
 interface AdminLayoutProps {
   onSwitchToUser?: () => void;
 }
+
+const AdminTabSkeleton = () => (
+  <div style={{
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: '400px',
+    gap: '12px',
+    color: '#64748B'
+  }}>
+    <div style={{
+      width: '32px',
+      height: '32px',
+      border: '3px solid #CBD5E1',
+      borderTopColor: '#FAAC30',
+      borderRadius: '50%',
+      animation: 'spin 0.7s linear infinite'
+    }} />
+    <span style={{ fontSize: '13px', fontWeight: 600, color: '#64748B' }}>
+      Memuat modul...
+    </span>
+  </div>
+);
 
 /* Lucide-style PanelLeftOpen icon (inline) */
 function PanelLeftOpenIcon() {
@@ -44,7 +70,7 @@ const tabLabels: Record<string, string> = {
 
 const AdminLayout: React.FC<AdminLayoutProps> = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return !!sessionStorage.getItem('admin_token');
+    return !!(sessionStorage.getItem('admin_token') || localStorage.getItem('admin_token'));
   });
 
   const [activeTab, setActiveTab] = useState<
@@ -58,6 +84,15 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
     }
     return true;
   });
+
+  // Pastikan admin terautentikasi dan token valid saat membuka portal admin
+  useEffect(() => {
+    apiService.ensureAdminAuth().then((authed) => {
+      if (authed) {
+        setIsAuthenticated(true);
+      }
+    });
+  }, []);
 
   // Otomatis sesuaikan sidebar saat ukuran layar berubah (Rotasi HP/iPad/Desktop)
   useEffect(() => {
@@ -98,7 +133,11 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
   };
 
   if (!isAuthenticated) {
-    return <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />;
+    return (
+      <Suspense fallback={<AdminTabSkeleton />}>
+        <AdminLogin onLoginSuccess={() => setIsAuthenticated(true)} />
+      </Suspense>
+    );
   }
 
   return (
@@ -200,17 +239,19 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
           </div>
         </header>
 
-        {/* Main Body */}
+        {/* Main Body with Suspense */}
         <main className="admin-main-content" style={{ flex: 1, padding: '28px' }}>
-          {activeTab === 'dashboard' && <DashboardHome />}
-          {activeTab === 'products' && <ProductManager />}
-          {activeTab === 'categories' && <CategoryManager />}
-          {activeTab === 'orders' && <OrderManager />}
-          {activeTab === 'shipments' && <ShipmentManager />}
-          {activeTab === 'customers' && <CustomerManager />}
-          {activeTab === 'reports' && <ReportManager />}
-          {activeTab === 'admins' && <AdminManager />}
-          {activeTab === 'settings' && <SettingsManager />}
+          <Suspense fallback={<AdminTabSkeleton />}>
+            {activeTab === 'dashboard' && <DashboardHome />}
+            {activeTab === 'products' && <ProductManager />}
+            {activeTab === 'categories' && <CategoryManager />}
+            {activeTab === 'orders' && <OrderManager />}
+            {activeTab === 'shipments' && <ShipmentManager />}
+            {activeTab === 'customers' && <CustomerManager />}
+            {activeTab === 'reports' && <ReportManager />}
+            {activeTab === 'admins' && <AdminManager />}
+            {activeTab === 'settings' && <SettingsManager />}
+          </Suspense>
         </main>
       </div>
     </div>

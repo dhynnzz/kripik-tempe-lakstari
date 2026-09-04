@@ -45,10 +45,12 @@ class AuthController extends Controller
         $admin->save();
 
         \Illuminate\Support\Facades\Auth::guard('admin')->login($admin);
+        $token = $admin->createToken('admin_token')->plainTextToken;
 
         return response()->json([
             'success' => true,
             'message' => 'Login Admin Berhasil!',
+            'token' => $token,
             'user' => [
                 'id' => $admin->id_admin,
                 'name' => $admin->nama_admin,
@@ -57,11 +59,25 @@ class AuthController extends Controller
         ]);
     }
 
+    public function me(Request $request)
+    {
+        $admin = $request->user();
+        return response()->json([
+            'success' => true,
+            'user' => $admin,
+        ]);
+    }
+
     public function logout(Request $request)
     {
+        if ($request->user() && method_exists($request->user(), 'currentAccessToken') && $request->user()->currentAccessToken()) {
+            $request->user()->currentAccessToken()->delete();
+        }
         \Illuminate\Support\Facades\Auth::guard('admin')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return response()->json([
             'success' => true,
