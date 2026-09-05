@@ -676,6 +676,17 @@
     font-size: 18px;
   }
 
+  .rm-header-actions {
+    width: 100%;
+  }
+
+  .btn-rm-print {
+    width: 100%;
+    justify-content: center;
+    padding: 9px 16px;
+    font-size: 12.5px;
+  }
+
   /* 2x2 Clean Compact Grid on Mobile */
   .rm-stats-grid {
     grid-template-columns: repeat(2, 1fr);
