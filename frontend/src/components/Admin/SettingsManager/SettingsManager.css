@@ -14,11 +14,11 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  background: linear-gradient(135deg, #232B45 0%, #1c2236 50%, #3a2b16 100%);
+  background: #232B45;
   padding: 22px 26px;
   border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.2);
-  border: 1px solid rgba(250, 172, 48, 0.35);
+  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.15);
+  border: 1px solid #334155;
   color: #ffffff;
 }
 
@@ -31,10 +31,10 @@
 }
 
 .settings-header-bar p {
-  color: #FAAC30;
+  color: #CBD5E1;
   font-size: 13px;
   margin-top: 4px;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 /* Tab Navigation */
