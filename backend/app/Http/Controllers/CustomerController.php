@@ -27,7 +27,14 @@ class CustomerController extends Controller
 
         // Filter by status
         if ($request->filled('status') && $request->status !== 'all') {
-            $query->where('status_pelanggan', $request->status);
+            $st = strtolower($request->status);
+            if ($st === 'aktif') {
+                $query->whereIn('status_pelanggan', ['aktif', 'Aktif']);
+            } else if ($st === 'blacklist' || $st === 'nonaktif') {
+                $query->whereIn('status_pelanggan', ['blacklist', 'Blacklist', 'nonaktif', 'Nonaktif']);
+            } else {
+                $query->where('status_pelanggan', $request->status);
+            }
         }
 
         $perPage = (int) ($request->per_page ?? 10);
@@ -35,8 +42,8 @@ class CustomerController extends Controller
 
         // Summary stats untuk cards metric
         $totalCustomers = Pelanggan::count();
-        $activeCustomers = Pelanggan::where('status_pelanggan', 'Aktif')->count();
-        $blacklistedCustomers = Pelanggan::where('status_pelanggan', 'Blacklist')->count();
+        $activeCustomers = Pelanggan::whereIn('status_pelanggan', ['aktif', 'Aktif'])->count();
+        $blacklistedCustomers = Pelanggan::whereIn('status_pelanggan', ['blacklist', 'Blacklist', 'nonaktif', 'Nonaktif'])->count();
         $totalOrders = \App\Models\Transaksi::count();
 
         return response()->json([

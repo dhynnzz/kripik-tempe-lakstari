@@ -1,85 +1,147 @@
 /* ==========================================================================
-   REPORT MANAGER STYLES - CLEAN & PLAIN (NO GRADIENTS)
+   REPORT MANAGER STYLES - LAKSTARI ADMIN PORTAL
+   Desktop & Mobile Responsive Design + Print Engine
    ========================================================================== */
 
 .report-manager-root {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 20px;
   width: 100%;
   max-width: 100%;
   box-sizing: border-box;
-  font-family: inherit;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #1E293B;
 }
 
-/* ── 1. PLAIN HEADER ── */
-.rm-header-plain {
+/* ── 1. HEADER BANNER (Solid Clean Navy, No Harsh Gradients) ── */
+.rm-header-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  background: #FFFFFF;
-  padding: 20px 24px;
-  border-radius: 12px;
-  border: 1px solid #E2E8F0;
+  background: #232B45;
+  padding: 22px 26px;
+  border-radius: 14px;
+  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.15);
+  border: 1px solid #334155;
+  color: #FFFFFF;
 }
 
-.rm-header-titles h2 {
-  font-size: 20px;
+.rm-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(250, 172, 48, 0.15);
+  border: 1px solid rgba(250, 172, 48, 0.35);
+  color: #FAAC30;
+  font-size: 11.5px;
   font-weight: 700;
-  color: #0F172A;
-  margin: 0;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+  text-transform: uppercase;
 }
 
-.rm-header-titles p {
-  color: #64748B;
-  font-size: 13px;
-  margin: 4px 0 0 0;
+.rm-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #FAAC30;
+  box-shadow: 0 0 8px #FAAC30;
+  animation: rmPulse 1.8s infinite;
+}
+
+@keyframes rmPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.rm-header-text h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.rm-header-text p {
+  color: #94A3B8;
+  font-size: 13.5px;
+  margin-top: 4px;
+  font-weight: 400;
+  max-width: 650px;
+  line-height: 1.5;
 }
 
 .rm-header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex-wrap: wrap;
 }
 
-.btn-rm-plain {
-  background: #FFFFFF;
-  color: #334155;
-  border: 1px solid #CBD5E1;
-  padding: 8px 14px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
+.btn-rm-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #F8FAFC;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all 0.2s ease;
 }
 
-.btn-rm-plain:hover:not(:disabled) {
-  background: #F8FAFC;
-  border-color: #94A3B8;
+.btn-rm-action:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
 }
 
-/* ── 2. FILTER BAR ── */
-.rm-filter-card-plain {
+.btn-rm-print {
+  background: #FAAC30;
+  color: #1E293B;
+  border-color: #FAAC30;
+}
+
+.btn-rm-print:hover:not(:disabled) {
+  background: #E39925;
+  border-color: #E39925;
+  color: #0F172A;
+}
+
+.rm-spinning {
+  animation: rmSpin 0.9s linear infinite;
+}
+
+@keyframes rmSpin {
+  100% { transform: rotate(360deg); }
+}
+
+/* ── 2. PERIOD FILTER CARD ── */
+.rm-filter-card {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 14px;
   background: #FFFFFF;
-  padding: 12px 18px;
-  border-radius: 10px;
+  padding: 14px 20px;
+  border-radius: 14px;
   border: 1px solid #E2E8F0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
 }
 
 .rm-filter-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   flex-wrap: wrap;
 }
 
@@ -97,14 +159,15 @@
 }
 
 .rm-period-chip {
-  padding: 6px 14px;
-  border-radius: 6px;
-  background: #F8FAFC;
+  padding: 7px 16px;
+  border-radius: 8px;
+  background: #F1F5F9;
   border: 1px solid #E2E8F0;
   color: #475569;
   font-size: 12.5px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .rm-period-chip:hover {
@@ -112,175 +175,484 @@
 }
 
 .rm-period-chip.active {
-  background: #0F172A;
-  border-color: #0F172A;
+  background: #1E293B;
+  border-color: #1E293B;
   color: #FFFFFF;
 }
 
-/* ── 3. PLAIN STAT CARDS ── */
+.rm-active-indicator {
+  font-size: 12.5px;
+  color: #64748B;
+}
+
+.rm-active-indicator strong {
+  color: #0F172A;
+}
+
+/* ── 3. STAT METRIC CARDS ── */
 .rm-stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  gap: 16px;
 }
 
 .rm-stat-card {
   background: #FFFFFF;
-  border-radius: 10px;
-  padding: 16px 18px;
+  border-radius: 16px;
+  padding: 20px;
   border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.rm-stat-label {
+.rm-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
+}
+
+.rm-stat-card.omset-card {
+  border-color: #E2E8F0;
+  background: #FFFFFF;
+}
+
+.rm-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rm-stat-title {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 700;
   color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rm-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px solid #E2E8F0;
+}
+
+.rm-stat-icon.gold {
+  background: rgba(250, 172, 48, 0.12);
+  color: #D97706;
+  border-color: rgba(250, 172, 48, 0.25);
+}
+
+.rm-stat-icon.green,
+.rm-stat-icon.blue,
+.rm-stat-icon.purple {
+  background: #F8FAFC;
+  color: #334155;
+  border-color: #E2E8F0;
 }
 
 .rm-stat-val {
   font-size: 22px;
-  font-weight: 700;
+  font-weight: 800;
   color: #0F172A;
   line-height: 1.2;
-  margin: 2px 0;
 }
 
-.rm-stat-sub {
-  font-size: 12px;
+.rm-stat-val.gold-text {
+  color: #B45309;
+}
+
+.rm-stat-unit {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.rm-stat-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+  font-size: 11.5px;
   color: #94A3B8;
 }
 
-/* ── 4. CHART CONTAINER ── */
+.rm-pill-badge {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #F1F5F9;
+  color: #475569;
+}
+
+.rm-pill-badge.gold {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.rm-pill-badge.green {
+  background: #ECFDF5;
+  color: #065F46;
+}
+
+.rm-pill-badge.blue,
+.rm-pill-badge.purple {
+  background: #F1F5F9;
+  color: #475569;
+}
+
+/* ── 4. CHART SECTION ── */
 .rm-chart-section {
   width: 100%;
 }
 
 .rm-chart-container {
   background: #FFFFFF;
-  border-radius: 10px;
+  border-radius: 16px;
   border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
   overflow: hidden;
 }
 
-/* ── 5. DUAL TABLES (PLAIN) ── */
+/* ── 5. DUAL PANELS (TOP PRODUCTS & SHIPPING) ── */
 .rm-panels-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
+  gap: 20px;
 }
 
 .rm-panel-card {
   background: #FFFFFF;
-  border-radius: 10px;
+  border-radius: 16px;
   border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
 .rm-panel-header {
-  padding: 12px 18px;
-  background: #F8FAFC;
-  border-bottom: 1px solid #E2E8F0;
+  padding: 18px 22px;
+  background: #EDF2F7;
+  border-bottom: 2px solid #CBD5E1;
 }
 
-.rm-panel-header h3 {
-  font-size: 14px;
+.rm-panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rm-panel-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px solid #CBD5E1;
+}
+
+.rm-panel-icon.gold,
+.rm-panel-icon.blue {
+  background: #F1F5F9;
+  color: #334155;
+}
+
+.rm-panel-title-wrap h3 {
+  font-size: 15px;
   font-weight: 700;
   color: #0F172A;
   margin: 0;
 }
 
-.rm-table-wrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
-.rm-plain-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13px;
-  text-align: left;
-}
-
-.rm-plain-table th {
-  background: #F8FAFC;
-  padding: 10px 16px;
+.rm-panel-title-wrap p {
   font-size: 12px;
-  font-weight: 600;
   color: #64748B;
-  border-bottom: 1px solid #E2E8F0;
+  margin: 2px 0 0 0;
 }
 
-.rm-plain-table td {
-  padding: 12px 16px;
-  border-bottom: 1px solid #F1F5F9;
-  color: #334155;
+.rm-panel-body {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
-.rm-plain-tag {
+/* Top Selling Products */
+.rm-top-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rm-product-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rm-product-rank-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
   background: #F1F5F9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
   border: 1px solid #E2E8F0;
-  color: #334155;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-size: 11.5px;
-  font-weight: 600;
 }
 
-/* ── 6. LOADING ── */
-.rm-loading-state {
-  padding: 40px 20px;
-  text-align: center;
+.rm-product-item:nth-child(1) .rm-product-rank-badge {
+  background: rgba(250, 172, 48, 0.12);
+  color: #B45309;
+  border: 1px solid rgba(250, 172, 48, 0.25);
+}
+
+.rm-product-item:nth-child(2) .rm-product-rank-badge,
+.rm-product-item:nth-child(3) .rm-product-rank-badge {
+  background: #F8FAFC;
+  color: #334155;
+  border: 1px solid #E2E8F0;
+}
+
+.rm-product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.rm-product-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+}
+
+.rm-product-name {
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.rm-product-sold-text {
   color: #64748B;
+  font-size: 12.5px;
+}
+
+.rm-product-sold-text strong {
+  color: #0F172A;
+  font-size: 14px;
+}
+
+.rm-progress-bar-bg {
+  width: 100%;
+  height: 7px;
+  background: #F1F5F9;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.rm-progress-bar-fill {
+  height: 100%;
+  background: #232B45;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rm-product-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+}
+
+.rm-category-tag {
+  color: #64748B;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 1px 7px;
+  border-radius: 5px;
+}
+
+.rm-share-text {
+  color: #94A3B8;
+}
+
+/* Shipping Breakdown List */
+.rm-shipping-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rm-shipping-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rm-shipping-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rm-status-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: inline-block;
+}
+
+.rm-shipping-count-wrap {
+  font-size: 13px;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.rm-shipping-count-wrap strong {
+  color: #0F172A;
+  font-size: 14px;
+}
+
+.rm-panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #94A3B8;
+  gap: 10px;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* ── 6. LOADING STATE ── */
+.rm-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 70px 20px;
+  color: #64748B;
+  text-align: center;
 }
 
 .rm-spinner {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
   border: 3px solid #E2E8F0;
-  border-top-color: #0F172A;
+  border-top-color: #FAAC30;
   border-radius: 50%;
   animation: rmSpin 0.9s linear infinite;
-  margin: 0 auto 10px auto;
+  margin-bottom: 14px;
 }
 
-@keyframes rmSpin {
-  100% { transform: rotate(360deg); }
-}
-
-/* ── 7. PRINT MEDIA QUERIES ── */
+/* ── 7. PRINT TEMPLATE & PRINT MEDIA QUERIES ── */
 .rm-print-header {
   display: none;
 }
 
 @media print {
-  .no-print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide admin elements not needed on printed paper */
+  .no-print,
+  .admin-sidebar,
+  .admin-topbar,
+  .btn-rm-action,
+  .rm-header-actions,
+  .rm-filter-card {
     display: none !important;
+  }
+
+  .report-manager-root {
+    gap: 14px;
   }
 
   .rm-print-header {
     display: block !important;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #000000;
+  }
+
+  .rm-print-company h2 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .rm-print-company p {
+    font-size: 11px;
+    color: #475569;
+    margin: 2px 0 10px 0;
+  }
+
+  .rm-print-meta h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .rm-print-meta p {
+    font-size: 11px;
+    color: #475569;
+    margin: 2px 0 0 0;
   }
 
   .rm-stats-grid {
     grid-template-columns: repeat(4, 1fr) !important;
+    gap: 10px !important;
   }
 
   .rm-stat-card {
-    border: 1px solid #94A3B8 !important;
+    box-shadow: none !important;
+    border: 1px solid #CBD5E1 !important;
+    padding: 12px !important;
+  }
+
+  .rm-stat-val {
+    font-size: 18px !important;
   }
 
   .rm-panels-grid {
     grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+  }
+
+  .rm-panel-card {
+    box-shadow: none !important;
+    border: 1px solid #CBD5E1 !important;
   }
 }
 
 /* ── 8. RESPONSIVE BREAKPOINTS ── */
-@media (max-width: 900px) {
+@media (max-width: 1024px) {
   .rm-stats-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -293,14 +665,37 @@
 @media (max-width: 768px) {
   .rm-stats-grid {
     grid-template-columns: 1fr;
+    gap: 12px;
   }
 
-  .rm-filter-card-plain {
+  .rm-header-banner {
+    padding: 18px 20px;
+  }
+
+  .rm-header-text h2 {
+    font-size: 20px;
+  }
+
+  .rm-filter-card {
     flex-direction: column;
     align-items: stretch;
   }
 
   .rm-period-chips {
     overflow-x: auto;
+    padding-bottom: 4px;
+    width: 100%;
+  }
+
+  .rm-period-chip {
+    white-space: nowrap;
+  }
+
+  .rm-panel-card {
+    border-radius: 14px;
+  }
+
+  .rm-panel-body {
+    padding: 16px;
   }
 }
