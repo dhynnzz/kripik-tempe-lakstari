@@ -366,6 +366,18 @@ export const apiService = {
     }
   },
 
+  searchBiteshipAreas: async (input: string): Promise<any> => {
+    try {
+      const response = await apiFetch(`/biteship/areas?input=${encodeURIComponent(input)}`, {
+        method: 'GET',
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Error searching areas:', error);
+      throw error;
+    }
+  },
+
   trackOrder: async (nomor_invoice: string, no_hp: string): Promise<any> => {
     try {
       const response = await apiFetch(`/track-order`, {
