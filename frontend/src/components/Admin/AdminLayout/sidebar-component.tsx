@@ -127,36 +127,16 @@ type MenuItem = {
   id: string;
   label: string;
   icon: () => ReactElement;
-  group?: string;
 };
 
-const menuGroups: { heading?: string; items: MenuItem[] }[] = [
-  {
-    items: [
-      { id: "dashboard", label: "Dashboard", icon: IconLayoutDashboard },
-    ],
-  },
-  {
-    heading: "Katalog",
-    items: [
-      { id: "products", label: "Produk", icon: IconPackage },
-      { id: "categories", label: "Kategori", icon: IconTag },
-    ],
-  },
-  {
-    heading: "Transaksi",
-    items: [
-      { id: "orders", label: "Pesanan", icon: IconShoppingCart },
-      { id: "shipments", label: "Pengiriman", icon: IconTruck },
-    ],
-  },
-  {
-    heading: "Manajemen",
-    items: [
-      { id: "customers", label: "Pelanggan", icon: IconUsers },
-      { id: "reports", label: "Laporan", icon: IconBarChart },
-    ],
-  },
+const menuItems: MenuItem[] = [
+  { id: "dashboard", label: "Dashboard", icon: IconLayoutDashboard },
+  { id: "products", label: "Produk", icon: IconPackage },
+  { id: "categories", label: "Kategori", icon: IconTag },
+  { id: "orders", label: "Pesanan", icon: IconShoppingCart },
+  { id: "shipments", label: "Pengiriman", icon: IconTruck },
+  { id: "customers", label: "Pelanggan", icon: IconUsers },
+  { id: "reports", label: "Laporan", icon: IconBarChart },
 ];
 
 const bottomItems: MenuItem[] = [
@@ -244,64 +224,48 @@ export function Lakstari21stSidebar({
                 </button>
               </div>
 
-              {/* Navigation Menu */}
+              {/* Navigation Menu (Rapat tanpa jeda/heading kategori) */}
               <div className="lakstari-sidebar-nav" style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "2px" }}>
-                {menuGroups.map((group, idx) => (
-                  <div key={idx} style={{ marginBottom: "3px" }}>
-                    {group.heading && (
-                      <div style={{
-                        fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em",
-                        color: "rgba(148,163,184,0.5)", textTransform: "uppercase",
-                        padding: "0 10px", marginBottom: "2px", marginTop: "4px"
-                      }}>
-                        {group.heading}
-                      </div>
-                    )}
-                    {group.items.map((item) => {
-                        const isActive = activeTab === item.id;
-                        return (
-                          <button
-                            key={item.id}
-                            onClick={() => handleMenuClick(item.id)}
-                            style={{
-                              display: "flex", alignItems: "center", gap: "10px",
-                              width: "100%", padding: "7.5px 10px",
-                              borderRadius: "7px", border: "none",
-                              background: isActive ? "#FAAC30" : "transparent",
-                              color: isActive ? "#232B45" : "#94A3B8",
-                              fontSize: "13.5px", fontWeight: isActive ? 700 : 500,
-                              cursor: "pointer", textAlign: "left",
-                              transition: "all 0.15s ease",
-                            }}
-                            onMouseEnter={(e) => {
-                              if (!isActive) {
-                                (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)";
-                                (e.currentTarget as HTMLElement).style.color = "#ffffff";
-                              }
-                            }}
-                            onMouseLeave={(e) => {
-                              if (!isActive) {
-                                (e.currentTarget as HTMLElement).style.background = "transparent";
-                                (e.currentTarget as HTMLElement).style.color = "#94A3B8";
-                              }
-                            }}
-                          >
-                            <span style={{ flexShrink: 0 }}><item.icon /></span>
-                            <span style={{ whiteSpace: "nowrap" }}>{item.label}</span>
-                          </button>
-                        );
-                      })}
-                  </div>
-                ))}
+                {menuItems.map((item) => {
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => handleMenuClick(item.id)}
+                      style={{
+                        display: "flex", alignItems: "center", gap: "10px",
+                        width: "100%", padding: "7.5px 10px",
+                        borderRadius: "7px", border: "none",
+                        background: isActive ? "#FAAC30" : "transparent",
+                        color: isActive ? "#232B45" : "#94A3B8",
+                        fontSize: "13.5px", fontWeight: isActive ? 700 : 500,
+                        cursor: "pointer", textAlign: "left",
+                        transition: "all 0.15s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        if (!isActive) {
+                          (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)";
+                          (e.currentTarget as HTMLElement).style.color = "#ffffff";
+                        }
+                      }}
+                      onMouseLeave={(e) => {
+                        if (!isActive) {
+                          (e.currentTarget as HTMLElement).style.background = "transparent";
+                          (e.currentTarget as HTMLElement).style.color = "#94A3B8";
+                        }
+                      }}
+                    >
+                      <span style={{ flexShrink: 0 }}><item.icon /></span>
+                      <span style={{ whiteSpace: "nowrap" }}>{item.label}</span>
+                    </button>
+                  );
+                })}
 
-                {/* Bottom Section (Langsung menyambung tanpa jeda jauh) */}
+                {/* Bottom Section (Menyambung langsung tanpa jarak jauh) */}
                 <div style={{
-                  paddingTop: "8px",
-                  marginTop: "6px",
+                  paddingTop: "6px", marginTop: "6px",
                   borderTop: "1px solid rgba(255,255,255,0.07)",
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "2px",
+                  display: "flex", flexDirection: "column", gap: "2px",
                 }}>
                   {bottomItems.map((item) => {
                     const isActive = activeTab === item.id;
