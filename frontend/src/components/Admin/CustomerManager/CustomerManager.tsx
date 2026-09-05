@@ -221,10 +221,6 @@ const CustomerManager: React.FC = () => {
       {/* 1. Header Banner */}
       <div className="cm-header-banner">
         <div className="cm-header-text">
-          <div className="cm-header-badge">
-            <span className="cm-pulse-dot"></span>
-            Admin Portal • Manajemen Pelanggan
-          </div>
           <h2>Data Pelanggan Lakstari</h2>
           <p>Pantau seluruh pelanggan terdaftar, kontak aktif, riwayat pesanan, dan verifikasi status akun.</p>
         </div>
@@ -365,7 +361,6 @@ const CustomerManager: React.FC = () => {
             className={`cm-chip chip-active ${statusFilter === 'Aktif' ? 'active' : ''}`}
             onClick={() => { setStatusFilter('Aktif'); setCurrentPage(1); }}
           >
-            <span className="cm-chip-dot green"></span>
             Aktif ({stats.active})
           </button>
           <button
@@ -373,7 +368,6 @@ const CustomerManager: React.FC = () => {
             className={`cm-chip chip-blacklist ${statusFilter === 'Blacklist' ? 'active' : ''}`}
             onClick={() => { setStatusFilter('Blacklist'); setCurrentPage(1); }}
           >
-            <span className="cm-chip-dot red"></span>
             Blacklist ({stats.blacklisted})
           </button>
         </div>

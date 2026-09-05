@@ -99,10 +99,6 @@ const ReportManager: React.FC = () => {
       {/* 1. Header Banner & Action Bar */}
       <div className="rm-header-banner no-print">
         <div className="rm-header-text">
-          <div className="rm-header-badge">
-            <span className="rm-pulse-dot"></span>
-            Admin Portal • Laporan & Analytics
-          </div>
           <h2>Laporan Penjualan & Performa Bisnis</h2>
           <p>
             Rekapitulasi omset toko, volume penjualan, performa produk terlaris, dan distribusi status logistik pengiriman.
