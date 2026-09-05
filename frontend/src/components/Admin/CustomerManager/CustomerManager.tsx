@@ -224,29 +224,6 @@ const CustomerManager: React.FC = () => {
           <h2>Data Pelanggan Lakstari</h2>
           <p>Pantau seluruh pelanggan terdaftar, kontak aktif, riwayat pesanan, dan verifikasi status akun.</p>
         </div>
-        <div className="cm-header-actions">
-          <button
-            className="btn-cm-refresh"
-            onClick={() => fetchCustomers(currentPage, searchQuery, statusFilter)}
-            title="Muat ulang data"
-            disabled={isLoading}
-          >
-            <svg
-              className={isLoading ? 'cm-spinning' : ''}
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
-            </svg>
-            <span>{isLoading ? 'Memuat...' : 'Segarkan Data'}</span>
-          </button>
-        </div>
       </div>
 
       {/* 2. Stat Metric Cards */}
