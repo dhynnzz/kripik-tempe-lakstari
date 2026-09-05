@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useRef, type ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
 import { apiService } from '../services/api';
 
 export interface ProductItem {
@@ -43,45 +43,75 @@ interface ProductContextType {
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
 
 export const normalizeProductImage = (img?: string): string => {
-  if (!img || img.startsWith('blob:')) return '/images/products/flavor-original.png';
-  
-  // Fix for corrupted database entries that prepended /images/products/ to /storage/
-  if (img.startsWith('/images/products/storage/')) {
-    img = img.replace('/images/products/storage/', '/storage/');
+  if (!img || typeof img !== 'string' || img.startsWith('blob:')) {
+    return '/images/products/flavor-original.png';
   }
 
-  if (img.startsWith('data:') || img.startsWith('http://') || img.startsWith('https://')) return img;
-  
-  const cleanImg = img.trim();
+  let cleanImg = img.trim();
+  const lowerImg = cleanImg.toLowerCase();
+
+  // Jika nama gambar atau path mengandung kata 'placeholder' atau korup
+  if (lowerImg.includes('placeholder')) {
+    return '/images/products/flavor-original.png';
+  }
+
+  // Perbaikan entri rusak di DB yang menempelkan /images/products/ ke depan /storage/
+  if (cleanImg.startsWith('/images/products/storage/')) {
+    cleanImg = cleanImg.replace('/images/products/storage/', '/storage/');
+  }
+
+  // Jika sudah merupakan data URL atau remote URL lengkap
+  if (cleanImg.startsWith('data:') || cleanImg.startsWith('http://') || cleanImg.startsWith('https://')) {
+    return cleanImg;
+  }
+
+  const baseUrl = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', '') : 'http://localhost:8000';
+
+  // Jika merupakan file di Laravel storage: /storage/... atau storage/...
   if (cleanImg.startsWith('/storage/') || cleanImg.startsWith('storage/')) {
-    const baseUrl = import.meta.env.VITE_API_BASE_URL ? import.meta.env.VITE_API_BASE_URL.replace('/api', '') : 'http://localhost:8000';
     const storagePath = cleanImg.startsWith('/') ? cleanImg : `/${cleanImg}`;
     return `${baseUrl}${storagePath}`;
   }
 
-  if (img.startsWith('/images/')) return img;
+  // Cek pencocokan varian rasa statis terlebih dahulu
+  if (lowerImg.includes('original')) return '/images/products/flavor-original.png';
+  if (lowerImg.includes('daun_jeruk') || lowerImg.includes('daun-jeruk') || lowerImg.includes('jeruk')) return '/images/products/flavor-daun-jeruk.png';
+  if (lowerImg.includes('balado')) return '/images/products/flavor-balado.png';
+  if (lowerImg.includes('bbq')) return '/images/products/flavor-bbq.png';
+  if (lowerImg.includes('keju')) return '/images/products/flavor-keju.png';
+  if (lowerImg.includes('jagung')) return '/images/products/flavor-jagung-bakar.png';
+  if (lowerImg.includes('sapi')) return '/images/products/flavor-sapi-panggang.png';
+  if (lowerImg.includes('pedas') || lowerImg.includes('manis')) return '/images/products/flavor-pedas-manis.png';
+  if (lowerImg.includes('paket_4') || lowerImg.includes('paket-4') || lowerImg.includes('hemat')) return '/images/products/paket-4-hemat.png';
+  if (lowerImg.includes('paket_5') || lowerImg.includes('paket-5') || lowerImg.includes('lengkap') || lowerImg.includes('jumbo')) return '/images/products/paket-5-lengkap.png';
 
-  const filename = img.replace(/^\//, '').toLowerCase();
-  if (filename.includes('original')) return '/images/products/flavor-original.png';
-  if (filename.includes('pedas_manis') || filename.includes('pedas-manis')) return '/images/products/flavor-pedas-manis.png';
-  if (filename.includes('balado')) return '/images/products/flavor-balado.png';
-  if (filename.includes('bbq')) return '/images/products/flavor-bbq.png';
-  if (filename.includes('keju')) return '/images/products/flavor-keju.png';
-  if (filename.includes('jagung')) return '/images/products/flavor-jagung-bakar.png';
-  if (filename.includes('sapi')) return '/images/products/flavor-sapi-panggang.png';
-  if (filename.includes('daun_jeruk') || filename.includes('jeruk')) return '/images/products/flavor-daun-jeruk.png';
-  if (filename.includes('paket_4') || filename.includes('paket-4') || filename.includes('hemat')) return '/images/products/paket-4-hemat.png';
-  if (filename.includes('paket_5') || filename.includes('paket-5') || filename.includes('lengkap')) return '/images/products/paket-5-lengkap.png';
+  // Jika merupakan file upload Laravel yang disimpan sebagai "products/xxx.ext"
+  if (cleanImg.startsWith('products/') || cleanImg.startsWith('/products/')) {
+    const relPath = cleanImg.startsWith('/') ? cleanImg.slice(1) : cleanImg;
+    return `${baseUrl}/storage/${relPath}`;
+  }
 
-  return `/images/products/${filename}`;
+  // Jika sudah mengarah ke file statis /images/products/...
+  if (cleanImg.startsWith('/images/products/flavor-') || cleanImg.startsWith('/images/products/paket-')) {
+    return cleanImg;
+  }
+
+  if (cleanImg.startsWith('/images/')) {
+    return cleanImg;
+  }
+
+  // Default fallback aman ke foto original daripada menghasilkan URL 404 rusak
+  return '/images/products/flavor-original.png';
 };
 
 export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [products, setProducts] = useState<ProductItem[]>([]);
   const [isLoadingProducts, setIsLoadingProducts] = useState(true);
 
-  const fetchProducts = async () => {
-    setIsLoadingProducts(true);
+  const fetchProducts = async (showLoading = false) => {
+    if (showLoading) {
+      setIsLoadingProducts(true);
+    }
     try {
       const rawProducts = await apiService.getProducts();
       // Map data backend ke format frontend
@@ -117,43 +147,15 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({ children })
       setIsLoadingProducts(false);
     }
   };
-  const lastFetchTime = useRef<number>(0);
-
-  const fetchProductsThrottled = () => {
-    const now = Date.now();
-    // Jika fetch terakhir kurang dari 10 detik yang lalu, jangan fetch lagi
-    if (now - lastFetchTime.current > 10000) {
-      lastFetchTime.current = now;
-      fetchProducts();
-    }
-  };
 
   useEffect(() => {
-    fetchProducts();
-    lastFetchTime.current = Date.now();
-
-    // Auto-sync data ketika pengguna kembali membuka tab ini (Refresh on Focus)
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        fetchProductsThrottled();
-      }
-    };
-    
-    const handleFocus = () => {
-      fetchProductsThrottled();
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-    };
+    // Hanya fetch sekali saat komponen di-mount dengan loading skeleton awal
+    fetchProducts(true);
   }, []);
 
   const refreshProducts = () => {
-    fetchProducts();
+    // Background update tanpa mereset UI atau menampilkan skeleton loading
+    fetchProducts(false);
   };
 
   const updateProductStock = async (id: number, newStock: number) => {

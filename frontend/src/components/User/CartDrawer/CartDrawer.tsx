@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useCart } from '../../../context/CartContext';
+import { normalizeProductImage } from '../../../context/ProductContext';
 import Swal from 'sweetalert2';
 import './CartDrawer.css';
 import { apiService } from '../../../services/api';
@@ -20,10 +21,10 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
   const { isCartOpen, toggleCart, cartItems, updateQuantity, removeFromCart, clearCart, totalPrice } = useCart();
   const [checkoutStep, setCheckoutStep] = useState(0); // 0 = Cart, 1 = Form, 2 = Success/Payment Instructions
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [agreedTerms, setAgreedTerms] = useState(true);
+  const [agreedTerms, setAgreedTerms] = useState(false);
 
   // Data pesanan setelah berhasil checkout
-  const [successData, setSuccessData] = useState<{invoice: string, payment_type: string, payment_code: string, status?: 'success' | 'pending'} | null>(null);
+  const [successData, setSuccessData] = useState<{ invoice: string, payment_type: string, payment_code: string, status?: 'success' | 'pending' } | null>(null);
 
   // State data wilayah
   const [provinces, setProvinces] = useState<RegionItem[]>([]);
@@ -41,7 +42,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
   const [isLoadingCities, setIsLoadingCities] = useState(false);
   const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
   const [isLoadingVillages, setIsLoadingVillages] = useState(false);
-  
+
   const [formData, setFormData] = useState({
     nama_pelanggan: '',
     no_hp: '',
@@ -186,7 +187,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
     }
 
     setIsSubmitting(true);
-    
+
     if (ongkir === 0) {
       Swal.fire({ title: 'Perhatian', text: 'Silakan cek dan pilih metode pengiriman terlebih dahulu.', icon: 'warning' });
       setIsSubmitting(false);
@@ -194,7 +195,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
     }
 
     const selectedOption = shippingOptions.find((opt: any) => `${opt.courier_name}-${opt.courier_service_name}` === selectedCourierId);
-    
+
     const items = cartItems.map(item => {
       const parsedId = item.productId || parseInt(item.id.replace(/\D/g, '')) || 1;
       return { id_product: parsedId, qty: item.quantity };
@@ -222,44 +223,62 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
         ...payload,
         payment_method: paymentMethod
       });
-      
+
       setIsSubmitting(false);
 
       if (res && res.success && res.snap_token) {
-        window.snap.pay(res.snap_token, {
-          onSuccess: async function(_result: any) {
-            // Beritahu backend (fallback localhost karena webhook tak terjangkau)
-            await apiService.paymentSuccessFallback(res.invoice);
+        if (res.snap_token.startsWith('DEMO_SNAP_') || !window.snap) {
+          // Mode Testing / Demo Checkout
+          localStorage.setItem('last_invoice', res.invoice);
+          setSuccessData({
+            invoice: res.invoice,
+            payment_type: res.payment_type || paymentMethod,
+            payment_code: 'PAY-' + Math.floor(100000 + Math.random() * 900000),
+            status: 'pending'
+          });
+          clearCart();
+          setCheckoutStep(2);
+          Swal.fire({
+            title: 'Pesanan Berhasil Dibuat!',
+            text: `Nomor Invoice: ${res.invoice}. Pesanan Anda telah tersimpan dan masuk ke sistem toko!`,
+            icon: 'success'
+          });
+        } else {
+          window.snap.pay(res.snap_token, {
+            onSuccess: async function (_result: any) {
+              // Beritahu backend (fallback localhost karena webhook tak terjangkau)
+              await apiService.paymentSuccessFallback(res.invoice);
 
-            // Simpan ke local storage
-            localStorage.setItem('last_invoice', res.invoice);
-            setSuccessData({
-              invoice: res.invoice,
-              payment_type: res.payment_type || paymentMethod,
-              payment_code: '',
-              status: 'success'
-            });
-            clearCart();
-            setCheckoutStep(2);
-          },
-          onPending: function(_result: any) {
-            localStorage.setItem('last_invoice', res.invoice);
-            setSuccessData({
-              invoice: res.invoice,
-              payment_type: res.payment_type || paymentMethod,
-              payment_code: '',
-              status: 'pending'
-            });
-            clearCart();
-            setCheckoutStep(2);
-          },
-          onError: function(_result: any) {
-            Swal.fire({ title: 'Gagal', text: 'Pembayaran gagal atau terjadi kesalahan.', icon: 'error' });
-          },
-          onClose: function() {
-            // User closes popup without finishing
-          }
-        });
+              // Simpan ke local storage
+              localStorage.setItem('last_invoice', res.invoice);
+              setSuccessData({
+                invoice: res.invoice,
+                payment_type: res.payment_type || paymentMethod,
+                payment_code: '',
+                status: 'success'
+              });
+              clearCart();
+              setCheckoutStep(2);
+            },
+            onPending: function (_result: any) {
+              localStorage.setItem('last_invoice', res.invoice);
+              setSuccessData({
+                invoice: res.invoice,
+                payment_type: res.payment_type || paymentMethod,
+                payment_code: '',
+                status: 'pending'
+              });
+              clearCart();
+              setCheckoutStep(2);
+            },
+            onError: function (_result: any) {
+              Swal.fire({ title: 'Gagal', text: 'Pembayaran gagal atau terjadi kesalahan.', icon: 'error' });
+            },
+            onClose: function () {
+              // User closes popup without finishing
+            }
+          });
+        }
       } else {
         Swal.fire({ title: 'Gagal', text: "Gagal memproses pesanan: " + (res?.message || "Kesalahan server"), icon: 'error' });
       }
@@ -316,13 +335,13 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
   return (
     <>
       {/* 1. SIDEBAR KERANJANG BELANJA (Step 0) */}
-      <div 
-        className={`cart-overlay ${(isCartOpen && checkoutStep === 0) ? 'open' : ''}`} 
+      <div
+        className={`cart-overlay ${(isCartOpen && checkoutStep === 0) ? 'open' : ''}`}
         onClick={() => toggleCart(false)}
       ></div>
-      
+
       <div className={`cart-drawer ${(isCartOpen && checkoutStep === 0) ? 'open' : ''}`}>
-        
+
         <div className="cart-header-wrapper">
           <div className="cart-header">
             <h2>Keranjang Belanja</h2>
@@ -344,11 +363,17 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
             <div className="cart-items-container">
               {cartItems.map((item) => (
                 <div key={item.id} className="cart-item-card">
-                  
+
                   <div className="cart-item-info-row">
                     {item.image && (
                       <div className="cart-item-image">
-                        <img src={item.image} alt={item.productName} />
+                        <img
+                          src={normalizeProductImage(item.image)}
+                          alt={item.productName}
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/images/products/flavor-original.png';
+                          }}
+                        />
                       </div>
                     )}
 
@@ -388,24 +413,24 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
           {cartItems.length > 0 && (
             <div className="cart-summary-card">
               <h3>Ringkasan Belanja</h3>
-              
+
               <div className="summary-row">
                 <span className="summary-label">Total ({totalItemCount} Barang)</span>
                 <span className="summary-value">{formatRupiah(totalPrice)}</span>
               </div>
-              
+
               <div className="summary-row">
                 <span className="summary-label">Ongkos Kirim</span>
                 <span className="summary-value small-text">Dihitung saat checkout</span>
               </div>
-              
+
               <hr className="summary-divider" />
-              
+
               <div className="summary-row total-row">
                 <span className="summary-label-bold">Total Belanja</span>
                 <span className="summary-total-price">{formatRupiah(totalPrice)}</span>
               </div>
-              
+
               <button className="btn-lanjut-pembayaran" onClick={() => setCheckoutStep(1)}>
                 Lanjut ke Pengiriman
               </button>
@@ -419,7 +444,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
       {isCartOpen && checkoutStep === 1 && (
         <div className="checkout-page-overlay" onClick={() => setCheckoutStep(0)}>
           <div className="checkout-page-card" onClick={(e) => e.stopPropagation()}>
-            
+
             {/* Header Judul Pembayaran */}
             <div className="checkout-page-top">
               <h1 className="checkout-main-title">Pembayaran</h1>
@@ -433,77 +458,139 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
 
             <form onSubmit={handleCheckoutSubmit} className="checkout-page-body">
               <div className="checkout-main-grid">
-                
+
                 {/* SISI KIRI: Data Pengiriman & Pilihan Pengiriman */}
                 <div className="checkout-left-section">
-                  
                   {/* CARD 1: Data Pengiriman */}
                   <div className="checkout-card-box">
                     <div className="card-box-header">
-                      <span className="box-icon-wrap truck-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="1" y="3" width="15" height="13"></rect>
-                          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
-                          <circle cx="5.5" cy="18.5" r="2.5"></circle>
-                          <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                      <span className="box-icon-wrap">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                          <circle cx="12" cy="10" r="3"></circle>
                         </svg>
                       </span>
-                      <h3>Data Pengiriman</h3>
-                    </div>
-
-                    <div className="box-form-body">
-                      
-                      {/* Nama Lengkap */}
-                      <div className="form-item">
-                        <label>Nama Lengkap</label>
-                        <input 
-                          required 
-                          type="text"
-                          placeholder="Masukkan nama lengkap" 
-                          value={formData.nama_pelanggan} 
-                          onChange={e => setFormData({...formData, nama_pelanggan: e.target.value})} 
-                        />
+                      <div className="card-header-titles">
+                        <h3>Data Pengiriman</h3>
+                        <span className="card-header-sub">Informasi penerima dan alamat tujuan paket</span>
                       </div>
+                    </div>
+                    <div className="box-form-body">
 
-                      {/* No WhatsApp & Email */}
+                      {/* Baris 1: Nama Lengkap & Nomor WhatsApp */}
                       <div className="form-item-2col">
                         <div className="form-item">
-                          <label>Nomor WhatsApp</label>
-                          <input 
-                            required 
-                            type="tel"
-                            placeholder="Contoh: 081234567890" 
-                            value={formData.no_hp} 
-                            onChange={e => setFormData({...formData, no_hp: e.target.value})} 
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                              </svg>
+                            </span>
+                            Nama Lengkap
+                          </label>
+                          <input
+                            required
+                            type="text"
+                            placeholder="Masukkan nama lengkap penerima"
+                            value={formData.nama_pelanggan}
+                            onChange={e => setFormData({ ...formData, nama_pelanggan: e.target.value })}
                           />
                         </div>
+
                         <div className="form-item">
-                          <label>Email (Opsional)</label>
-                          <input 
-                            type="email" 
-                            placeholder="nama@email.com" 
-                            value={formData.email} 
-                            onChange={e => setFormData({...formData, email: e.target.value})} 
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                              </svg>
+                            </span>
+                            Nomor WhatsApp
+                          </label>
+                          <input
+                            required
+                            type="tel"
+                            placeholder="Contoh: 081234567890"
+                            value={formData.no_hp}
+                            onChange={e => setFormData({ ...formData, no_hp: e.target.value })}
                           />
                         </div>
                       </div>
 
-                      {/* Alamat Lengkap */}
+                      {/* Baris 2: Email (Opsional) & Catatan Tambahan (Opsional) */}
+                      <div className="form-item-2col">
+                        <div className="form-item">
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                <polyline points="22,6 12,13 2,6"></polyline>
+                              </svg>
+                            </span>
+                            Email (Opsional)
+                          </label>
+                          <input
+                            type="email"
+                            placeholder="nama@email.com"
+                            value={formData.email}
+                            onChange={e => setFormData({ ...formData, email: e.target.value })}
+                          />
+                        </div>
+
+                        <div className="form-item">
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="16" y1="13" x2="8" y2="13"></line>
+                                <line x1="16" y1="17" x2="8" y2="17"></line>
+                              </svg>
+                            </span>
+                            Catatan Tambahan (Opsional)
+                          </label>
+                          <input
+                            type="text"
+                            placeholder="Titip di pos satpam / pagar"
+                            value={formData.catatan}
+                            onChange={e => setFormData({ ...formData, catatan: e.target.value })}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Baris 3: Alamat Lengkap */}
                       <div className="form-item">
-                        <label>Alamat Lengkap</label>
-                        <textarea 
-                          required 
+                        <label>
+                          <span className="form-label-icon">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                              <circle cx="12" cy="10" r="3"></circle>
+                            </svg>
+                          </span>
+                          Alamat Lengkap
+                        </label>
+                        <textarea
+                          required
                           rows={2}
-                          placeholder="Nama jalan, RT/RW, nomor rumah, patokan lokasi" 
-                          value={formData.alamat_lengkap} 
-                          onChange={e => setFormData({...formData, alamat_lengkap: e.target.value})} 
+                          placeholder="Nama jalan, RT/RW, nomor rumah, atau patokan lokasi"
+                          value={formData.alamat_lengkap}
+                          onChange={e => setFormData({ ...formData, alamat_lengkap: e.target.value })}
                         />
                       </div>
 
-                      {/* Provinsi, Kota/Kabupaten & Kode Pos (3 Kolom Sejajar) */}
+                      {/* Baris 4: Provinsi, Kota/Kabupaten & Kode Pos (3 Kolom Sejajar) */}
                       <div className="form-item-3col">
                         <div className="form-item">
-                          <label>Provinsi</label>
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                                <line x1="8" y1="2" x2="8" y2="18"></line>
+                                <line x1="16" y1="6" x2="16" y2="22"></line>
+                              </svg>
+                            </span>
+                            Provinsi
+                          </label>
                           <CustomSelect
                             options={provinces.map(prov => ({
                               value: prov.id,
@@ -516,7 +603,16 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                         </div>
 
                         <div className="form-item">
-                          <label>Kota/Kabupaten</label>
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M3 21h18"></path>
+                                <path d="M5 21V7l8-4v18"></path>
+                                <path d="M19 21V11l-6-4"></path>
+                              </svg>
+                            </span>
+                            Kota/Kabupaten
+                          </label>
                           <CustomSelect
                             options={cities.map(city => ({
                               value: city.id,
@@ -530,21 +626,39 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                         </div>
 
                         <div className="form-item">
-                          <label>Kode Pos</label>
-                          <input 
-                            required 
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="4" y1="9" x2="20" y2="9"></line>
+                                <line x1="4" y1="15" x2="20" y2="15"></line>
+                                <line x1="10" y1="3" x2="8" y2="21"></line>
+                                <line x1="16" y1="3" x2="14" y2="21"></line>
+                              </svg>
+                            </span>
+                            Kode Pos
+                          </label>
+                          <input
+                            required
                             type="text"
-                            placeholder="Misal: 40111" 
-                            value={formData.kode_pos} 
-                            onChange={e => setFormData(prev => ({ ...prev, kode_pos: e.target.value.replace(/\D/g, '').slice(0, 5) }))} 
+                            placeholder="Misal: 65311"
+                            value={formData.kode_pos}
+                            onChange={e => setFormData(prev => ({ ...prev, kode_pos: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
                           />
                         </div>
                       </div>
 
-                      {/* Kecamatan & Desa / Kelurahan (2 Kolom Dropdown Berantai) */}
+                      {/* Baris 5: Kecamatan & Desa / Kelurahan (2 Kolom Dropdown Berantai) */}
                       <div className="form-item-2col">
                         <div className="form-item">
-                          <label>Kecamatan</label>
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+                              </svg>
+                            </span>
+                            Kecamatan
+                          </label>
                           <CustomSelect
                             options={districts.map(dist => ({
                               value: dist.id,
@@ -558,7 +672,16 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                         </div>
 
                         <div className="form-item">
-                          <label>Desa / Kelurahan</label>
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M20 9v11a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V9"></path>
+                                <path d="M9 22V12h6v10"></path>
+                                <path d="M2 10.6L12 2l10 8.6"></path>
+                              </svg>
+                            </span>
+                            Desa / Kelurahan
+                          </label>
                           <CustomSelect
                             options={villages.map(vill => ({
                               value: vill.id,
@@ -572,167 +695,221 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                         </div>
                       </div>
 
-                      {/* Catatan Tambahan */}
-                      <div className="form-item">
-                        <label>Catatan Tambahan (Opsional)</label>
-                        <input 
-                          type="text"
-                          placeholder="Contoh: Titip di pos satpam" 
-                          value={formData.catatan} 
-                          onChange={e => setFormData({...formData, catatan: e.target.value})} 
-                        />
-                      </div>
-
                     </div>
                   </div>
 
-                  {/* CARD 1.5: Pilihan Pengiriman (Biteship) */}
-                  <div className="checkout-card-box shipping-method-card">
-                    <div className="card-box-header">
-                      <span className="box-icon-wrap truck-icon" style={{ background: '#E0E7FF' }}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#4F46E5" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <circle cx="12" cy="12" r="10"></circle>
-                          <path d="M12 16v-4"></path>
-                          <path d="M12 8h.01"></path>
+                  {/* SUB-GRID BAWAH: Pilihan Pengiriman & Metode Pembayaran Berdampingan */}
+                  <div className="checkout-bottom-grid">
+
+                    {/* CARD 1.5: Pilihan Pengiriman (Biteship) */}
+                    <div className="checkout-card-box shipping-method-card">                      <div className="card-box-header">
+                      <span className="box-icon-wrap">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <rect x="1" y="3" width="15" height="13" rx="1"></rect>
+                          <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                          <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                          <circle cx="18.5" cy="18.5" r="2.5"></circle>
                         </svg>
                       </span>
-                      <h3>Pilihan Pengiriman</h3>
-                      <button 
-                        type="button" 
-                        onClick={fetchShippingRates}
-                        disabled={isLoadingRates || formData.kode_pos.length < 5}
-                        className="btn-cek-ongkir"
-                        style={{ marginLeft: 'auto', padding: '6px 12px', fontSize: '12px', background: '#FEF3C7', color: '#D97706', border: '1px solid #FDE68A', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}
-                      >
-                        {isLoadingRates ? 'Memuat...' : 'Cek Ongkir'}
-                      </button>
-                    </div>
-
-                    <div className="box-form-body">
-                      {shippingOptions.length === 0 ? (
-                        <p style={{ fontSize: '13px', color: '#64748B', fontStyle: 'italic', margin: 0 }}>Silakan isi Kode Pos lalu klik tombol "Cek Ongkir" di atas untuk melihat pilihan pengiriman.</p>
-                      ) : (
-                        <div className="shipping-options-list" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                          {shippingOptions.map((opt: any) => {
-                            const optId = `${opt.courier_name}-${opt.courier_service_name}`;
-                            return (
-                              <label key={optId} className={`shipping-opt-card ${selectedCourierId === optId ? 'selected' : ''}`} style={{ display: 'flex', alignItems: 'center', padding: '12px', border: selectedCourierId === optId ? '2px solid #D97706' : '1px solid #E2E8F0', borderRadius: '8px', cursor: 'pointer', background: selectedCourierId === optId ? '#FFFBEB' : '#FFF', transition: 'all 0.2s ease' }}>
-                                <input 
-                                  type="radio" 
-                                  name="shipping_service" 
-                                  value={optId}
-                                  checked={selectedCourierId === optId}
-                                  onChange={() => {
-                                    setSelectedCourierId(optId);
-                                    setOngkir(opt.price);
-                                  }}
-                                  style={{ marginRight: '12px', accentColor: '#D97706', width: '18px', height: '18px' }}
-                                />
-                                <div style={{ flex: 1 }}>
-                                  <div style={{ fontWeight: 600, color: '#1E293B', fontSize: '14px' }}>{opt.courier_name.toUpperCase()} - {opt.courier_service_name}</div>
-                                  <div style={{ fontSize: '12px', color: '#64748B', marginTop: '2px' }}>Estimasi {opt.duration}</div>
-                                </div>
-                                <div style={{ fontWeight: 700, color: '#D97706', fontSize: '15px' }}>
-                                  {formatRupiah(opt.price)}
-                                </div>
-                              </label>
-                            );
-                          })}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* CARD 2: Metode Pembayaran (Hanya QRIS, BCA, BNI, BRI) */}
-                  <div className="checkout-card-box payment-method-card">
-                    <div className="card-box-header">
-                      <span className="box-icon-wrap" style={{ background: '#FEF3C7' }}>
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#D97706" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="2" y="6" width="20" height="12" rx="2"></rect>
-                          <circle cx="12" cy="12" r="2"></circle>
-                          <path d="M6 12h.01M18 12h.01"></path>
-                        </svg>
-                      </span>
-                      <h3>Metode Pembayaran</h3>
-                    </div>
-
-                    <div className="payment-card-content">
-                      
-                      {/* Grid 4 Pilihan Pembayaran: QRIS, BCA, BNI, BRI */}
-                      <div className="ewallet-grid">
-                        
-                        {/* 1. QRIS */}
-                        <div 
-                          className={`ewallet-btn-card ${paymentMethod === 'qris' ? 'selected' : ''}`}
-                          onClick={() => setPaymentMethod('qris')}
-                        >
-                          <div className="ewallet-logo-box">
-                            <img src="/images/payments/logo-qris.png" alt="QRIS" className="payment-logo-img" />
-                          </div>
-                          <span className="payment-sub-text">E-Wallet & QR</span>
-                        </div>
-
-                        {/* 2. BCA Virtual Account */}
-                        <div 
-                          className={`ewallet-btn-card ${paymentMethod === 'bca_va' ? 'selected' : ''}`}
-                          onClick={() => setPaymentMethod('bca_va')}
-                        >
-                          <div className="ewallet-logo-box">
-                            <img src="/images/payments/logo-bca.png" alt="BCA" className="payment-logo-img" />
-                          </div>
-                          <span className="payment-sub-text">Virtual Account</span>
-                        </div>
-
-                        {/* 3. BNI Virtual Account */}
-                        <div 
-                          className={`ewallet-btn-card ${paymentMethod === 'bni_va' ? 'selected' : ''}`}
-                          onClick={() => setPaymentMethod('bni_va')}
-                        >
-                          <div className="ewallet-logo-box">
-                            <img src="/images/payments/logo-bni.png" alt="BNI" className="payment-logo-img" />
-                          </div>
-                          <span className="payment-sub-text">Virtual Account</span>
-                        </div>
-
-                        {/* 4. BRI Virtual Account */}
-                        <div 
-                          className={`ewallet-btn-card ${paymentMethod === 'bri_va' ? 'selected' : ''}`}
-                          onClick={() => setPaymentMethod('bri_va')}
-                        >
-                          <div className="ewallet-logo-box">
-                            <img src="/images/payments/logo-bri.png" alt="BRI" className="payment-logo-img" />
-                          </div>
-                          <span className="payment-sub-text">Virtual Account</span>
-                        </div>
-
+                      <div className="card-header-titles">
+                        <h3>Pilihan Pengiriman</h3>
+                        <span className="card-header-sub">Pilih opsi kurir resmi dan estimasi tiba</span>
                       </div>
+                    </div>
 
-                      {/* Penjelasan Metode Terpilih */}
-                      <div className="payment-selected-hint">
-                        {paymentMethod === 'qris' && (
-                          <span>⚡ <strong>QRIS:</strong> Scan QR bayar instan via GoPay, OVO, DANA, ShopeePay, BCA mobile, dan seluruh m-Banking.</span>
-                        )}
-                        {paymentMethod === 'bca_va' && (
-                          <span>🏦 <strong>BCA Virtual Account:</strong> Pembayaran otomatis via m-BCA, KlikBCA, atau ATM BCA.</span>
-                        )}
-                        {paymentMethod === 'bni_va' && (
-                          <span>🏦 <strong>BNI Virtual Account:</strong> Pembayaran otomatis via BNI Mobile Banking, Internet Banking, atau ATM BNI.</span>
-                        )}
-                        {paymentMethod === 'bri_va' && (
-                          <span>🏦 <strong>BRI Virtual Account:</strong> Pembayaran otomatis via BRImo, Internet Banking, atau ATM BRI.</span>
+                      <div className="box-form-body">
+                        {shippingOptions.length === 0 ? (
+                          <div className="shipping-empty-box">
+                            <div className="shipping-empty-icon">
+                              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                                <rect x="1" y="3" width="15" height="13" rx="1"></rect>
+                                <polygon points="16 8 20 8 23 11 23 16 16 16 8"></polygon>
+                                <circle cx="5.5" cy="18.5" r="2.5"></circle>
+                                <circle cx="18.5" cy="18.5" r="2.5"></circle>
+                              </svg>
+                            </div>
+                            <p>
+                              {formData.kode_pos.length === 5
+                                ? <>Kode pos <strong>{formData.kode_pos}</strong> siap. Klik tombol di bawah untuk menampilkan kurir.</>
+                                : <>Masukkan <strong>Kode Pos</strong> di atas, lalu klik tombol untuk mengecek tarif kurir.</>
+                              }
+                            </p>
+                            <button
+                              type="button"
+                              onClick={fetchShippingRates}
+                              disabled={isLoadingRates || formData.kode_pos.length < 5}
+                              className="btn-cek-ongkir-prominent"
+                            >
+                              {isLoadingRates ? (
+                                <>
+                                  <span className="btn-spinner-white"></span>
+                                  <span>Menghitung Ongkir...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                  </svg>
+                                  <span>Cek Pilihan Ongkir</span>
+                                </>
+                              )}
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="shipping-list-wrapper">
+                            <div className="shipping-list-topbar">
+                              <span className="shipping-count-badge">{shippingOptions.length} Layanan Kurir</span>
+                              <button
+                                type="button"
+                                onClick={fetchShippingRates}
+                                disabled={isLoadingRates}
+                                className="btn-refresh-rates"
+                                title="Hitung ulang tarif kurir"
+                              >
+                                {isLoadingRates ? (
+                                  <>
+                                    <span className="btn-spinner-tiny"></span>
+                                    <span>Memuat...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                                      <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
+                                    </svg>
+                                    <span>Cek Ulang</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+
+                            <div className="shipping-options-list">
+                              {shippingOptions.map((opt: any) => {
+                                const optId = `${opt.courier_name}-${opt.courier_service_name}`;
+                                const isSelected = selectedCourierId === optId;
+                                return (
+                                  <label key={optId} className={`shipping-opt-card ${isSelected ? 'selected' : ''}`}>
+                                    <input
+                                      type="radio"
+                                      name="shipping_service"
+                                      value={optId}
+                                      checked={isSelected}
+                                      onChange={() => {
+                                        setSelectedCourierId(optId);
+                                        setOngkir(opt.price);
+                                      }}
+                                      className="shipping-opt-radio"
+                                    />
+                                    <div className="shipping-opt-info">
+                                      <div className="shipping-opt-header">
+                                        <span className="shipping-courier-tag">{opt.courier_name}</span>
+                                        <span className="shipping-courier-name">{opt.courier_service_name}</span>
+                                      </div>
+                                      <div className="shipping-opt-meta">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                          <circle cx="12" cy="12" r="10"></circle>
+                                          <polyline points="12 6 12 12 16 14"></polyline>
+                                        </svg>
+                                        <span>Estimasi {opt.duration} {opt.shipment_duration_unit ? opt.shipment_duration_unit.toLowerCase() : ''}</span>
+                                      </div>
+                                    </div>
+                                    <div className="shipping-opt-price">
+                                      {formatRupiah(opt.price)}
+                                    </div>
+                                  </label>
+                                );
+                              })}
+                            </div>
+                          </div>
                         )}
                       </div>
-
                     </div>
-                  </div>
 
+                    {/* CARD 2: Metode Pembayaran (Hanya QRIS, BCA, BNI, BRI) */}
+                    <div className="checkout-card-box payment-method-card">
+                      <div className="card-box-header">
+                        <span className="box-icon-wrap">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                            <line x1="2" y1="10" x2="22" y2="10"></line>
+                          </svg>
+                        </span>
+                        <div className="card-header-titles">
+                          <h3>Metode Pembayaran</h3>
+                          <span className="card-header-sub">QRIS otomatis & Virtual Account Bank resmi</span>
+                        </div>
+                      </div>
+
+                      <div className="payment-card-content">
+
+                        {/* Grid 4 Pilihan Pembayaran: QRIS, BCA, BNI, BRI */}
+                        <div className="ewallet-grid">
+
+                          {/* 1. QRIS */}
+                          <div
+                            className={`ewallet-btn-card ${paymentMethod === 'qris' ? 'selected' : ''}`}
+                            onClick={() => setPaymentMethod('qris')}
+                          >
+                            <div className="ewallet-logo-box">
+                              <img src="/images/payments/logo-qris.png" alt="QRIS" className="payment-logo-img" />
+                            </div>
+                            <span className="payment-sub-text">E-Wallet & QR</span>
+                          </div>
+
+                          {/* 2. BCA Virtual Account */}
+                          <div
+                            className={`ewallet-btn-card ${paymentMethod === 'bca_va' ? 'selected' : ''}`}
+                            onClick={() => setPaymentMethod('bca_va')}
+                          >
+                            <div className="ewallet-logo-box">
+                              <img src="/images/payments/logo-bca.png" alt="BCA" className="payment-logo-img" />
+                            </div>
+                            <span className="payment-sub-text">Virtual Account</span>
+                          </div>
+
+                          {/* 3. BNI Virtual Account */}
+                          <div
+                            className={`ewallet-btn-card ${paymentMethod === 'bni_va' ? 'selected' : ''}`}
+                            onClick={() => setPaymentMethod('bni_va')}
+                          >
+                            <div className="ewallet-logo-box">
+                              <img src="/images/payments/logo-bni.png" alt="BNI" className="payment-logo-img" />
+                            </div>
+                            <span className="payment-sub-text">Virtual Account</span>
+                          </div>
+
+                          {/* 4. BRI Virtual Account */}
+                          <div
+                            className={`ewallet-btn-card ${paymentMethod === 'bri_va' ? 'selected' : ''}`}
+                            onClick={() => setPaymentMethod('bri_va')}
+                          >
+                            <div className="ewallet-logo-box">
+                              <img src="/images/payments/logo-bri.png" alt="BRI" className="payment-logo-img" />
+                            </div>
+                            <span className="payment-sub-text">Virtual Account</span>
+                          </div>
+
+                        </div>
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
 
                 {/* SISI KANAN: Ringkasan Pesanan */}
                 <div className="checkout-right-section">
 
                   <div className="checkout-summary-card-box">
-                    <h3 className="summary-title">Ringkasan Pesanan</h3>
+                    <h3 className="summary-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="box-icon-wrap" style={{ width: '32px', height: '32px', borderRadius: '8px' }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                          <line x1="3" y1="6" x2="21" y2="6"></line>
+                          <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                      </span>
+                      Ringkasan Pesanan
+                    </h3>
 
                     {/* Mini Item List */}
                     <div className="order-items-scroll">
@@ -740,7 +917,14 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                         <div key={item.id} className="order-item-row">
                           <div className="order-item-left">
                             {item.image ? (
-                              <img src={item.image} alt={item.variant} className="order-item-thumb" />
+                              <img
+                                src={normalizeProductImage(item.image)}
+                                alt={item.variant}
+                                className="order-item-thumb"
+                                onError={(e) => {
+                                  (e.currentTarget as HTMLImageElement).src = '/images/products/flavor-original.png';
+                                }}
+                              />
                             ) : (
                               <div className="order-item-thumb-placeholder"></div>
                             )}
@@ -776,10 +960,10 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
 
                     {/* Checkbox Persetujuan */}
                     <label className="terms-checkbox-label">
-                      <input 
-                        type="checkbox" 
-                        checked={agreedTerms} 
-                        onChange={(e) => setAgreedTerms(e.target.checked)} 
+                      <input
+                        type="checkbox"
+                        checked={agreedTerms}
+                        onChange={(e) => setAgreedTerms(e.target.checked)}
                       />
                       <span>
                         Saya setuju dengan <a href="#" onClick={(e) => e.preventDefault()}>Syarat & Ketentuan</a> serta <a href="#" onClick={(e) => e.preventDefault()}>Kebijakan Privasi</a> Lakstari.
@@ -787,9 +971,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                     </label>
 
                     {/* Tombol Selesaikan Pesanan */}
-                    <button 
-                      type="submit" 
-                      disabled={isSubmitting || !agreedTerms} 
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !agreedTerms}
                       className="btn-selesaikan-pesanan"
                     >
                       {isSubmitting ? 'Memproses Pesanan...' : 'Selesaikan Pesanan'}
@@ -825,7 +1009,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                 </svg>
               </div>
             </div>
-            
+
             <h2 style={{ color: '#1E293B', marginBottom: '10px' }}>
               {successData.status === 'success' ? 'Pembayaran Berhasil' : 'Menunggu Pembayaran'}
             </h2>
@@ -841,7 +1025,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
 
             <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
               {onNavigateToTracking && (
-                <button 
+                <button
                   className="btn-selesaikan-pesanan"
                   style={{ background: '#10B981', flex: 1 }}
                   onClick={() => {
@@ -853,7 +1037,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                   Lacak Pesanan
                 </button>
               )}
-              <button 
+              <button
                 className="btn-selesaikan-pesanan"
                 style={{ flex: 1 }}
                 onClick={() => {

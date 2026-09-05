@@ -28,8 +28,8 @@ const apiFetch = async (url: string, options: RequestInit = {}) => {
     headers.set('X-XSRF-TOKEN', getCsrfToken());
   }
 
-  // Set Bearer Token jika admin telah login
-  const token = sessionStorage.getItem('admin_token') || localStorage.getItem('admin_token');
+  // Set Bearer Token jika admin telah login (khusus sesi tab ini)
+  const token = sessionStorage.getItem('admin_token');
   if (token) {
     headers.set('Authorization', `Bearer ${token}`);
   }
@@ -67,11 +67,11 @@ export const apiService = {
       if (json.success) {
         if (json.token) {
           sessionStorage.setItem('admin_token', json.token);
-          localStorage.setItem('admin_token', json.token);
+          localStorage.removeItem('admin_token');
         }
         if (json.user) {
           sessionStorage.setItem('admin_user', JSON.stringify(json.user));
-          localStorage.setItem('admin_user', JSON.stringify(json.user));
+          localStorage.removeItem('admin_user');
         }
       }
       return json;
@@ -81,27 +81,37 @@ export const apiService = {
     }
   },
 
-  // Memastikan admin terautentikasi (menggunakan token aktif atau login default)
-  ensureAdminAuth: async (): Promise<boolean> => {
-    const existingToken = sessionStorage.getItem('admin_token') || localStorage.getItem('admin_token');
-    if (existingToken) {
-      try {
-        const res = await apiFetch('/admin/me');
-        if (res.ok) {
-          const json = await res.json();
-          if (json.success) return true;
-        }
-      } catch (e) {
-        // Stale token, attempt re-login below
-      }
-    }
-    // Auto-login dengan kredensial admin default untuk menjamin dashboard terisi data
-    try {
-      const res = await apiService.loginAdmin('admin@lakstari.com', 'adminlakstari2026');
-      return !!res.success;
-    } catch (e) {
+  // Memeriksa apakah admin memiliki sesi aktif dan token valid
+  checkAdminAuth: async (): Promise<boolean> => {
+    const existingToken = sessionStorage.getItem('admin_token');
+    if (!existingToken) {
       return false;
     }
+    try {
+      const res = await apiFetch('/admin/me');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          if (json.user) {
+            sessionStorage.setItem('admin_user', JSON.stringify(json.user));
+          }
+          return true;
+        }
+      }
+    } catch (e) {
+      console.warn('Gagal verifikasi sesi admin:', e);
+    }
+    // Jika token kadaluarsa / tidak valid, bersihkan sesi
+    sessionStorage.removeItem('admin_token');
+    sessionStorage.removeItem('admin_user');
+    localStorage.removeItem('admin_token');
+    localStorage.removeItem('admin_user');
+    return false;
+  },
+
+  // Alias untuk kompatibilitas tanpa auto-login
+  ensureAdminAuth: async (): Promise<boolean> => {
+    return apiService.checkAdminAuth();
   },
 
   // Logout Admin
@@ -474,13 +484,7 @@ export const apiService = {
 
   getDashboardStats: async (): Promise<any> => {
     try {
-      let response = await apiFetch(`/admin/reports/dashboard`);
-      if (response.status === 401) {
-        const authed = await apiService.ensureAdminAuth();
-        if (authed) {
-          response = await apiFetch(`/admin/reports/dashboard`);
-        }
-      }
+      const response = await apiFetch(`/admin/reports/dashboard`);
       const json = await response.json();
       return json.success ? json.data : null;
     } catch (error) {
@@ -491,13 +495,7 @@ export const apiService = {
 
   getSalesChart: async (period: 'weekly' | 'monthly' | 'yearly' = 'weekly'): Promise<any> => {
     try {
-      let response = await apiFetch(`/admin/reports/sales-chart?period=${period}`);
-      if (response.status === 401) {
-        const authed = await apiService.ensureAdminAuth();
-        if (authed) {
-          response = await apiFetch(`/admin/reports/sales-chart?period=${period}`);
-        }
-      }
+      const response = await apiFetch(`/admin/reports/sales-chart?period=${period}`);
       const json = await response.json();
       return json.success ? json.data : null;
     } catch (error) {

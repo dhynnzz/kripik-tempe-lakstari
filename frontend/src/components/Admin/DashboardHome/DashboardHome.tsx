@@ -112,20 +112,6 @@ export default function DashboardHome() {
 
   useEffect(() => {
     fetchStats();
-
-    // Auto-sync
-    const handleFocus = () => fetchStats();
-    const handleVisibility = () => {
-      if (document.visibilityState === 'visible') fetchStats();
-    };
-
-    window.addEventListener('focus', handleFocus);
-    document.addEventListener('visibilitychange', handleVisibility);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-      document.removeEventListener('visibilitychange', handleVisibility);
-    };
   }, []);
 
   const showNotification = (msg: string) => {

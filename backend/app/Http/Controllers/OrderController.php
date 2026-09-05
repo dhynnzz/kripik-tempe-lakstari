@@ -163,79 +163,93 @@ class OrderController extends Controller
                 'total_pembayaran' => $subtotal + $validatedShippingCost,
             ]);
 
-            // 5. Buat Pengiriman (Draft)
+            // 5. Buat Pengiriman (Draft - Belum Diproses)
             Pengiriman::create([
                 'id_transaksi' => $transaksi->id_transaksi,
                 'id_pelanggan' => $pelanggan->id_pelanggan,
                 'id_alamat' => $alamat->id_alamat,
                 'kurir' => $request->kurir ?? 'JNE',
                 'layanan_kurir' => $request->layanan_kurir ?? 'Reguler',
-                'status_pengiriman' => 'menunggu_pickup',
+                'status_pengiriman' => 'belum_diproses',
                 'biaya_pengiriman' => $validatedShippingCost,
                 'berat_total' => $realWeight
             ]);
 
             DB::commit();
 
-            // Midtrans Configuration
-            Config::$serverKey = config('midtrans.server_key');
-            Config::$isProduction = config('midtrans.is_production');
-            Config::$isSanitized = config('midtrans.is_sanitized');
-            Config::$is3ds = config('midtrans.is_3ds');
+            $snapToken = null;
+            $serverKey = config('midtrans.server_key');
 
-            $item_details = [];
-            foreach ($transaksi->details as $detail) {
-                $item_details[] = [
-                    'id'       => $detail->id_product,
-                    'price'    => $detail->harga_product,
-                    'quantity' => $detail->jumlah,
-                    'name'     => $detail->nama_product,
-                ];
+            // Jika Midtrans dikonfigurasi, minta Snap Token resmi
+            if (!empty($serverKey)) {
+                try {
+                    Config::$serverKey = $serverKey;
+                    Config::$isProduction = config('midtrans.is_production', false);
+                    Config::$isSanitized = config('midtrans.is_sanitized', true);
+                    Config::$is3ds = config('midtrans.is_3ds', true);
+
+                    $item_details = [];
+                    foreach ($transaksi->details as $detail) {
+                        $item_details[] = [
+                            'id'       => $detail->id_product,
+                            'price'    => $detail->harga_product,
+                            'quantity' => $detail->jumlah,
+                            'name'     => $detail->nama_product,
+                        ];
+                    }
+                    // Tambah ongkir
+                    $item_details[] = [
+                        'id' => 'SHIPPING',
+                        'price' => $request->biaya_pengiriman,
+                        'quantity' => 1,
+                        'name' => 'Biaya Pengiriman'
+                    ];
+
+                    $enabledPayments = [];
+                    if ($request->payment_method === 'bca_va') {
+                        $enabledPayments = ['bca_va'];
+                    } elseif ($request->payment_method === 'bni_va') {
+                        $enabledPayments = ['bni_va'];
+                    } elseif ($request->payment_method === 'bri_va') {
+                        $enabledPayments = ['bri_va'];
+                    } elseif ($request->payment_method === 'mandiri_va') {
+                        $enabledPayments = ['echannel'];
+                    } elseif ($request->payment_method === 'qris') {
+                        $enabledPayments = ['gopay', 'shopeepay', 'other_qris'];
+                    }
+
+                    $params = [
+                        'transaction_details' => [
+                            'order_id' => $invoice,
+                            'gross_amount' => $transaksi->total_pembayaran,
+                        ],
+                        'customer_details' => [
+                            'first_name' => $pelanggan->nama_pelanggan,
+                            'email' => $pelanggan->email ?: 'customer@example.com',
+                            'phone' => $pelanggan->no_hp,
+                        ],
+                        'item_details' => $item_details,
+                        'callbacks' => [
+                            'finish' => env('FRONTEND_URL', 'http://localhost:5173'),
+                            'error' => env('FRONTEND_URL', 'http://localhost:5173'),
+                            'unfinish' => env('FRONTEND_URL', 'http://localhost:5173')
+                        ]
+                    ];
+
+                    if (!empty($enabledPayments)) {
+                        $params['enabled_payments'] = $enabledPayments;
+                    }
+
+                    $snapToken = \Midtrans\Snap::getSnapToken($params);
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Midtrans token generation skipped: ' . $e->getMessage());
+                }
             }
-            // Tambah ongkir
-            $item_details[] = [
-                'id' => 'SHIPPING',
-                'price' => $request->biaya_pengiriman,
-                'quantity' => 1,
-                'name' => 'Biaya Pengiriman'
-            ];
 
-            $enabledPayments = [];
-            if ($request->payment_method === 'bca_va') {
-                $enabledPayments = ['bca_va'];
-            } elseif ($request->payment_method === 'bni_va') {
-                $enabledPayments = ['bni_va'];
-            } elseif ($request->payment_method === 'bri_va') {
-                $enabledPayments = ['bri_va'];
-            } elseif ($request->payment_method === 'mandiri_va') {
-                $enabledPayments = ['echannel'];
-            } elseif ($request->payment_method === 'qris') {
-                $enabledPayments = ['gopay', 'shopeepay', 'other_qris'];
+            // Jika Midtrans belum diset atau mode simulasi/testing, buat token demo agar pesanan tetap tersimpan rapi
+            if (!$snapToken) {
+                $snapToken = 'DEMO_SNAP_' . strtoupper(uniqid());
             }
-
-            $params = [
-                'transaction_details' => [
-                    'order_id' => $invoice,
-                    'gross_amount' => $transaksi->total_pembayaran,
-                ],
-                'customer_details' => [
-                    'first_name' => $pelanggan->nama_pelanggan,
-                    'email' => $pelanggan->email ?: 'customer@example.com',
-                    'phone' => $pelanggan->no_hp,
-                ],
-                'item_details' => $item_details,
-                'callbacks' => [
-                    'finish' => env('FRONTEND_URL', 'http://localhost:5173'),
-                    'error' => env('FRONTEND_URL', 'http://localhost:5173'),
-                    'unfinish' => env('FRONTEND_URL', 'http://localhost:5173')
-                ]
-            ];
-
-            if (!empty($enabledPayments)) {
-                $params['enabled_payments'] = $enabledPayments;
-            }
-
-            $snapToken = \Midtrans\Snap::getSnapToken($params);
 
             // Simpan tipe pembayaran dan token ke database
             $transaksi->payment_type = $request->payment_method;
@@ -262,66 +276,82 @@ class OrderController extends Controller
     // [ADMIN] Ambil Semua Pesanan
     public function index()
     {
-        // Konfigurasi Midtrans
-        \Midtrans\Config::$serverKey = config('midtrans.server_key');
-        \Midtrans\Config::$isProduction = config('midtrans.is_production');
+        $serverKey = config('midtrans.server_key');
 
         $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman', 'alamat'])->orderBy('tanggal_transaksi', 'desc')->paginate(10);
 
-        // Auto-Sync khusus untuk localhost/testing dimana webhook tidak tertangkap
-        foreach ($orders as $order) {
-            $pengiriman = $order->pengiriman;
-            // Cek jika pending ATAU (sudah lunas tapi belum masuk biteship)
-            if (in_array($order->status_pembayaran, ['pending', 'failed']) || $order->status_transaksi === 'menunggu_pembayaran' || ($order->status_pembayaran === 'paid' && $pengiriman && !$pengiriman->betship_order_id)) {
-                try {
-                    $status = \Midtrans\Transaction::status($order->nomor_invoice);
-                    
-                    if ($status) {
-                        $order->midtrans_transaction_status = $status->transaction_status;
-                        $order->midtrans_payment_type = $status->payment_type ?? $order->payment_type;
-                        if (isset($status->transaction_id)) {
-                            $order->midtrans_transaction_id = $status->transaction_id;
-                        }
+        // Auto-Sync khusus untuk localhost/testing dimana webhook tidak tertangkap jika Midtrans server key diset
+        if (!empty($serverKey)) {
+            try {
+                \Midtrans\Config::$serverKey = $serverKey;
+                \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
 
-                        $transaction = $status->transaction_status;
-
-                        if ($transaction == 'capture' || $transaction == 'settlement') {
-                            $order->status_pembayaran = 'paid';
-                            $order->status_transaksi = 'diproses';
-                            if (!$order->paid_at) {
-                                $order->paid_at = now();
-                            }
-                            // Panggil Biteship
-                            \App\Http\Controllers\BiteshipController::createOrder($order);
-                        } else if ($transaction == 'pending') {
-                            $order->status_pembayaran = 'pending';
-                        } else if (in_array($transaction, ['deny', 'expire', 'cancel'])) {
-                            $order->status_pembayaran = $transaction == 'deny' ? 'failed' : ($transaction == 'expire' ? 'expired' : 'cancelled');
+                $hasChanges = false;
+                foreach ($orders as $order) {
+                    $pengiriman = $order->pengiriman;
+                    // Cek jika pending ATAU (sudah lunas tapi belum masuk biteship)
+                    if (in_array($order->status_pembayaran, ['pending', 'failed']) || $order->status_transaksi === 'menunggu_pembayaran' || ($order->status_pembayaran === 'paid' && $pengiriman && !$pengiriman->betship_order_id)) {
+                        try {
+                            $status = \Midtrans\Transaction::status($order->nomor_invoice);
                             
-                            if ($order->status_transaksi !== 'dibatalkan') {
-                                $order->status_transaksi = 'dibatalkan';
-                                // Kembalikan stok
-                                foreach ($order->details as $detail) {
-                                    $product = \App\Models\Product::find($detail->id_product);
-                                    if ($product) {
-                                        $product->increment('stok_product', $detail->jumlah);
-                                        if ($product->status_product == 'habis') {
-                                            $product->update(['status_product' => 'aktif']);
+                            if ($status) {
+                                $order->midtrans_transaction_status = $status->transaction_status;
+                                $order->midtrans_payment_type = $status->payment_type ?? $order->payment_type;
+                                if (isset($status->transaction_id)) {
+                                    $order->midtrans_transaction_id = $status->transaction_id;
+                                }
+
+                                $transaction = $status->transaction_status;
+
+                                if ($transaction == 'capture' || $transaction == 'settlement') {
+                                    $order->status_pembayaran = 'paid';
+                                    $order->status_transaksi = 'diproses';
+                                    if (!$order->paid_at) {
+                                        $order->paid_at = now();
+                                    }
+                                    // Panggil Biteship
+                                    \App\Http\Controllers\BiteshipController::createOrder($order);
+                                } else if ($transaction == 'pending') {
+                                    $order->status_pembayaran = 'pending';
+                                } else if (in_array($transaction, ['deny', 'expire', 'cancel'])) {
+                                    $order->status_pembayaran = $transaction == 'deny' ? 'failed' : ($transaction == 'expire' ? 'expired' : 'cancelled');
+                                    
+                                    if ($order->status_transaksi !== 'dibatalkan') {
+                                        $order->status_transaksi = 'dibatalkan';
+                                        if ($pengiriman) {
+                                            $pengiriman->status_pengiriman = 'dibatalkan';
+                                            $pengiriman->save();
+                                            \App\Http\Controllers\BiteshipController::cancelOrder($pengiriman);
+                                        }
+                                        // Kembalikan stok
+                                        foreach ($order->details as $detail) {
+                                            $product = \App\Models\Product::find($detail->id_product);
+                                            if ($product) {
+                                                $product->increment('stok_product', $detail->jumlah);
+                                                if ($product->status_product == 'habis') {
+                                                    $product->update(['status_product' => 'aktif']);
+                                                }
+                                            }
                                         }
                                     }
                                 }
+                                $order->save();
+                                $hasChanges = true;
                             }
+                        } catch (\Throwable $e) {
+                            // Abaikan jika order tidak ditemukan di midtrans (mungkin data mock atau network error)
                         }
-                        $order->save();
                     }
-                } catch (\Exception $e) {
-                    // Abaikan jika order tidak ditemukan di midtrans (mungkin data mock)
                 }
+
+                // Ambil ulang data hanya jika ada perubahan status
+                if ($hasChanges) {
+                    $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman', 'alamat'])->orderBy('tanggal_transaksi', 'desc')->paginate(10);
+                }
+            } catch (\Throwable $e) {
+                // Abaikan kesalahan konfigurasi Midtrans agar endpoint tidak 500
             }
         }
-
-        // Ambil ulang data agar relasi terbaru (setelah update status) terkirim
-        $orders = Transaksi::with(['pelanggan', 'details.product', 'pengiriman', 'alamat'])->orderBy('tanggal_transaksi', 'desc')->paginate(10);
 
         return response()->json(['success' => true, 'data' => $orders]);
     }
@@ -329,7 +359,9 @@ class OrderController extends Controller
     // [ADMIN] Update Status Pesanan / Pembayaran
     public function updateStatus(Request $request, $id)
     {
-        $transaksi = Transaksi::findOrFail($id);
+        $transaksi = Transaksi::with(['pengiriman', 'details'])->findOrFail($id);
+        $previousStatus = $transaksi->status_transaksi;
+        $pengiriman = $transaksi->pengiriman;
 
         if ($request->has('status_pembayaran')) {
             $transaksi->status_pembayaran = $request->status_pembayaran;
@@ -339,13 +371,68 @@ class OrderController extends Controller
                     $transaksi->status_transaksi = 'diproses';
                 }
                 \App\Http\Controllers\BiteshipController::createOrder($transaksi);
+                if ($pengiriman && $pengiriman->status_pengiriman == 'belum_diproses') {
+                    $pengiriman->status_pengiriman = 'menunggu_pickup';
+                    $pengiriman->save();
+                }
             }
         }
 
         if ($request->has('status_transaksi')) {
-            $transaksi->status_transaksi = $request->status_transaksi;
-            if (strtolower($request->status_transaksi) == 'diproses') {
+            $newStatus = strtolower(str_replace(' ', '_', $request->status_transaksi));
+            $transaksi->status_transaksi = $newStatus;
+
+            if ($newStatus == 'diproses') {
                 \App\Http\Controllers\BiteshipController::createOrder($transaksi);
+                if ($pengiriman && $pengiriman->status_pengiriman == 'belum_diproses') {
+                    $pengiriman->status_pengiriman = 'menunggu_pickup';
+                    $pengiriman->save();
+                }
+            } elseif ($newStatus == 'dikemas' || $newStatus == 'siap_dikirim') {
+                if ($pengiriman && $pengiriman->status_pengiriman == 'belum_diproses') {
+                    $pengiriman->status_pengiriman = 'menunggu_pickup';
+                    $pengiriman->save();
+                }
+            } elseif ($newStatus == 'dikirim') {
+                if ($pengiriman) {
+                    $pengiriman->status_pengiriman = 'dalam_perjalanan';
+                    if (!$pengiriman->tanggal_dikirim) {
+                        $pengiriman->tanggal_dikirim = now();
+                    }
+                    $pengiriman->save();
+                }
+            } elseif ($newStatus == 'selesai') {
+                if ($pengiriman) {
+                    $pengiriman->status_pengiriman = 'terkirim';
+                    if (!$pengiriman->tanggal_selesai) {
+                        $pengiriman->tanggal_selesai = now();
+                    }
+                    if (!$pengiriman->tanggal_dikirim) {
+                        $pengiriman->tanggal_dikirim = now();
+                    }
+                    $pengiriman->save();
+                }
+            } elseif ($newStatus == 'dibatalkan') {
+                if ($pengiriman) {
+                    $pengiriman->status_pengiriman = 'dibatalkan';
+                    $pengiriman->save();
+                    \App\Http\Controllers\BiteshipController::cancelOrder($pengiriman);
+                }
+                if ($transaksi->status_pembayaran !== 'paid') {
+                    $transaksi->status_pembayaran = 'cancelled';
+                }
+                // Kembalikan stok jika sebelumnya belum dibatalkan
+                if ($previousStatus !== 'dibatalkan') {
+                    foreach ($transaksi->details as $detail) {
+                        $product = \App\Models\Product::find($detail->id_product);
+                        if ($product) {
+                            $product->increment('stok_product', $detail->jumlah);
+                            if ($product->status_product == 'habis') {
+                                $product->update(['status_product' => 'aktif']);
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -411,6 +498,12 @@ class OrderController extends Controller
             $order->status_pembayaran = $transaction == 'deny' ? 'failed' : ($transaction == 'expire' ? 'expired' : 'cancelled');
             $order->status_transaksi = 'dibatalkan';
             
+            if ($order->pengiriman) {
+                $order->pengiriman->status_pengiriman = 'dibatalkan';
+                $order->pengiriman->save();
+                \App\Http\Controllers\BiteshipController::cancelOrder($order->pengiriman);
+            }
+            
             if ($previousStatus !== 'dibatalkan') {
                 foreach ($order->details as $detail) {
                     $product = Product::find($detail->id_product);
@@ -448,7 +541,7 @@ class OrderController extends Controller
                         $order->midtrans_transaction_id = $status->transaction_id;
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Abaikan jika error, tetap lanjut update status lokal
                 $order->midtrans_transaction_status = 'settlement'; // asumsikan sukses
             }

@@ -5,7 +5,8 @@ import { CartProvider } from './context/CartContext';
 import { ProductProvider } from './context/ProductContext';
 import { CategoryProvider } from './context/CategoryContext';
 import { NotifProvider, NotifContainer } from '@/components/ui/notif';
-import { OfflineAlert } from './components/common/OfflineAlert/OfflineAlert';
+import { Error400Page } from '@/components/ui/error-400-page';
+import { OfflineAlert, HttpError, type HttpErrorCode } from './components/common';
 
 // Lazy load Admin Portal & Secondary User Pages for high performance on low-end devices
 const AdminLayout = lazy(() => import('./components/Admin/AdminLayout/AdminLayout'));
@@ -60,11 +61,38 @@ const UserViewFallback = () => (
 );
 
 function App() {
+  const pathname = window.location.pathname;
+
+  // Cek apakah URL memicu halaman error khusus (400, 401, 403, 404, 500, 502, 503, 504) atau 404 URL tidak dikenal
+  const errorCode = (() => {
+    const num = Number(pathname.replace(/^\//, ''));
+    if ([400, 401, 403, 404, 500, 502, 503, 504].includes(num)) {
+      return num as HttpErrorCode;
+    }
+    // Jika URL tidak dikenal dan bukan beranda atau portal admin
+    if (pathname !== '/' && !pathname.startsWith('/admin') && pathname !== '') {
+      return 404 as HttpErrorCode;
+    }
+    return null;
+  })();
+
   const [role, setRole] = useState<'user' | 'admin'>(() => {
     return window.location.pathname.startsWith('/admin') ? 'admin' : 'user';
   });
 
   const [currentView, setCurrentView] = useState<'home' | 'about' | 'track-order'>('home');
+
+  if (errorCode) {
+    if (errorCode === 400) {
+      return (
+        <Error400Page
+          onGoHome={() => { window.location.href = '/'; }}
+          onRetry={() => window.location.reload()}
+        />
+      );
+    }
+    return <HttpError code={errorCode} onGoHome={() => { window.location.href = '/'; }} />;
+  }
 
   const handleSwitchToAdmin = () => {
     setRole('admin');

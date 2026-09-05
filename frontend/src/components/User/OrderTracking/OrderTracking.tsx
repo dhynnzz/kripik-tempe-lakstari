@@ -31,7 +31,7 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
 
     setLoading(true);
     setError('');
-    
+
     const res = await apiService.trackOrder(invoice.trim(), phone.trim());
     if (res.success) {
       setOrderData(res.data);
@@ -45,14 +45,14 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
   const handleContinuePayment = () => {
     if (orderData && orderData.snap_token) {
       (window as any).snap.pay(orderData.snap_token, {
-        onSuccess: function(_result: any) {
+        onSuccess: function (_result: any) {
           Swal.fire({ title: 'Berhasil', text: 'Pembayaran berhasil!', icon: 'success' });
-          handleTrack({ preventDefault: () => {} } as any); // Refresh status
+          handleTrack({ preventDefault: () => { } } as any); // Refresh status
         },
-        onPending: function(_result: any) {
+        onPending: function (_result: any) {
           // Boleh direfresh atau dibiarkan
         },
-        onError: function(_result: any) {
+        onError: function (_result: any) {
           Swal.fire({ title: 'Gagal', text: 'Terjadi kesalahan saat memproses pembayaran.', icon: 'error' });
         }
       });
@@ -96,20 +96,20 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
         <form onSubmit={handleTrack} className="ot-form">
           <div className="form-group">
             <label>Nomor Invoice</label>
-            <input 
-              type="text" 
-              placeholder="Contoh: INV-2026xxxx-xxx" 
-              value={invoice} 
-              onChange={(e) => setInvoice(e.target.value)} 
+            <input
+              type="text"
+              placeholder="Contoh: INV-2026xxxx-xxx"
+              value={invoice}
+              onChange={(e) => setInvoice(e.target.value)}
             />
           </div>
           <div className="form-group">
             <label>Nomor WhatsApp</label>
-            <input 
-              type="text" 
-              placeholder="08xxxx" 
-              value={phone} 
-              onChange={(e) => setPhone(e.target.value)} 
+            <input
+              type="text"
+              placeholder="08xxxx"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
             />
           </div>
           {error && <div className="error-text">{error}</div>}
@@ -127,7 +127,7 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
                   {orderData.status_transaksi?.split('_').join(' ').toUpperCase()}
                 </span>
               </div>
-              
+
               <div className="receipt-body">
                 <div className="detail-row">
                   <span>Tanggal Transaksi</span>
@@ -163,7 +163,7 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
                     )}
                   </>
                 )}
-                
+
                 <div className="items-list">
                   <h4>Ringkasan Pesanan</h4>
                   <ul>
@@ -214,9 +214,9 @@ const OrderTracking: React.FC<OrderTrackingProps> = ({ onBack }) => {
                     <p style={{ color: '#92400e', marginBottom: '10px' }}>
                       Selesaikan pembayaran Anda untuk segera memproses pesanan ini.
                     </p>
-                    
+
                     <div className="action-btn-wrapper">
-                      <button 
+                      <button
                         onClick={handleContinuePayment}
                         className="pay-continue-btn"
                       >

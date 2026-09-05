@@ -46,24 +46,6 @@ export const CategoryProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   useEffect(() => {
     fetchCategories();
-
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        fetchCategories();
-      }
-    };
-    
-    const handleFocus = () => {
-      fetchCategories();
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      window.removeEventListener('focus', handleFocus);
-    };
   }, []);
 
   const refreshCategories = () => {

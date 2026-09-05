@@ -3,42 +3,111 @@ import { apiService } from '../../../services/api';
 import './ShipmentManager.css';
 import Swal from 'sweetalert2';
 
+const STATUS_OPTIONS: Record<string, string> = {
+  belum_diproses: 'Belum Diproses (Menunggu Pembayaran)',
+  menunggu_pickup: 'Menunggu Pickup Kurir',
+  dalam_perjalanan: 'Dalam Perjalanan (Diambil Kurir)',
+  terkirim: 'Terkirim (Sampai di Pelanggan)',
+  dibatalkan: 'Dibatalkan',
+};
+
+const STATUS_LABELS: Record<string, string> = {
+  belum_diproses: 'Belum Diproses',
+  menunggu_pickup: 'Menunggu Pickup',
+  dalam_perjalanan: 'Dalam Perjalanan',
+  terkirim: 'Terkirim',
+  dibatalkan: 'Dibatalkan',
+};
+
+const formatRupiah = (n: number | string) =>
+  'Rp ' + Number(n || 0).toLocaleString('id-ID');
+
+const formatDate = (d: string | null) => {
+  if (!d) return '-';
+  return new Date(d).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+};
+
+const formatDateTime = (d: string | null) => {
+  if (!d) return '-';
+  return new Date(d).toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+};
 
 const ShipmentManager: React.FC = () => {
   const [shipments, setShipments] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedShipment, setSelectedShipment] = useState<any | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('Semua');
   const [selectedShipmentDetail, setSelectedShipmentDetail] = useState<any | null>(null);
+  const [editingResiShipment, setEditingResiShipment] = useState<any | null>(null);
   const [resiInput, setResiInput] = useState('');
+  const [updatingId, setUpdatingId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [totalShipments, setTotalShipments] = useState(0);
 
-  const fetchShipments = async (page: number = 1) => {
-    setIsLoading(true);
-    const data = await apiService.getShipments(page);
-    if (data && data.data) {
-      setShipments(data.data);
-      setCurrentPage(data.current_page || 1);
-      setLastPage(data.last_page || 1);
-      setTotalShipments(data.total || 0);
-    } else {
-      setShipments(Array.isArray(data) ? data : []);
+  const fetchShipments = async (page: number = 1, showLoading = true) => {
+    if (showLoading) setIsLoading(true);
+    try {
+      const data = await apiService.getShipments(page);
+      if (data && data.data) {
+        setShipments(data.data);
+        setCurrentPage(data.current_page || 1);
+        setLastPage(data.last_page || 1);
+        setTotalShipments(data.total || 0);
+      } else {
+        setShipments(Array.isArray(data) ? data : []);
+      }
+    } catch (err) {
+      console.error('Error fetching shipments:', err);
+    } finally {
+      if (showLoading) setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
-    fetchShipments(currentPage);
+    fetchShipments(currentPage, true);
   }, [currentPage]);
 
-  const handleSaveChanges = async () => {
-    if (!selectedShipment) return;
+  const getStatusCount = (tab: string) => {
+    if (tab === 'Semua') return shipments.length;
+    const normalized = tab.toLowerCase().replace(/ /g, '_');
+    return shipments.filter((s: any) => {
+      const st = (s.status_pengiriman || '').toLowerCase();
+      if (normalized === 'terkirim' && (st === 'terkirim' || st === 'selesai')) return true;
+      if (normalized === 'dalam_perjalanan' && (st === 'dalam_perjalanan' || st === 'dikirim')) return true;
+      return st === normalized;
+    }).length;
+  };
 
-    if (selectedShipment.status_pengiriman === 'dibatalkan' || selectedShipment.status_pengiriman === 'Dibatalkan') {
+  const filteredShipments = shipments.filter((s: any) => {
+    if (statusFilter !== 'Semua') {
+      const normalizedFilter = statusFilter.toLowerCase().replace(/ /g, '_');
+      const st = (s.status_pengiriman || '').toLowerCase();
+      if (normalizedFilter === 'terkirim' && (st === 'terkirim' || st === 'selesai')) {
+        // match
+      } else if (normalizedFilter === 'dalam_perjalanan' && (st === 'dalam_perjalanan' || st === 'dikirim')) {
+        // match
+      } else if (st !== normalizedFilter) {
+        return false;
+      }
+    }
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase().trim();
+    const invoice = (s.transaksi?.nomor_invoice || '').toLowerCase();
+    const resi = (s.nomor_resi || '').toLowerCase();
+    const customer = (s.transaksi?.pelanggan?.nama_pelanggan || '').toLowerCase();
+    const recipient = (s.alamat?.nama_penerima || '').toLowerCase();
+    const phone = (s.alamat?.no_hp_penerima || s.transaksi?.pelanggan?.no_hp || '').toLowerCase();
+    const courier = (s.kurir || '').toLowerCase();
+
+    return invoice.includes(q) || resi.includes(q) || customer.includes(q) || recipient.includes(q) || phone.includes(q) || courier.includes(q);
+  });
+
+  const handleStatusChange = async (id: number, newStatus: string) => {
+    if (newStatus === 'dibatalkan') {
       const result = await Swal.fire({
-        title: 'Batalkan Pengiriman?',
-        text: 'Pesanan di Biteship akan dibatalkan otomatis.',
+        title: 'Batalkan Pengiriman & Pesanan?',
+        text: 'Pesanan di Biteship akan dibatalkan otomatis dan stok produk akan dikembalikan.',
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#DC2626',
@@ -46,274 +115,476 @@ const ShipmentManager: React.FC = () => {
         confirmButtonText: 'Ya, Batalkan',
         cancelButtonText: 'Kembali'
       });
-      if (!result.isConfirmed) return; // Batal simpan jika tidak yakin
+      if (!result.isConfirmed) return;
     }
 
-    const payload = {
-      status_pengiriman: selectedShipment.status_pengiriman,
-      nomor_resi: resiInput
-    };
-    const success = await apiService.updateShipment(selectedShipment.id_pengiriman, payload);
-    if(success) {
-      Swal.fire({
-        title: 'Berhasil',
-        text: 'Perubahan berhasil disimpan',
-        icon: 'success',
-        confirmButtonColor: 'var(--primary-dark)'
+    setUpdatingId(id);
+
+    // Optimistic Update: langsung perbarui status lokal agar kartu tidak reload/berkedip
+    setShipments((prev) =>
+      prev.map((s: any) =>
+        s.id_pengiriman === id ? { ...s, status_pengiriman: newStatus } : s
+      )
+    );
+
+    const success = await apiService.updateShipment(id, { status_pengiriman: newStatus });
+    if (success) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
       });
-      setSelectedShipment(null);
-      fetchShipments(currentPage);
+      Toast.fire({
+        icon: 'success',
+        title: 'Status pengiriman berhasil diperbarui'
+      });
+      // Sinkronisasi data di latar belakang tanpa memicu spinner reload
+      await fetchShipments(currentPage, false);
+    } else {
+      await fetchShipments(currentPage, false);
+      Swal.fire({
+        title: 'Gagal',
+        text: 'Gagal memperbarui status pengiriman',
+        icon: 'error'
+      });
+    }
+    setUpdatingId(null);
+  };
+
+  const handleSaveResi = async () => {
+    if (!editingResiShipment) return;
+
+    const id = editingResiShipment.id_pengiriman;
+    const newResi = resiInput.trim();
+    setEditingResiShipment(null);
+
+    // Optimistic Update
+    setShipments((prev) =>
+      prev.map((s: any) =>
+        s.id_pengiriman === id ? { ...s, nomor_resi: newResi } : s
+      )
+    );
+
+    const success = await apiService.updateShipment(id, {
+      nomor_resi: newResi
+    });
+
+    if (success) {
+      const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true
+      });
+      Toast.fire({
+        icon: 'success',
+        title: 'Nomor resi berhasil diperbarui'
+      });
+      await fetchShipments(currentPage, false);
+    } else {
+      await fetchShipments(currentPage, false);
     }
   };
 
   return (
     <div className="shipment-manager-container">
-      {/* Header Bar */}
+      {/* ═══════════ HEADER BAR ═══════════ */}
       <div className="shipment-header-bar">
         <div className="shipment-header-title">
-          <h2>Menu Pengiriman</h2>
-          <p>Pantau nomor resi kurir, status ekspedisi, ongkir, dan pengiriman.</p>
+          <h2>Manajemen Pengiriman Paket</h2>
+          <p>Pantau nomor resi kurir, jadwal pickup, dan status ekspedisi secara real-time.</p>
+        </div>
+        <div className="sm-header-search-wrap">
+          <input
+            type="text"
+            className="sm-header-search-input"
+            placeholder="🔍 Cari invoice / resi / pelanggan..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          {searchQuery && (
+            <button className="sm-search-clear-btn" onClick={() => setSearchQuery('')} title="Hapus pencarian">✕</button>
+          )}
         </div>
       </div>
 
-      {/* Tabel Pengiriman */}
-      <div className="shipment-table-card">
-        <table className="shipment-table">
-          <thead>
-            <tr>
-              <th>Invoice</th>
-              <th>Pelanggan</th>
-              <th>Kurir & Layanan</th>
-              <th>Nomor Resi</th>
-              <th>Status Pengiriman</th>
-              <th>Aksi Admin</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-                <tr>
-                  <td colSpan={6} style={{ textAlign: 'center', padding: '60px 0' }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '15px', color: '#64748b' }}>
-                      <div style={{ width: '36px', height: '36px', border: '3px solid #e2e8f0', borderTopColor: 'var(--primary-dark)', borderRadius: '50%', animation: 'spin 1s linear infinite' }}></div>
-                      <span style={{ fontWeight: 600, fontSize: '14px' }}>Memuat data pengiriman...</span>
-                      <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+      {/* ═══════════ FILTER TABS ═══════════ */}
+      <div className="sm-filter-tabs">
+        {['Semua', 'Belum Diproses', 'Menunggu Pickup', 'Dalam Perjalanan', 'Terkirim', 'Dibatalkan'].map((status) => {
+          const count = getStatusCount(status);
+          return (
+            <button
+              key={status}
+              className={`sm-filter-tab-btn ${statusFilter === status ? 'active' : ''}`}
+              onClick={() => setStatusFilter(status)}
+            >
+              <span>{status}</span>
+              {count > 0 && <span className="sm-tab-counter">{count}</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* ═══════════ DAFTAR KARTU PENGIRIMAN ═══════════ */}
+      <div className="sm-cards-list">
+        {isLoading ? (
+          <div className="sm-loading-state">
+            <div className="sm-spinner" />
+            <span>Memuat data pengiriman...</span>
+          </div>
+        ) : filteredShipments.length === 0 ? (
+          <div className="sm-empty-card">
+            <span style={{ fontSize: '40px', display: 'block', marginBottom: '8px' }}></span>
+            <p style={{ fontWeight: 600, color: '#64748B' }}>
+              {searchQuery ? `Tidak ada pengiriman yang cocok dengan "${searchQuery}"` : 'Belum ada data pengiriman untuk status ini.'}
+            </p>
+            {searchQuery && (
+              <button
+                className="sm-empty-reset-btn"
+                onClick={() => setSearchQuery('')}
+              >
+                Reset Pencarian
+              </button>
+            )}
+          </div>
+        ) : (
+          filteredShipments.map((s: any) => {
+            const rawStatus = (s.status_pengiriman || 'belum_diproses').toLowerCase();
+            const recipientName = s.alamat?.nama_penerima || s.transaksi?.pelanggan?.nama_pelanggan || '-';
+            const recipientPhone = s.alamat?.no_hp_penerima || s.transaksi?.pelanggan?.no_hp || '';
+            const fullAddress = s.alamat ? `${s.alamat.alamat_lengkap || ''}, Kec. ${s.alamat.kecamatan || ''}, ${s.alamat.kota || ''}, ${s.alamat.provinsi || ''} ${s.alamat.kode_pos || ''}` : '-';
+
+            return (
+              <div key={s.id_pengiriman} className="sm-card">
+                {/* Header Kartu (Navy) */}
+                <div className="sm-card-header">
+                  <div className="sm-card-invoice">
+                    <span>#{s.transaksi?.nomor_invoice || `TRX-${s.id_transaksi}`}</span>
+                  </div>
+                  <div className="sm-card-courier-tag">
+                    {s.kurir || 'Kurir Lokal'} • {s.layanan_kurir || s.layanan || 'REG'} ({s.berat_total ? (s.berat_total >= 1000 ? `${(s.berat_total / 1000).toFixed(1).replace('.0', '')}kg` : `${s.berat_total}g`) : '1kg'})
+                  </div>
+                </div>
+
+                {/* Badan Kartu */}
+                <div className="sm-card-body">
+                  {/* Baris 1: Penerima & Resi */}
+                  <div className="sm-customer-row">
+                    <div className="sm-customer-info">
+                      <strong className="sm-customer-name">{recipientName}</strong>
+                      {recipientPhone && <span className="sm-customer-phone">({recipientPhone})</span>}
                     </div>
-                  </td>
-                </tr>
-            ) : shipments.length > 0 ? (
-                shipments.map((s: any) => (
-              <tr key={s.id_pengiriman}>
-                <td><strong style={{ color: 'var(--primary-dark)' }}>{s.transaksi?.nomor_invoice}</strong></td>
-                <td>{s.transaksi?.pelanggan?.nama_pelanggan}</td>
-                <td>
-                  <span className="courier-badge">{s.kurir || 'Kurir Lokal'}</span> <small>({s.layanan || 'REG'})</small>
-                </td>
-                <td><code style={{ background: '#F1F5F9', padding: '2px 6px', borderRadius: '4px' }}>{s.nomor_resi || 'Belum diisi'}</code></td>
-                <td>
-                  <span style={{
-                    background: (s.status_pengiriman === 'terkirim' || s.status_pengiriman === 'Selesai') ? '#DCFCE7' : s.status_pengiriman === 'dalam_perjalanan' ? '#DBEAFE' : s.status_pengiriman === 'dibatalkan' ? '#FEE2E2' : '#FEF3C7',
-                    color: (s.status_pengiriman === 'terkirim' || s.status_pengiriman === 'Selesai') ? '#166534' : s.status_pengiriman === 'dalam_perjalanan' ? '#1E40AF' : s.status_pengiriman === 'dibatalkan' ? '#DC2626' : '#92400E',
-                    padding: '4px 10px', borderRadius: '20px', fontSize: '11px', fontWeight: 700
-                  }}>
-                    {s.status_pengiriman === 'dibatalkan' ? 'Dibatalkan' : s.status_pengiriman === 'terkirim' ? 'Terkirim' : s.status_pengiriman === 'dalam_perjalanan' ? 'Dalam Perjalanan' : 'Menunggu Pickup'}
-                  </span>
-                </td>
-                <td>
-                  <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                    <button 
+                    <div className="sm-customer-resi">
+                      {s.nomor_resi ? (
+                        <button
+                          type="button"
+                          className="sm-resi-tag"
+                          title="Klik untuk ubah nomor resi"
+                          onClick={() => {
+                            setEditingResiShipment(s);
+                            setResiInput(s.nomor_resi || '');
+                          }}
+                        >
+                          Resi: <strong>{s.nomor_resi}</strong>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="sm-no-resi"
+                          title="Klik untuk input resi baru"
+                          onClick={() => {
+                            setEditingResiShipment(s);
+                            setResiInput('');
+                          }}
+                        >
+                          + Input Resi
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Baris 2: Alamat Pengiriman */}
+                  <div className="sm-address-row">
+                    <span className="sm-address-dest">Tujuan:</span>
+                    <span className="sm-address-text">{fullAddress}</span>
+                  </div>
+
+                  {/* Catatan Pembeli jika ada */}
+                  {s.alamat?.catatan && (
+                    <div className="sm-catatan-tag">
+                      <span className="sm-catatan-label">Catatan:</span>
+                      <span className="sm-catatan-text">{s.alamat.catatan}</span>
+                    </div>
+                  )}
+
+                  {/* Baris 3: Status Badge & Informasi Waktu */}
+                  <div className="sm-badges-row">
+                    <span className={`sm-badge sm-badge-${rawStatus}`}>
+                      {STATUS_LABELS[rawStatus] || s.status_pengiriman}
+                    </span>
+                    <span className="sm-info-badge">
+                      Ongkir: {formatRupiah(s.biaya_pengiriman)}
+                    </span>
+                    {s.tanggal_dikirim && (
+                      <span className="sm-info-badge">
+                        Dikirim: {formatDate(s.tanggal_dikirim)}
+                      </span>
+                    )}
+                    {s.tanggal_selesai && (
+                      <span className="sm-info-badge">
+                        Sampai: {formatDate(s.tanggal_selesai)}
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Footer Kartu: Ubah Status & Tombol Aksi */}
+                <div className="sm-card-footer">
+                  <div className="sm-status-wrap">
+                    <label className="sm-status-label">Status:</label>
+                    <select
+                      className="sm-status-select"
+                      value={rawStatus === 'selesai' ? 'terkirim' : (rawStatus === 'dikirim' ? 'dalam_perjalanan' : rawStatus)}
+                      disabled={updatingId === s.id_pengiriman}
+                      onChange={(e) => handleStatusChange(s.id_pengiriman, e.target.value)}
+                    >
+                      {Object.entries(STATUS_OPTIONS).map(([val, label]) => (
+                        <option key={val} value={val}>{label}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="sm-actions-wrap">
+                    <button
+                      className="sm-btn sm-btn-resi"
                       onClick={() => {
-                        setSelectedShipment(s);
+                        setEditingResiShipment(s);
                         setResiInput(s.nomor_resi || '');
                       }}
-                      style={{
-                        background: '#e2e8f0',
-                        color: '#334155',
-                        border: '1px solid #cbd5e1',
-                        padding: '6px 12px',
-                        borderRadius: '8px',
-                        fontWeight: 700,
-                        fontSize: '12px',
-                        cursor: 'pointer'
-                      }}
                     >
-                      Kelola Pengiriman
+                      Edit Resi
                     </button>
-                    <button 
+                    <button
+                      className="sm-btn sm-btn-detail"
                       onClick={() => setSelectedShipmentDetail(s)}
-                      style={{
-                        background: 'var(--primary-dark)',
-                        color: 'var(--primary-accent)',
-                        border: 'none',
-                        padding: '6px 12px',
-                        borderRadius: '8px',
-                        fontWeight: 700,
-                        fontSize: '12px',
-                        cursor: 'pointer'
-                      }}
                     >
-                      Detail
+                      Detail Paket
                     </button>
                   </div>
-                </td>
-              </tr>
-            ))) : (
-                <tr>
-                  <td colSpan={6} style={{textAlign: 'center', padding: '40px', color: '#64748b'}}>Belum ada data pengiriman.</td>
-                </tr>
-            )}
-          </tbody>
-        </table>
-        
-        {/* Pagination Controls */}
+                </div>
+              </div>
+            );
+          })
+        )}
+
+        {/* Pagination */}
         {lastPage > 1 && (
-          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem', gap: '0.5rem', alignItems: 'center', borderTop: '1px solid #e2e8f0' }}>
-            <span style={{ fontSize: '0.875rem', color: '#64748b', marginRight: '1rem' }}>
-              Total: {totalShipments} pengiriman
-            </span>
-            <button 
-              onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+          <div className="sm-pagination">
+            <span className="sm-page-info">Total: {totalShipments} pengiriman</span>
+            <button
+              className="sm-page-btn"
+              onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
               disabled={currentPage === 1}
-              style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', background: currentPage === 1 ? '#f8fafc' : '#ffffff', color: currentPage === 1 ? '#94a3b8' : '#334155', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontSize: '0.875rem', transition: 'all 0.2s' }}
             >
-              Sebelumnya
+              ‹ Sebelumnya
             </button>
-            <span style={{ padding: '0.25rem 0.5rem', fontWeight: 600, fontSize: '0.875rem', color: '#0f172a' }}>
-              Halaman {currentPage} dari {lastPage}
-            </span>
-            <button 
-              onClick={() => setCurrentPage(prev => Math.min(prev + 1, lastPage))}
+            <span className="sm-page-current">Halaman {currentPage} dari {lastPage}</span>
+            <button
+              className="sm-page-btn"
+              onClick={() => setCurrentPage((p) => Math.min(p + 1, lastPage))}
               disabled={currentPage === lastPage}
-              style={{ padding: '0.35rem 0.75rem', borderRadius: '6px', border: '1px solid #cbd5e1', background: currentPage === lastPage ? '#f8fafc' : '#ffffff', color: currentPage === lastPage ? '#94a3b8' : '#334155', cursor: currentPage === lastPage ? 'not-allowed' : 'pointer', fontSize: '0.875rem', transition: 'all 0.2s' }}
             >
-              Selanjutnya
+              Selanjutnya ›
             </button>
           </div>
         )}
       </div>
 
-      {/* Modal Kelola Pengiriman */}
-      {selectedShipment && (
-        <div style={{
-          position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000,
-          display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px'
-        }}>
-          <div style={{
-            background: '#fff', padding: '28px', borderRadius: '16px', width: '100%', maxWidth: '500px',
-          }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px', color: 'var(--primary-dark)' }}>Kelola Pengiriman: {selectedShipment.transaksi?.nomor_invoice}</h3>
-              <button onClick={() => setSelectedShipment(null)} style={{ border: 'none', background: 'none', fontSize: '18px', cursor: 'pointer' }}>✕</button>
+      {/* ═══════════ MODAL EDIT RESI ═══════════ */}
+      {editingResiShipment && (
+        <div className="sm-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setEditingResiShipment(null); }}>
+          <div className="sm-modal sm-modal-sm">
+            <div className="sm-modal-header">
+              <h2>Input / Edit Resi: <span>{editingResiShipment.transaksi?.nomor_invoice}</span></h2>
+              <button className="sm-modal-close" onClick={() => setEditingResiShipment(null)}>✕</button>
             </div>
-
-            <div style={{ background: '#F8FAFC', padding: '14px', borderRadius: '10px', marginBottom: '16px' }}>
-              <div style={{ marginBottom: '10px' }}>
-                <label style={{display: 'block', fontSize: '12px', marginBottom: '5px', fontWeight: 'bold'}}>Input Nomor Resi Baru</label>
-                <div style={{display: 'flex', gap: '10px'}}>
-                  <input type="text" value={resiInput} onChange={e => setResiInput(e.target.value)} placeholder="Misal: JT8899001122" style={{ flex: 1, padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }} />
-                </div>
-              </div>
+            <div className="sm-modal-body">
+              <label style={{ fontSize: '12px', fontWeight: 700, color: '#475569' }}>
+                Nomor Resi Kurir ({editingResiShipment.kurir || 'Ekspedisi'}):
+              </label>
+              <input
+                type="text"
+                value={resiInput}
+                onChange={(e) => setResiInput(e.target.value)}
+                placeholder="Contoh: JT8899001122"
+                style={{
+                  padding: '10px 14px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #cbd5e1',
+                  fontSize: '14px',
+                  fontWeight: 600,
+                  outline: 'none',
+                  fontFamily: 'monospace'
+                }}
+                autoFocus
+              />
+              <p style={{ margin: 0, fontSize: '11px', color: '#64748b' }}>
+                Nomor resi ini akan langsung dapat dilacak oleh pembeli di halaman Lacak Pesanan.
+              </p>
             </div>
-
-            <div style={{ background: '#F8FAFC', padding: '14px', borderRadius: '10px', marginBottom: '16px' }}>
-               <label style={{display: 'block', fontSize: '12px', marginBottom: '5px', fontWeight: 'bold'}}>Ubah Status Pengiriman</label>
-               <select 
-                  style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #ccc' }}
-                  value={selectedShipment.status_pengiriman}
-                  onChange={(e) => {
-                     setSelectedShipment({...selectedShipment, status_pengiriman: e.target.value});
-                  }}
-               >
-                  <option value="menunggu_pickup">Menunggu Pickup</option>
-                  <option value="dalam_perjalanan">Dalam Perjalanan</option>
-                  <option value="terkirim">Terkirim</option>
-                  <option value="dibatalkan">Dibatalkan</option>
-               </select>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px' }}>
-               <button onClick={() => setSelectedShipment(null)} style={{ background: '#E2E8F0', color: '#1E293B', border: 'none', padding: '8px 20px', borderRadius: '8px', cursor: 'pointer' }}>Batal</button>
-               <button onClick={handleSaveChanges} style={{ background: 'var(--primary-dark)', color: 'var(--primary-accent)', border: 'none', padding: '8px 20px', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold' }}>Simpan</button>
+            <div className="sm-modal-footer">
+              <button
+                style={{
+                  padding: '8px 18px',
+                  borderRadius: '8px',
+                  border: '1.5px solid #cbd5e1',
+                  background: '#ffffff',
+                  color: '#334155',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+                onClick={() => setEditingResiShipment(null)}
+              >
+                Batal
+              </button>
+              <button
+                style={{
+                  padding: '8px 20px',
+                  borderRadius: '8px',
+                  border: 'none',
+                  background: '#232B45',
+                  color: '#FAAC30',
+                  fontWeight: 700,
+                  cursor: 'pointer'
+                }}
+                onClick={handleSaveResi}
+              >
+                Simpan Resi
+              </button>
             </div>
           </div>
         </div>
       )}
-      {/* Modal Detail Pengiriman */}
+
+      {/* ═══════════ MODAL DETAIL PAKET & PENGIRIMAN ═══════════ */}
       {selectedShipmentDetail && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
-          <div style={{ background: '#fff', borderRadius: '16px', width: '100%', maxWidth: '800px', maxHeight: '90vh', overflowY: 'auto', padding: '30px', boxShadow: '0 10px 25px rgba(0,0,0,0.1)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '2px solid #f1f5f9', paddingBottom: '16px' }}>
-              <h2 style={{ margin: 0, color: '#0f172a', fontSize: '1.25rem' }}>Detail Pengiriman: <span style={{ color: 'var(--primary-dark)' }}>{selectedShipmentDetail.transaksi?.nomor_invoice}</span></h2>
-              <button onClick={() => setSelectedShipmentDetail(null)} style={{ background: 'transparent', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#64748b' }}>✕</button>
+        <div className="sm-modal-overlay" onClick={(e) => { if (e.target === e.currentTarget) setSelectedShipmentDetail(null); }}>
+          <div className="sm-modal">
+            <div className="sm-modal-header">
+              <h2>Detail Pengiriman: <span>{selectedShipmentDetail.transaksi?.nomor_invoice}</span></h2>
+              <button className="sm-modal-close" onClick={() => setSelectedShipmentDetail(null)}>✕</button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-              {/* Kolom Kiri: Info Resi & Ekspedisi */}
-              <div>
-                <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '12px' }}>Informasi Resi & Kurir</h3>
-                <div style={{ fontSize: '0.9rem', color: '#475569', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <p style={{ margin: 0 }}><strong>Kurir:</strong> {selectedShipmentDetail.kurir || '-'}</p>
-                  <p style={{ margin: 0 }}><strong>Layanan:</strong> {selectedShipmentDetail.layanan_kurir || '-'}</p>
-                  <p style={{ margin: 0 }}><strong>Nomor Resi:</strong> <span style={{ background: '#f1f5f9', padding: '2px 6px', borderRadius: '4px', fontWeight: 'bold' }}>{selectedShipmentDetail.nomor_resi || 'Belum diisi'}</span></p>
-                  <p style={{ margin: 0 }}><strong>Status:</strong> <span style={{ color: selectedShipmentDetail.status_pengiriman === 'Terkirim' ? '#16a34a' : '#d97706', fontWeight: 600 }}>{selectedShipmentDetail.status_pengiriman || '-'}</span></p>
-                  <p style={{ margin: 0 }}><strong>Biaya Ongkir:</strong> Rp {parseFloat(selectedShipmentDetail.biaya_pengiriman || 0).toLocaleString('id-ID')}</p>
-                  <p style={{ margin: 0 }}><strong>Berat Total:</strong> {selectedShipmentDetail.berat_total || 0} gram</p>
+            <div className="sm-modal-body">
+              <div className="sm-modal-grid">
+                {/* Kolom Kiri: Info Kurir & Resi */}
+                <div>
+                  <h3 className="sm-modal-section-title">Informasi Ekspedisi & Resi</h3>
+                  <div className="sm-modal-info-list">
+                    <div className="sm-modal-info-row">
+                      <span>Kurir</span>
+                      <strong>{selectedShipmentDetail.kurir || '-'} ({selectedShipmentDetail.layanan_kurir || selectedShipmentDetail.layanan || 'REG'})</strong>
+                    </div>
+                    <div className="sm-modal-info-row">
+                      <span>Nomor Resi</span>
+                      <strong style={{ fontFamily: 'monospace' }}>{selectedShipmentDetail.nomor_resi || 'Belum diisi'}</strong>
+                    </div>
+                    <div className="sm-modal-info-row">
+                      <span>Status</span>
+                      <span className={`sm-badge sm-badge-${(selectedShipmentDetail.status_pengiriman || '').toLowerCase()}`}>
+                        {STATUS_LABELS[(selectedShipmentDetail.status_pengiriman || '').toLowerCase()] || selectedShipmentDetail.status_pengiriman}
+                      </span>
+                    </div>
+                    <div className="sm-modal-info-row">
+                      <span>Total Berat</span>
+                      <strong>{selectedShipmentDetail.berat_total || 0} gram</strong>
+                    </div>
+                    <div className="sm-modal-info-row">
+                      <span>Biaya Ongkir</span>
+                      <strong>{formatRupiah(selectedShipmentDetail.biaya_pengiriman)}</strong>
+                    </div>
+                    <div className="sm-modal-info-row">
+                      <span>Tgl Dikirim</span>
+                      <strong>{formatDateTime(selectedShipmentDetail.tanggal_dikirim)}</strong>
+                    </div>
+                    <div className="sm-modal-info-row">
+                      <span>Tgl Sampai</span>
+                      <strong>{formatDateTime(selectedShipmentDetail.tanggal_selesai)}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Kolom Kanan: Alamat Tujuan */}
+                <div>
+                  <h3 className="sm-modal-section-title">Alamat Penerima</h3>
+                  <div className="sm-modal-info-list">
+                    <div className="sm-modal-info-row">
+                      <span>Nama</span>
+                      <strong>{selectedShipmentDetail.alamat?.nama_penerima || selectedShipmentDetail.transaksi?.pelanggan?.nama_pelanggan || '-'}</strong>
+                    </div>
+                    <div className="sm-modal-info-row">
+                      <span>No. Handphone</span>
+                      <strong>{selectedShipmentDetail.alamat?.no_hp_penerima || selectedShipmentDetail.transaksi?.pelanggan?.no_hp || '-'}</strong>
+                    </div>
+                    <div className="sm-modal-info-row">
+                      <span>Alamat</span>
+                      <strong>{selectedShipmentDetail.alamat?.alamat_lengkap || '-'}</strong>
+                    </div>
+                    <div className="sm-modal-info-row">
+                      <span>Wilayah</span>
+                      <strong>{selectedShipmentDetail.alamat?.kecamatan}, {selectedShipmentDetail.alamat?.kota}, {selectedShipmentDetail.alamat?.provinsi} {selectedShipmentDetail.alamat?.kode_pos}</strong>
+                    </div>
+                    {selectedShipmentDetail.alamat?.catatan && (
+                      <div className="sm-modal-info-row">
+                        <span>Catatan</span>
+                        <strong style={{ color: '#92400e' }}>{selectedShipmentDetail.alamat.catatan}</strong>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
-              {/* Kolom Kanan: Alamat Tujuan */}
-              <div>
-                <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '12px' }}>Alamat Tujuan</h3>
-                <div style={{ fontSize: '0.9rem', color: '#475569', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                  <p style={{ margin: 0 }}><strong>Penerima:</strong> {selectedShipmentDetail.alamat?.nama_penerima || selectedShipmentDetail.transaksi?.pelanggan?.nama_pelanggan || '-'}</p>
-                  <p style={{ margin: 0 }}><strong>No. HP:</strong> {selectedShipmentDetail.alamat?.no_hp_penerima || selectedShipmentDetail.transaksi?.pelanggan?.no_hp || '-'}</p>
-                  <p style={{ margin: 0, lineHeight: '1.5' }}><strong>Alamat:</strong> {selectedShipmentDetail.alamat?.alamat_lengkap || '-'}<br/>
-                    {selectedShipmentDetail.alamat?.kecamatan}, {selectedShipmentDetail.alamat?.kota}, {selectedShipmentDetail.alamat?.provinsi} {selectedShipmentDetail.alamat?.kode_pos}
-                  </p>
-                  {selectedShipmentDetail.alamat?.catatan && (
-                    <p style={{ margin: 0, marginTop: '4px', fontStyle: 'italic', color: '#d97706' }}>Catatan: {selectedShipmentDetail.alamat.catatan}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Isi Paket (Daftar Produk) */}
-            <h3 style={{ fontSize: '1rem', color: '#334155', borderBottom: '1px solid #e2e8f0', paddingBottom: '8px', marginBottom: '12px' }}>Isi Paket (Daftar Barang)</h3>
-            <div style={{ border: '1px solid #e2e8f0', borderRadius: '8px', overflow: 'hidden', marginBottom: '24px' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
-                <thead style={{ background: '#f8fafc' }}>
-                  <tr>
-                    <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e2e8f0' }}>Produk</th>
-                    <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #e2e8f0' }}>Varian</th>
-                    <th style={{ padding: '12px', textAlign: 'center', borderBottom: '1px solid #e2e8f0' }}>Qty</th>
-                    <th style={{ padding: '12px', textAlign: 'right', borderBottom: '1px solid #e2e8f0' }}>Berat per item</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedShipmentDetail.transaksi?.details?.map((d: any, index: number) => (
-                    <tr key={index} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                      <td style={{ padding: '12px' }}>
-                        <div style={{ fontWeight: 600, color: '#0f172a' }}>{d.nama_product}</div>
-                      </td>
-                      <td style={{ padding: '12px', textAlign: 'center' }}>{d.product?.varian_rasa || '-'}</td>
-                      <td style={{ padding: '12px', textAlign: 'center', fontWeight: 600 }}>{d.jumlah}x</td>
-                      <td style={{ padding: '12px', textAlign: 'right' }}>{d.berat_product}g</td>
-                    </tr>
-                  ))}
-                  {(!selectedShipmentDetail.transaksi?.details || selectedShipmentDetail.transaksi?.details.length === 0) && (
+              {/* Rincian Produk untuk Packing */}
+              <h3 className="sm-modal-section-title" style={{ marginTop: '10px' }}>Rincian Isi Paket (Barang untuk Dipacking)</h3>
+              <div className="sm-modal-table-wrap">
+                <table className="sm-modal-table">
+                  <thead>
                     <tr>
-                      <td colSpan={4} style={{ padding: '12px', textAlign: 'center', color: '#94a3b8' }}>Data produk tidak tersedia</td>
+                      <th>Nama Produk</th>
+                      <th style={{ textAlign: 'center' }}>Varian</th>
+                      <th style={{ textAlign: 'center' }}>Jumlah</th>
+                      <th style={{ textAlign: 'right' }}>Berat / Unit</th>
                     </tr>
-                  )}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {selectedShipmentDetail.transaksi?.details && selectedShipmentDetail.transaksi.details.length > 0 ? (
+                      selectedShipmentDetail.transaksi.details.map((d: any, idx: number) => (
+                        <tr key={idx}>
+                          <td><strong>{d.nama_product || d.product?.nama_product || 'Produk'}</strong></td>
+                          <td style={{ textAlign: 'center' }}>{d.product?.varian_rasa || '-'}</td>
+                          <td style={{ textAlign: 'center', fontWeight: 800 }}>x{d.jumlah}</td>
+                          <td style={{ textAlign: 'right' }}>{d.berat_product || d.product?.berat_product || 150}g</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan={4} style={{ textAlign: 'center', padding: '16px', color: '#94a3b8' }}>Tidak ada rincian produk</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
             </div>
 
-            <div style={{ textAlign: 'right' }}>
-              <button 
+            <div className="sm-modal-footer">
+              <button
+                className="sm-btn sm-btn-resi"
                 onClick={() => setSelectedShipmentDetail(null)}
-                style={{ background: '#f1f5f9', color: '#334155', border: '1px solid #cbd5e1', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', transition: 'all 0.2s' }}
               >
-                Tutup Jendela
+                Tutup
               </button>
             </div>
           </div>

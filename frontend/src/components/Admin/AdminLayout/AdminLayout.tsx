@@ -70,7 +70,7 @@ const tabLabels: Record<string, string> = {
 
 const AdminLayout: React.FC<AdminLayoutProps> = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    return !!(sessionStorage.getItem('admin_token') || localStorage.getItem('admin_token'));
+    return !!sessionStorage.getItem('admin_token');
   });
 
   const [activeTab, setActiveTab] = useState<
@@ -85,12 +85,16 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
     return true;
   });
 
-  // Pastikan admin terautentikasi dan token valid saat membuka portal admin
+  // Verifikasi keabsahan sesi admin ke server saat membuka portal admin
   useEffect(() => {
-    apiService.ensureAdminAuth().then((authed) => {
-      if (authed) {
-        setIsAuthenticated(true);
-      }
+    const token = sessionStorage.getItem('admin_token');
+    if (!token) {
+      setIsAuthenticated(false);
+      return;
+    }
+
+    apiService.checkAdminAuth().then((isValid) => {
+      setIsAuthenticated(isValid);
     });
   }, []);
 
