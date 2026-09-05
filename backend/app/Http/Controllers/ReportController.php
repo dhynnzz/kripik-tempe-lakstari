@@ -86,6 +86,66 @@ class ReportController extends Controller
             ->take(5)
             ->get();
 
+        // 8. Grafik Penjualan (Per Hari, Per Minggu, Per Bulan)
+        $now = Carbon::now();
+        $startOfYear = $now->copy()->startOfYear();
+        $startOfWeek = $now->copy()->startOfWeek();
+        $startOfData = $startOfWeek->lt($startOfYear) ? $startOfWeek : $startOfYear;
+        
+        $validTransactions = Transaksi::where('tanggal_transaksi', '>=', $startOfData)
+            ->whereIn('status_pembayaran', ['paid', 'settlement'])
+            ->get(['tanggal_transaksi', 'total_pembayaran']);
+
+        // Sales per Month
+        $salesPerMonth = [];
+        for ($i = 1; $i <= 12; $i++) {
+            $monthDate = Carbon::create($now->year, $i, 1);
+            $total = $validTransactions->filter(function($t) use ($i, $now) {
+                $d = Carbon::parse($t->tanggal_transaksi);
+                return $d->month === $i && $d->year === $now->year;
+            })->sum('total_pembayaran');
+            $salesPerMonth[] = ['label' => $monthDate->translatedFormat('M'), 'total' => $total];
+        }
+
+        // Sales per Week in current month
+        $salesPerWeek = [];
+        $startOfMonth = $now->copy()->startOfMonth();
+        $endOfMonth = $now->copy()->endOfMonth();
+        $weekNumber = 1;
+        $currDate = $startOfMonth->copy();
+        while ($currDate->lte($endOfMonth)) {
+            $endOfWeek = $currDate->copy()->endOfWeek();
+            if ($endOfWeek->gt($endOfMonth)) {
+                $endOfWeek = $endOfMonth->copy();
+            }
+            $currStr = $currDate->toDateString();
+            $endStr = $endOfWeek->toDateString();
+            $total = $validTransactions->filter(function($t) use ($currStr, $endStr) {
+                $dStr = Carbon::parse($t->tanggal_transaksi)->toDateString();
+                return $dStr >= $currStr && $dStr <= $endStr;
+            })->sum('total_pembayaran');
+            $salesPerWeek[] = ['label' => 'Mg ' . $weekNumber, 'total' => $total];
+            $currDate = $endOfWeek->addDay();
+            $weekNumber++;
+        }
+
+        // Sales per Day in current week
+        $salesPerDay = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = $startOfWeek->copy()->addDays($i);
+            $dStr = $date->toDateString();
+            $total = $validTransactions->filter(function($t) use ($dStr) {
+                return Carbon::parse($t->tanggal_transaksi)->toDateString() === $dStr;
+            })->sum('total_pembayaran');
+            $salesPerDay[] = ['label' => $date->translatedFormat('D'), 'total' => $total];
+        }
+
+        $salesChart = [
+            'perDay' => $salesPerDay,
+            'perWeek' => $salesPerWeek,
+            'perMonth' => $salesPerMonth
+        ];
+
         return response()->json([
             'success' => true,
             'data' => [
@@ -102,6 +162,7 @@ class ReportController extends Controller
                 'orderStatuses' => $orderStatuses,
                 'recentOrders' => $recentOrders,
                 'topProducts' => $topProducts,
+                'salesChart' => $salesChart,
             ]
         ]);
     }

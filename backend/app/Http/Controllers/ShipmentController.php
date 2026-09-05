@@ -26,6 +26,9 @@ class ShipmentController extends Controller
 
         if ($request->has('nomor_resi')) {
             $pengiriman->nomor_resi = $request->nomor_resi;
+            if (!$pengiriman->tanggal_dikirim) {
+                $pengiriman->tanggal_dikirim = now();
+            }
         }
 
         if ($request->has('status_pengiriman')) {

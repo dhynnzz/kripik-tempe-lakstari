@@ -24,6 +24,7 @@ Route::post('/track-order', [\App\Http\Controllers\OrderController::class, 'trac
 Route::get('/wilayah/districts/{regencyId}', [\App\Http\Controllers\WilayahController::class, 'getDistricts']);
 Route::get('/wilayah/villages/{districtId}', [\App\Http\Controllers\WilayahController::class, 'getVillages']);
 Route::post('/shipping-rates', [\App\Http\Controllers\BiteshipController::class, 'getRates']);
+Route::get('/biteship/areas', [\App\Http\Controllers\BiteshipController::class, 'searchAreas']);
 
 // Protected Routes (Sanctum)
 Route::middleware('auth:sanctum')->group(function () {

@@ -6,7 +6,6 @@ import './CartDrawer.css';
 import { apiService } from '../../../services/api';
 import { regionService, formatRegionName, type RegionItem } from '../../../services/regionService';
 import CustomSelect from '../CustomSelect/CustomSelect';
-
 declare global {
   interface Window {
     snap: any;
@@ -26,13 +25,13 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
   // Data pesanan setelah berhasil checkout
   const [successData, setSuccessData] = useState<{ invoice: string, payment_type: string, payment_code: string, status?: 'success' | 'pending' } | null>(null);
 
-  // State data wilayah
+  // State data wilayah lokal
   const [provinces, setProvinces] = useState<RegionItem[]>([]);
   const [cities, setCities] = useState<RegionItem[]>([]);
   const [districts, setDistricts] = useState<RegionItem[]>([]);
   const [villages, setVillages] = useState<RegionItem[]>([]);
 
-  // State ID terpilih untuk cascading request API
+  // State ID terpilih untuk cascading request API lokal
   const [selectedProvId, setSelectedProvId] = useState('');
   const [selectedRegencyId, setSelectedRegencyId] = useState('');
   const [selectedDistrictId, setSelectedDistrictId] = useState('');
@@ -43,6 +42,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
   const [isLoadingDistricts, setIsLoadingDistricts] = useState(false);
   const [isLoadingVillages, setIsLoadingVillages] = useState(false);
 
+  // Biteship Postal Code State
+  const [biteshipPostalCodes, setBiteshipPostalCodes] = useState<any[]>([]);
+  const [isLoadingPostalCodes, setIsLoadingPostalCodes] = useState(false);
   const [formData, setFormData] = useState({
     nama_pelanggan: '',
     no_hp: '',
@@ -71,6 +73,132 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
     });
   }, []);
 
+  // 1. Handler saat memilih Provinsi
+  const handleProvinceChange = async (provId: string) => {
+    const selected = provinces.find((p) => p.id === provId);
+    setSelectedProvId(provId);
+    setSelectedRegencyId('');
+    setSelectedDistrictId('');
+    setSelectedVillageId('');
+
+    setCities([]);
+    setDistricts([]);
+    setVillages([]);
+    setBiteshipPostalCodes([]);
+
+    setFormData(prev => ({
+      ...prev,
+      provinsi: selected ? formatRegionName(selected.name) : '',
+      kota: '',
+      kecamatan: '',
+      desa_kelurahan: '',
+      kode_pos: ''
+    }));
+    setShippingOptions([]);
+    setOngkir(0);
+    setSelectedCourierId('');
+
+    if (provId) {
+      setIsLoadingCities(true);
+      const regencies = await regionService.getRegencies(provId);
+      setCities(regencies);
+      setIsLoadingCities(false);
+    }
+  };
+
+  // 2. Handler saat memilih Kota/Kabupaten
+  const handleCityChange = async (cityId: string) => {
+    const selected = cities.find((c) => c.id === cityId);
+    setSelectedRegencyId(cityId);
+    setSelectedDistrictId('');
+    setSelectedVillageId('');
+
+    setDistricts([]);
+    setVillages([]);
+    setBiteshipPostalCodes([]);
+
+    setFormData(prev => ({
+      ...prev,
+      kota: selected ? formatRegionName(selected.name) : '',
+      kecamatan: '',
+      desa_kelurahan: '',
+      kode_pos: ''
+    }));
+    setShippingOptions([]);
+    setOngkir(0);
+    setSelectedCourierId('');
+
+    if (cityId) {
+      setIsLoadingDistricts(true);
+      const dists = await regionService.getDistricts(cityId);
+      setDistricts(dists);
+      setIsLoadingDistricts(false);
+    }
+  };
+
+  // 3. Handler saat memilih Kecamatan (Sekaligus menarik Kode Pos dari Biteship)
+  const handleDistrictChange = async (districtId: string) => {
+    const selected = districts.find((d) => d.id === districtId);
+    setSelectedDistrictId(districtId);
+    setSelectedVillageId('');
+
+    setVillages([]);
+    setBiteshipPostalCodes([]);
+    
+    const districtName = selected ? formatRegionName(selected.name) : '';
+    setFormData(prev => ({
+      ...prev,
+      kecamatan: districtName,
+      desa_kelurahan: '',
+      kode_pos: ''
+    }));
+    setShippingOptions([]);
+    setOngkir(0);
+    setSelectedCourierId('');
+
+    if (districtId && selected) {
+      setIsLoadingVillages(true);
+      const vills = await regionService.getVillages(districtId);
+      setVillages(vills);
+      setIsLoadingVillages(false);
+
+      // Tarik Kode Pos dari Biteship
+      setIsLoadingPostalCodes(true);
+      try {
+        const searchQuery = `${districtName} ${formData.kota}`;
+        const res = await apiService.searchBiteshipAreas(searchQuery);
+        if (res && res.success && res.areas) {
+          // Filter out duplicates postal codes (sometimes Biteship returns same postal code multiple times)
+          const uniquePostalCodes = Array.from(new Set(res.areas.map((a: any) => a.postal_code)))
+            .map(code => {
+              return res.areas.find((a: any) => a.postal_code === code);
+            });
+          
+          setBiteshipPostalCodes(uniquePostalCodes);
+          
+          // Auto-fill jika hanya 1 kode pos
+          if (uniquePostalCodes.length === 1) {
+            setFormData(prev => ({ ...prev, kode_pos: uniquePostalCodes[0].postal_code.toString() }));
+          }
+        }
+      } catch (err) {
+        console.error("Gagal menarik kode pos dari biteship", err);
+      } finally {
+        setIsLoadingPostalCodes(false);
+      }
+    }
+  };
+
+  // 4. Handler saat memilih Desa/Kelurahan
+  const handleVillageChange = (villageId: string) => {
+    const selected = villages.find((v) => v.id === villageId);
+    setSelectedVillageId(villageId);
+    setFormData(prev => ({
+      ...prev,
+      desa_kelurahan: selected ? formatRegionName(selected.name) : ''
+    }));
+  };
+
   // Kunci scroll dan interaksi halaman belakang saat keranjang atau form pembayaran terbuka
   useEffect(() => {
     if (isCartOpen) {
@@ -94,90 +222,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
 
   if (!isCartOpen) return null;
 
-  // 1. Handler saat memilih Provinsi
-  const handleProvinceChange = async (provId: string) => {
-    const selected = provinces.find((p) => p.id === provId);
-    setSelectedProvId(provId);
-    setSelectedRegencyId('');
-    setSelectedDistrictId('');
-    setSelectedVillageId('');
 
-    setCities([]);
-    setDistricts([]);
-    setVillages([]);
-
-    setFormData(prev => ({
-      ...prev,
-      provinsi: selected ? formatRegionName(selected.name) : '',
-      kota: '',
-      kecamatan: '',
-      desa_kelurahan: ''
-    }));
-
-    if (provId) {
-      setIsLoadingCities(true);
-      const regencies = await regionService.getRegencies(provId);
-      setCities(regencies);
-      setIsLoadingCities(false);
-    }
-  };
-
-  // 2. Handler saat memilih Kota/Kabupaten
-  const handleCityChange = async (cityId: string) => {
-    const selected = cities.find((c) => c.id === cityId);
-    setSelectedRegencyId(cityId);
-    setSelectedDistrictId('');
-    setSelectedVillageId('');
-
-    setDistricts([]);
-    setVillages([]);
-
-    setFormData(prev => ({
-      ...prev,
-      kota: selected ? formatRegionName(selected.name) : '',
-      kecamatan: '',
-      desa_kelurahan: ''
-    }));
-
-    if (cityId) {
-      setIsLoadingDistricts(true);
-      const dists = await regionService.getDistricts(cityId);
-      setDistricts(dists);
-      setIsLoadingDistricts(false);
-    }
-  };
-
-  // 3. Handler saat memilih Kecamatan
-  const handleDistrictChange = async (districtId: string) => {
-    const selected = districts.find((d) => d.id === districtId);
-    setSelectedDistrictId(districtId);
-    setSelectedVillageId('');
-
-    setVillages([]);
-
-    setFormData(prev => ({
-      ...prev,
-      kecamatan: selected ? formatRegionName(selected.name) : '',
-      desa_kelurahan: ''
-    }));
-
-    if (districtId) {
-      setIsLoadingVillages(true);
-      const vills = await regionService.getVillages(districtId);
-      setVillages(vills);
-      setIsLoadingVillages(false);
-    }
-  };
-
-  // 4. Handler saat memilih Desa/Kelurahan
-  const handleVillageChange = (villageId: string) => {
-    const selected = villages.find((v) => v.id === villageId);
-    setSelectedVillageId(villageId);
-    setFormData(prev => ({
-      ...prev,
-      desa_kelurahan: selected ? formatRegionName(selected.name) : ''
-    }));
-  };
 
   const handleCheckoutSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -432,7 +477,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
               </div>
 
               <button className="btn-lanjut-pembayaran" onClick={() => setCheckoutStep(1)}>
-                Lanjut ke Pengiriman
+                Lanjutkan Pesanan
               </button>
             </div>
           )}
@@ -629,30 +674,6 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                           <label>
                             <span className="form-label-icon">
                               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <line x1="4" y1="9" x2="20" y2="9"></line>
-                                <line x1="4" y1="15" x2="20" y2="15"></line>
-                                <line x1="10" y1="3" x2="8" y2="21"></line>
-                                <line x1="16" y1="3" x2="14" y2="21"></line>
-                              </svg>
-                            </span>
-                            Kode Pos
-                          </label>
-                          <input
-                            required
-                            type="text"
-                            placeholder="Misal: 65311"
-                            value={formData.kode_pos}
-                            onChange={e => setFormData(prev => ({ ...prev, kode_pos: e.target.value.replace(/\D/g, '').slice(0, 5) }))}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Baris 5: Kecamatan & Desa / Kelurahan (2 Kolom Dropdown Berantai) */}
-                      <div className="form-item-2col">
-                        <div className="form-item">
-                          <label>
-                            <span className="form-label-icon">
-                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                 <circle cx="12" cy="12" r="10"></circle>
                                 <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
                               </svg>
@@ -670,7 +691,10 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                             disabled={!selectedRegencyId || isLoadingDistricts}
                           />
                         </div>
+                      </div>
 
+                      {/* Baris 5: Desa / Kelurahan & Kode Pos (2 Kolom Dropdown Berantai) */}
+                      <div className="form-item-2col">
                         <div className="form-item">
                           <label>
                             <span className="form-label-icon">
@@ -691,6 +715,30 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ onNavigateToTracking }) => {
                             onChange={val => handleVillageChange(val)}
                             placeholder={!selectedDistrictId ? 'Pilih Kecamatan dulu' : (isLoadingVillages ? 'Memuat kelurahan...' : 'Pilih Desa / Kelurahan')}
                             disabled={!selectedDistrictId || isLoadingVillages}
+                          />
+                        </div>
+
+                        <div className="form-item">
+                          <label>
+                            <span className="form-label-icon">
+                              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <line x1="4" y1="9" x2="20" y2="9"></line>
+                                <line x1="4" y1="15" x2="20" y2="15"></line>
+                                <line x1="10" y1="3" x2="8" y2="21"></line>
+                                <line x1="16" y1="3" x2="14" y2="21"></line>
+                              </svg>
+                            </span>
+                            Kode Pos
+                          </label>
+                          <CustomSelect
+                            options={biteshipPostalCodes.map(area => ({
+                              value: area.postal_code.toString(),
+                              label: `${area.postal_code} - ${area.name}`
+                            }))}
+                            value={formData.kode_pos}
+                            onChange={val => setFormData(prev => ({ ...prev, kode_pos: val }))}
+                            placeholder={!selectedDistrictId ? 'Pilih Kecamatan' : (isLoadingPostalCodes ? 'Mencari...' : (biteshipPostalCodes.length === 0 ? 'Tidak ditemukan' : 'Pilih Kode Pos'))}
+                            disabled={!selectedDistrictId || isLoadingPostalCodes || biteshipPostalCodes.length === 0}
                           />
                         </div>
                       </div>

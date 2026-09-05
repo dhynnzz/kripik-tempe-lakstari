@@ -48,11 +48,18 @@ class BiteshipController extends Controller
             ])->post('https://api.biteship.com/v1/rates/couriers', $payload);
 
             if ($response->successful()) {
-                $data = $response->json();
-                if (!empty($data['pricing'])) {
+                $responseData = $response->json();
+                
+                if (isset($responseData['pricing']) && is_array($responseData['pricing'])) {
+                    $responseData['pricing'] = array_values(array_filter($responseData['pricing'], function ($option) {
+                        return strpos(strtolower($option['courier_service_name'] ?? ''), 'trucking') === false;
+                    }));
+                }
+
+                if (!empty($responseData['pricing'])) {
                     return response()->json([
                         'success' => true,
-                        'data' => $data
+                        'data' => $responseData
                     ]);
                 }
             }
@@ -164,6 +171,44 @@ class BiteshipController extends Controller
                 'note' => 'Tarif dinamis berbasis zona wilayah'
             ]);
 
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function searchAreas(Request $request)
+    {
+        $input = $request->query('input');
+        if (!$input) {
+            return response()->json(['success' => false, 'message' => 'Parameter input wajib diisi'], 400);
+        }
+
+        $apiKey = env('BITESHIP_API_KEY');
+        if (!$apiKey) {
+            return response()->json(['success' => false, 'message' => 'Biteship API Key not configured'], 500);
+        }
+
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => $apiKey,
+            ])->get('https://api.biteship.com/v1/maps/areas', [
+                'countries' => 'ID',
+                'input' => $input,
+                'type' => 'single'
+            ]);
+
+            if ($response->successful()) {
+                return response()->json($response->json());
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mencari area dari Biteship.',
+                'error' => $response->json()
+            ], 400);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
