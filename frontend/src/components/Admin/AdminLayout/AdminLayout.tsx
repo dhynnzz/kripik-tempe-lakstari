@@ -13,7 +13,6 @@ const OrderManager = lazy(() => import('../OrderManager/OrderManager'));
 const ShipmentManager = lazy(() => import('../ShipmentManager/ShipmentManager'));
 const CustomerManager = lazy(() => import('../CustomerManager/CustomerManager'));
 const ReportManager = lazy(() => import('../ReportManager/ReportManager'));
-const AdminManager = lazy(() => import('../AdminManager/AdminManager'));
 const SettingsManager = lazy(() => import('../SettingsManager/SettingsManager'));
 const AdminLogin = lazy(() => import('../AdminLogin/AdminLogin'));
 
@@ -64,7 +63,6 @@ const tabLabels: Record<string, string> = {
   shipments: "Pengiriman",
   customers: "Pelanggan",
   reports: "Laporan",
-  admins: "Admin",
   settings: "Pengaturan",
 };
 
@@ -74,7 +72,7 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
   });
 
   const [activeTab, setActiveTab] = useState<
-    'dashboard' | 'products' | 'categories' | 'orders' | 'shipments' | 'customers' | 'reports' | 'admins' | 'settings'
+    'dashboard' | 'products' | 'categories' | 'orders' | 'shipments' | 'customers' | 'reports' | 'settings'
   >('dashboard');
 
   const [isDark, setIsDark] = useState(false);
@@ -237,7 +235,6 @@ const AdminLayout: React.FC<AdminLayoutProps> = () => {
             {activeTab === 'shipments' && <ShipmentManager />}
             {activeTab === 'customers' && <CustomerManager />}
             {activeTab === 'reports' && <ReportManager />}
-            {activeTab === 'admins' && <AdminManager />}
             {activeTab === 'settings' && <SettingsManager />}
           </Suspense>
         </main>
