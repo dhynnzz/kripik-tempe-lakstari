@@ -1,9 +1,9 @@
 import { useState, type ReactElement } from "react";
 
-/* ─── Lucide-style SVG icons (inline, no dependency) ─── */
+/* ─── Lucide-style SVG icons (inline, crisp 18x18, no dependency) ─── */
 function IconLayoutDashboard() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <rect x="3" y="3" width="7" height="7" rx="1" />
       <rect x="14" y="3" width="7" height="7" rx="1" />
       <rect x="3" y="14" width="7" height="7" rx="1" />
@@ -13,7 +13,7 @@ function IconLayoutDashboard() {
 }
 function IconPackage() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <path d="m7.5 4.27 9 5.15" /><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z" />
       <path d="m3.3 7 8.7 5 8.7-5" /><path d="M12 22V12" />
     </svg>
@@ -21,7 +21,7 @@ function IconPackage() {
 }
 function IconTag() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" />
       <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />
     </svg>
@@ -29,7 +29,7 @@ function IconTag() {
 }
 function IconShoppingCart() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <circle cx="8" cy="21" r="1" /><circle cx="19" cy="21" r="1" />
       <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />
     </svg>
@@ -37,7 +37,7 @@ function IconShoppingCart() {
 }
 function IconTruck() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2" />
       <path d="M15 18H9" /><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.624l-3.48-4.35A1 1 0 0 0 17.52 8H14" />
       <circle cx="17" cy="18" r="2" /><circle cx="7" cy="18" r="2" />
@@ -46,7 +46,7 @@ function IconTruck() {
 }
 function IconUsers() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
       <circle cx="9" cy="7" r="4" />
       <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
@@ -56,17 +56,16 @@ function IconUsers() {
 }
 function IconBarChart() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <line x1="12" x2="12" y1="20" y2="10" />
       <line x1="18" x2="18" y1="20" y2="4" />
       <line x1="6" x2="6" y1="20" y2="16" />
     </svg>
   );
 }
-
 function IconSettings() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
       <circle cx="12" cy="12" r="3" />
     </svg>
@@ -74,7 +73,7 @@ function IconSettings() {
 }
 function IconLogOut() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
       <polyline points="16 17 21 12 16 7" />
       <line x1="21" x2="9" y1="12" y2="12" />
@@ -83,7 +82,7 @@ function IconLogOut() {
 }
 function IconPanelLeftClose() {
   return (
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
       <rect width="18" height="18" x="3" y="3" rx="2" />
       <path d="M9 3v18" />
       <path d="m16 15-3-3 3-3" />
@@ -106,7 +105,7 @@ function BrandLogo() {
       <span style={{ fontSize: "16px", fontWeight: 800, color: "#ffffff", letterSpacing: "0.02em", lineHeight: 1.2 }}>
         Lakstari
       </span>
-      <span style={{ fontSize: "11px", color: "#94A3B8", fontWeight: 500, lineHeight: 1.2, marginTop: "1px" }}>
+      <span style={{ fontSize: "11px", color: "#94A3B8", fontWeight: 500, lineHeight: 1.2, marginTop: "2px" }}>
         Admin Portal
       </span>
     </div>
@@ -127,20 +126,36 @@ type MenuItem = {
   id: string;
   label: string;
   icon: () => ReactElement;
+  group?: string;
 };
 
-const menuItems: MenuItem[] = [
-  { id: "dashboard", label: "Dashboard", icon: IconLayoutDashboard },
-  { id: "products", label: "Produk", icon: IconPackage },
-  { id: "categories", label: "Kategori", icon: IconTag },
-  { id: "orders", label: "Pesanan", icon: IconShoppingCart },
-  { id: "shipments", label: "Pengiriman", icon: IconTruck },
-  { id: "customers", label: "Pelanggan", icon: IconUsers },
-  { id: "reports", label: "Laporan", icon: IconBarChart },
-];
-
-const bottomItems: MenuItem[] = [
-  { id: "settings", label: "Pengaturan", icon: IconSettings },
+const menuGroups: { heading?: string; items: MenuItem[] }[] = [
+  {
+    items: [
+      { id: "dashboard", label: "Dashboard", icon: IconLayoutDashboard },
+    ],
+  },
+  {
+    heading: "Katalog",
+    items: [
+      { id: "products", label: "Produk", icon: IconPackage },
+      { id: "categories", label: "Kategori", icon: IconTag },
+    ],
+  },
+  {
+    heading: "Transaksi",
+    items: [
+      { id: "orders", label: "Pesanan", icon: IconShoppingCart },
+      { id: "shipments", label: "Pengiriman", icon: IconTruck },
+    ],
+  },
+  {
+    heading: "Manajemen",
+    items: [
+      { id: "customers", label: "Pelanggan", icon: IconUsers },
+      { id: "reports", label: "Laporan", icon: IconBarChart },
+    ],
+  },
 ];
 
 /* ─── Main Sidebar Component ─── */
@@ -178,13 +193,11 @@ export function Lakstari21stSidebar({
         <aside
           className="lakstari-sidebar-aside"
           style={{
-            width: isOpen ? "250px" : "0px",
-            minWidth: isOpen ? "250px" : "0px",
+            width: isOpen ? "260px" : "0px",
+            minWidth: isOpen ? "260px" : "0px",
             height: "100%",
             backgroundColor: "#232B45",
-            display: "flex",
-            flexDirection: "column",
-            padding: isOpen ? "12px 10px" : "0",
+            padding: isOpen ? "12px 10px 10px" : "0",
             boxSizing: "border-box",
             borderRight: isOpen ? "1px solid rgba(255,255,255,0.07)" : "none",
             overflow: "hidden",
@@ -192,9 +205,20 @@ export function Lakstari21stSidebar({
           }}
         >
           {isOpen && (
-            <>
+            /* 1 Single Div untuk Semua Komponen Sidebar (Tanpa Scroll) */
+            <div
+              className="lakstari-sidebar-nav"
+              style={{
+                width: "100%",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+                overflow: "hidden",
+                boxSizing: "border-box",
+              }}
+            >
               {/* Brand Header */}
-              <div style={{ marginBottom: "12px", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 4px" }}>
+              <div style={{ marginBottom: "10px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0, padding: "2px 4px" }}>
                 <BrandLogo />
                 <button
                   onClick={toggleSidebar}
@@ -224,50 +248,19 @@ export function Lakstari21stSidebar({
                 </button>
               </div>
 
-              {/* Navigation Menu (Rapat tanpa jeda/heading kategori) */}
-              <div className="lakstari-sidebar-nav" style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: "2px" }}>
-                {menuItems.map((item) => {
-                  const isActive = activeTab === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      onClick={() => handleMenuClick(item.id)}
-                      style={{
-                        display: "flex", alignItems: "center", gap: "10px",
-                        width: "100%", padding: "7.5px 10px",
-                        borderRadius: "7px", border: "none",
-                        background: isActive ? "#FAAC30" : "transparent",
-                        color: isActive ? "#232B45" : "#94A3B8",
-                        fontSize: "13.5px", fontWeight: isActive ? 700 : 500,
-                        cursor: "pointer", textAlign: "left",
-                        transition: "all 0.15s ease",
-                      }}
-                      onMouseEnter={(e) => {
-                        if (!isActive) {
-                          (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)";
-                          (e.currentTarget as HTMLElement).style.color = "#ffffff";
-                        }
-                      }}
-                      onMouseLeave={(e) => {
-                        if (!isActive) {
-                          (e.currentTarget as HTMLElement).style.background = "transparent";
-                          (e.currentTarget as HTMLElement).style.color = "#94A3B8";
-                        }
-                      }}
-                    >
-                      <span style={{ flexShrink: 0 }}><item.icon /></span>
-                      <span style={{ whiteSpace: "nowrap" }}>{item.label}</span>
-                    </button>
-                  );
-                })}
-
-                {/* Bottom Section (Menyambung langsung tanpa jarak jauh) */}
-                <div style={{
-                  paddingTop: "6px", marginTop: "6px",
-                  borderTop: "1px solid rgba(255,255,255,0.07)",
-                  display: "flex", flexDirection: "column", gap: "2px",
-                }}>
-                  {bottomItems.map((item) => {
+              {/* Menu Groups */}
+              {menuGroups.map((group, idx) => (
+                <div key={idx} style={{ marginBottom: "3px", flexShrink: 0 }}>
+                  {group.heading && (
+                    <div style={{
+                      fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em",
+                      color: "rgba(148,163,184,0.45)", textTransform: "uppercase",
+                      padding: "0 10px", marginTop: "4px", marginBottom: "2px"
+                    }}>
+                      {group.heading}
+                    </div>
+                  )}
+                  {group.items.map((item) => {
                     const isActive = activeTab === item.id;
                     return (
                       <button
@@ -275,13 +268,14 @@ export function Lakstari21stSidebar({
                         onClick={() => handleMenuClick(item.id)}
                         style={{
                           display: "flex", alignItems: "center", gap: "10px",
-                          width: "100%", padding: "7.5px 10px",
+                          width: "100%", padding: "7px 10px",
                           borderRadius: "7px", border: "none",
                           background: isActive ? "#FAAC30" : "transparent",
                           color: isActive ? "#232B45" : "#94A3B8",
-                          fontSize: "13.5px", fontWeight: isActive ? 700 : 500,
+                          fontSize: "14px", fontWeight: isActive ? 700 : 500,
                           cursor: "pointer", textAlign: "left",
                           transition: "all 0.15s ease",
+                          marginBottom: "1px",
                         }}
                         onMouseEnter={(e) => {
                           if (!isActive) {
@@ -296,55 +290,92 @@ export function Lakstari21stSidebar({
                           }
                         }}
                       >
-                        <span style={{ flexShrink: 0 }}><item.icon /></span>
-                        <span>{item.label}</span>
+                        <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}><item.icon /></span>
+                        <span style={{ whiteSpace: "nowrap" }}>{item.label}</span>
                       </button>
                     );
                   })}
-
-                  {/* Logout */}
-                  <button
-                    onClick={onLogout}
-                    style={{
-                      display: "flex", alignItems: "center", gap: "10px",
-                      width: "100%", padding: "7.5px 10px",
-                      borderRadius: "7px", border: "none",
-                      background: "transparent",
-                      color: "#94A3B8",
-                      fontSize: "13.5px", fontWeight: 500,
-                      cursor: "pointer", textAlign: "left",
-                      transition: "all 0.15s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)";
-                      (e.currentTarget as HTMLElement).style.color = "#F87171";
-                    }}
-                    onMouseLeave={(e) => {
-                      (e.currentTarget as HTMLElement).style.background = "transparent";
-                      (e.currentTarget as HTMLElement).style.color = "#94A3B8";
-                    }}
-                  >
-                    <span style={{ flexShrink: 0 }}><IconLogOut /></span>
-                    <span>Keluar</span>
-                  </button>
-
-                  {/* Profile */}
-                  <div style={{
-                    display: "flex", alignItems: "center", gap: "10px",
-                    padding: "6px 8px 2px",
-                    marginTop: "4px",
-                  }}>
-                    <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
-                      <span style={{ fontSize: "13px", fontWeight: 600, color: "#E2E8F0", lineHeight: 1.2 }}>Admin Lakstari</span>
-                      <span style={{ fontSize: "11px", color: "#64748B", lineHeight: 1.2 }}>Pemilik Toko</span>
-                    </div>
-                    <button style={{ background: "none", border: "none", color: "#64748B", cursor: "pointer", marginLeft: "auto", flexShrink: 0 }}>
-                      <IconChevronDown />
-                    </button>
-                  </div>
                 </div>
+              ))}
+
+              {/* Divider */}
+              <div style={{ height: "1px", backgroundColor: "rgba(255,255,255,0.07)", margin: "4px 0 3px", flexShrink: 0 }} />
+
+              {/* Pengaturan */}
+              <button
+                onClick={() => handleMenuClick("settings")}
+                style={{
+                  display: "flex", alignItems: "center", gap: "10px",
+                  width: "100%", padding: "7px 10px",
+                  borderRadius: "7px", border: "none",
+                  background: activeTab === "settings" ? "#FAAC30" : "transparent",
+                  color: activeTab === "settings" ? "#232B45" : "#94A3B8",
+                  fontSize: "14px", fontWeight: activeTab === "settings" ? 700 : 500,
+                  cursor: "pointer", textAlign: "left",
+                  transition: "all 0.15s ease",
+                  flexShrink: 0,
+                  marginBottom: "1px",
+                }}
+                onMouseEnter={(e) => {
+                  if (activeTab !== "settings") {
+                    (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.07)";
+                    (e.currentTarget as HTMLElement).style.color = "#ffffff";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (activeTab !== "settings") {
+                    (e.currentTarget as HTMLElement).style.background = "transparent";
+                    (e.currentTarget as HTMLElement).style.color = "#94A3B8";
+                  }
+                }}
+              >
+                <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}><IconSettings /></span>
+                <span>Pengaturan</span>
+              </button>
+
+              {/* Keluar */}
+              <button
+                onClick={onLogout}
+                style={{
+                  display: "flex", alignItems: "center", gap: "10px",
+                  width: "100%", padding: "7px 10px",
+                  borderRadius: "7px", border: "none",
+                  background: "transparent",
+                  color: "#94A3B8",
+                  fontSize: "14px", fontWeight: 500,
+                  cursor: "pointer", textAlign: "left",
+                  transition: "all 0.15s ease",
+                  flexShrink: 0,
+                }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.12)";
+                  (e.currentTarget as HTMLElement).style.color = "#F87171";
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = "transparent";
+                  (e.currentTarget as HTMLElement).style.color = "#94A3B8";
+                }}
+              >
+                <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}><IconLogOut /></span>
+                <span>Keluar</span>
+              </button>
+
+              {/* Profile Card */}
+              <div style={{
+                marginTop: "auto",
+                display: "flex", alignItems: "center", gap: "10px",
+                padding: "8px 10px 2px",
+                flexShrink: 0,
+              }}>
+                <div style={{ display: "flex", flexDirection: "column", minWidth: 0 }}>
+                  <span style={{ fontSize: "13px", fontWeight: 600, color: "#E2E8F0", lineHeight: 1.3 }}>Admin Lakstari</span>
+                  <span style={{ fontSize: "11px", color: "#64748B", lineHeight: 1.3 }}>Pemilik Toko</span>
+                </div>
+                <button style={{ background: "none", border: "none", color: "#64748B", cursor: "pointer", marginLeft: "auto", flexShrink: 0, padding: 0 }}>
+                  <IconChevronDown />
+                </button>
               </div>
-            </>
+            </div>
           )}
         </aside>
       </div>

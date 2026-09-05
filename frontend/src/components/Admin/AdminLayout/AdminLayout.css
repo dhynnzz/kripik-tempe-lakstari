@@ -735,16 +735,17 @@
 }
 
 /* ════════════════════════════════════════
-   SIDEBAR SCROLLBAR HIDING (Direct 1 Screen View)
+   SIDEBAR UNIFIED CONTAINER (No Scroll)
 ════════════════════════════════════════ */
-.lakstari-sidebar-nav,
-.lakstari-sidebar-aside {
+.lakstari-sidebar-aside,
+.lakstari-sidebar-nav {
+  overflow: hidden !important;
   scrollbar-width: none !important;
   -ms-overflow-style: none !important;
 }
 
-.lakstari-sidebar-nav::-webkit-scrollbar,
-.lakstari-sidebar-aside::-webkit-scrollbar {
+.lakstari-sidebar-aside::-webkit-scrollbar,
+.lakstari-sidebar-nav::-webkit-scrollbar {
   display: none !important;
   width: 0 !important;
   height: 0 !important;
