@@ -332,7 +332,7 @@ const CustomerManager: React.FC = () => {
             </svg>
             <input
               type="text"
-              placeholder="Cari nama pelanggan, nomor WhatsApp, email..."
+              placeholder="Cari nama, WhatsApp, email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="cm-search-input"
