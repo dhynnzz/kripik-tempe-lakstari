@@ -735,31 +735,17 @@
 }
 
 /* ════════════════════════════════════════
-   SIDEBAR CUSTOM SCROLLBAR (Sleek & Minimal)
+   SIDEBAR SCROLLBAR HIDING (Direct 1 Screen View)
 ════════════════════════════════════════ */
-.lakstari-sidebar-nav::-webkit-scrollbar,
-.lakstari-sidebar-aside::-webkit-scrollbar {
-  width: 4px;
-}
-
-.lakstari-sidebar-nav::-webkit-scrollbar-track,
-.lakstari-sidebar-aside::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.lakstari-sidebar-nav::-webkit-scrollbar-thumb,
-.lakstari-sidebar-aside::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.16);
-  border-radius: 10px;
-}
-
-.lakstari-sidebar-nav::-webkit-scrollbar-thumb:hover,
-.lakstari-sidebar-aside::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.35);
-}
-
 .lakstari-sidebar-nav,
 .lakstari-sidebar-aside {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+
+.lakstari-sidebar-nav::-webkit-scrollbar,
+.lakstari-sidebar-aside::-webkit-scrollbar {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
