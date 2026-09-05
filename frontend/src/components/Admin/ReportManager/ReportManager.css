@@ -1,132 +1,711 @@
-/* Report Manager Styles - PRD Lakstari */
-.report-manager-container {
+/* ==========================================================================
+   REPORT MANAGER STYLES - LAKSTARI ADMIN PORTAL
+   Desktop & Mobile Responsive Design + Print Engine
+   ========================================================================== */
+
+.report-manager-root {
   display: flex;
   flex-direction: column;
   gap: 20px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1E293B;
 }
 
-.report-filter-card {
+/* ── 1. HEADER BANNER ── */
+.rm-header-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;
-  background: linear-gradient(135deg, #232B45 0%, #1c2236 50%, #3a2b16 100%);
-  padding: 22px 26px;
-  border-radius: 14px;
-  box-shadow: 0 4px 16px rgba(35, 43, 69, 0.2);
-  border: 1px solid rgba(250, 172, 48, 0.35);
-  color: #ffffff;
-}
-
-.report-filter-title h2 {
-  font-size: 22px;
-  font-weight: 800;
-  color: #ffffff;
-  margin: 0;
-  letter-spacing: -0.2px;
-}
-
-.report-filter-title p {
-  color: #FAAC30;
-  font-size: 13px;
-  margin-top: 4px;
-  font-weight: 600;
-}
-
-.report-filter-controls {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #ffffff;
-}
-
-.report-filter-select {
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid rgba(250, 172, 48, 0.5);
-  background: #1A2035;
-  font-size: 13px;
-  font-weight: 700;
-  color: #FAAC30;
-  outline: none;
-}
-
-.report-stats-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-}
-
-.report-stat-card {
-  background: #ffffff;
+  background: linear-gradient(135deg, #1E293B 0%, #0F172A 60%, #312006 100%);
+  padding: 24px 28px;
   border-radius: 16px;
-  padding: 20px;
-  border: 1px solid #EAEFEF;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(250, 172, 48, 0.3);
+  color: #FFFFFF;
 }
 
-.report-stat-label {
-  font-size: 12px;
+.rm-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(250, 172, 48, 0.15);
+  border: 1px solid rgba(250, 172, 48, 0.35);
+  color: #FAAC30;
+  font-size: 11.5px;
   font-weight: 700;
-  color: #64748B;
-  margin-bottom: 6px;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
   text-transform: uppercase;
 }
 
-.report-stat-value {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--primary-dark);
+.rm-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #FAAC30;
+  box-shadow: 0 0 8px #FAAC30;
+  animation: rmPulse 1.8s infinite;
 }
 
-.report-panel-card {
-  background: #ffffff;
+@keyframes rmPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.rm-header-text h2 {
+  font-size: 24px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.rm-header-text p {
+  color: #94A3B8;
+  font-size: 13.5px;
+  margin-top: 4px;
+  font-weight: 400;
+  max-width: 650px;
+  line-height: 1.5;
+}
+
+.rm-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn-rm-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #F8FAFC;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 10px 18px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-rm-action:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.35);
+  transform: translateY(-1px);
+}
+
+.btn-rm-print {
+  background: #FAAC30;
+  color: #1E293B;
+  border-color: #FAAC30;
+}
+
+.btn-rm-print:hover:not(:disabled) {
+  background: #E39925;
+  border-color: #E39925;
+  color: #0F172A;
+}
+
+.rm-spinning {
+  animation: rmSpin 0.9s linear infinite;
+}
+
+@keyframes rmSpin {
+  100% { transform: rotate(360deg); }
+}
+
+/* ── 2. PERIOD FILTER CARD ── */
+.rm-filter-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  background: #FFFFFF;
+  padding: 14px 20px;
+  border-radius: 14px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+}
+
+.rm-filter-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.rm-filter-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.rm-period-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.rm-period-chip {
+  padding: 7px 16px;
+  border-radius: 8px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.rm-period-chip:hover {
+  background: #E2E8F0;
+}
+
+.rm-period-chip.active {
+  background: #1E293B;
+  border-color: #1E293B;
+  color: #FFFFFF;
+}
+
+.rm-active-indicator {
+  font-size: 12.5px;
+  color: #64748B;
+}
+
+.rm-active-indicator strong {
+  color: #0F172A;
+}
+
+/* ── 3. STAT METRIC CARDS ── */
+.rm-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.rm-stat-card {
+  background: #FFFFFF;
   border-radius: 16px;
-  border: 1px solid #EAEFEF;
+  padding: 20px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.rm-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
+}
+
+.rm-stat-card.omset-card {
+  border-color: rgba(250, 172, 48, 0.4);
+  background: linear-gradient(180deg, #FFFFFF 0%, #FFFDF9 100%);
+}
+
+.rm-stat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rm-stat-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.rm-stat-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rm-stat-icon.gold {
+  background: rgba(250, 172, 48, 0.16);
+  color: #D97706;
+}
+
+.rm-stat-icon.green {
+  background: rgba(16, 185, 129, 0.12);
+  color: #059669;
+}
+
+.rm-stat-icon.blue {
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563EB;
+}
+
+.rm-stat-icon.purple {
+  background: rgba(147, 51, 234, 0.12);
+  color: #7C3AED;
+}
+
+.rm-stat-val {
+  font-size: 24px;
+  font-weight: 800;
+  color: #0F172A;
+  line-height: 1.2;
+}
+
+.rm-stat-val.gold-text {
+  color: #B45309;
+}
+
+.rm-stat-unit {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748B;
+}
+
+.rm-stat-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px solid #F1F5F9;
+  font-size: 11.5px;
+  color: #94A3B8;
+}
+
+.rm-pill-badge {
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.rm-pill-badge.gold {
+  background: #FEF3C7;
+  color: #B45309;
+}
+
+.rm-pill-badge.green {
+  background: #DCFCE7;
+  color: #166534;
+}
+
+.rm-pill-badge.blue {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.rm-pill-badge.purple {
+  background: #F3E8FF;
+  color: #6B21A8;
+}
+
+/* ── 4. CHART SECTION ── */
+.rm-chart-section {
+  width: 100%;
+}
+
+.rm-chart-container {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+}
+
+/* ── 5. DUAL PANELS (TOP PRODUCTS & SHIPPING) ── */
+.rm-panels-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.rm-panel-card {
+  background: #FFFFFF;
+  border-radius: 16px;
+  border: 1px solid #E2E8F0;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
-.report-panel-header {
-  background-color: #F8FAFC;
-  padding: 16px 20px;
+.rm-panel-header {
+  padding: 18px 22px;
+  background: #FAFAFA;
   border-bottom: 1px solid #E2E8F0;
 }
 
-.report-panel-header h3 {
+.rm-panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rm-panel-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rm-panel-icon.gold {
+  background: rgba(250, 172, 48, 0.16);
+  color: #D97706;
+}
+
+.rm-panel-icon.blue {
+  background: rgba(37, 99, 235, 0.12);
+  color: #2563EB;
+}
+
+.rm-panel-title-wrap h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0F172A;
   margin: 0;
-  font-size: 15px;
+}
+
+.rm-panel-title-wrap p {
+  font-size: 12px;
+  color: #64748B;
+  margin: 2px 0 0 0;
+}
+
+.rm-panel-body {
+  padding: 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Top Selling Products */
+.rm-top-products-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rm-product-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.rm-product-rank-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: #F1F5F9;
+  color: #475569;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
   font-weight: 800;
-  color: var(--primary-dark);
+  flex-shrink: 0;
 }
 
-.report-mini-table {
+.rm-product-item:nth-child(1) .rm-product-rank-badge {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FDE68A;
+}
+
+.rm-product-item:nth-child(2) .rm-product-rank-badge {
+  background: #F1F5F9;
+  color: #334155;
+  border: 1px solid #E2E8F0;
+}
+
+.rm-product-item:nth-child(3) .rm-product-rank-badge {
+  background: #FFEDD5;
+  color: #C2410C;
+  border: 1px solid #FED7AA;
+}
+
+.rm-product-info {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.rm-product-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13.5px;
+}
+
+.rm-product-name {
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.rm-product-sold-text {
+  color: #64748B;
+  font-size: 12.5px;
+}
+
+.rm-product-sold-text strong {
+  color: #0F172A;
+  font-size: 14px;
+}
+
+.rm-progress-bar-bg {
   width: 100%;
-  border-collapse: collapse;
-  text-align: left;
+  height: 7px;
+  background: #F1F5F9;
+  border-radius: 999px;
+  overflow: hidden;
 }
 
-.report-mini-table th {
-  padding: 12px 20px;
+.rm-progress-bar-fill {
+  height: 100%;
+  background: #FAAC30;
+  border-radius: 999px;
+  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.rm-product-sub-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11.5px;
+}
+
+.rm-category-tag {
+  color: #64748B;
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  padding: 1px 7px;
+  border-radius: 5px;
+}
+
+.rm-share-text {
+  color: #94A3B8;
+}
+
+/* Shipping Breakdown List */
+.rm-shipping-breakdown-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.rm-shipping-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rm-shipping-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rm-status-badge {
   font-size: 12px;
   font-weight: 700;
-  color: #64748B;
-  text-transform: uppercase;
-  border-bottom: 1px solid #E2E8F0;
-  background-color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: inline-block;
 }
 
-.report-mini-table td {
-  padding: 14px 20px;
+.rm-shipping-count-wrap {
   font-size: 13px;
-  color: #334155;
-  border-bottom: 1px solid #F1F5F9;
+  color: #64748B;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.report-mini-table tr:last-child td {
-  border-bottom: none;
-}
+.rm-shipping-count-wrap strong {
+  color: #0F172A;
+  font-size: 14px;
+}
+
+.rm-panel-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #94A3B8;
+  gap: 10px;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* ── 6. LOADING STATE ── */
+.rm-loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 70px 20px;
+  color: #64748B;
+  text-align: center;
+}
+
+.rm-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #E2E8F0;
+  border-top-color: #FAAC30;
+  border-radius: 50%;
+  animation: rmSpin 0.9s linear infinite;
+  margin-bottom: 14px;
+}
+
+/* ── 7. PRINT TEMPLATE & PRINT MEDIA QUERIES ── */
+.rm-print-header {
+  display: none;
+}
+
+@media print {
+  body {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    padding: 0 !important;
+  }
+
+  /* Hide admin elements not needed on printed paper */
+  .no-print,
+  .admin-sidebar,
+  .admin-topbar,
+  .btn-rm-action,
+  .rm-header-actions,
+  .rm-filter-card {
+    display: none !important;
+  }
+
+  .report-manager-root {
+    gap: 14px;
+  }
+
+  .rm-print-header {
+    display: block !important;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid #000000;
+  }
+
+  .rm-print-company h2 {
+    font-size: 20px;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  .rm-print-company p {
+    font-size: 11px;
+    color: #475569;
+    margin: 2px 0 10px 0;
+  }
+
+  .rm-print-meta h3 {
+    font-size: 14px;
+    font-weight: 700;
+    margin: 0;
+  }
+
+  .rm-print-meta p {
+    font-size: 11px;
+    color: #475569;
+    margin: 2px 0 0 0;
+  }
+
+  .rm-stats-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .rm-stat-card {
+    box-shadow: none !important;
+    border: 1px solid #CBD5E1 !important;
+    padding: 12px !important;
+  }
+
+  .rm-stat-val {
+    font-size: 18px !important;
+  }
+
+  .rm-panels-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 14px !important;
+  }
+
+  .rm-panel-card {
+    box-shadow: none !important;
+    border: 1px solid #CBD5E1 !important;
+  }
+}
+
+/* ── 8. RESPONSIVE BREAKPOINTS ── */
+@media (max-width: 1024px) {
+  .rm-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .rm-panels-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .rm-stats-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .rm-header-banner {
+    padding: 18px 20px;
+  }
+
+  .rm-header-text h2 {
+    font-size: 20px;
+  }
+
+  .rm-filter-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rm-period-chips {
+    overflow-x: auto;
+    padding-bottom: 4px;
+    width: 100%;
+  }
+
+  .rm-period-chip {
+    white-space: nowrap;
+  }
+
+  .rm-panel-card {
+    border-radius: 14px;
+  }
+
+  .rm-panel-body {
+    padding: 16px;
+  }
+}

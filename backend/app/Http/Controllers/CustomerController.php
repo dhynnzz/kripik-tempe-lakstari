@@ -7,14 +7,48 @@ use Illuminate\Http\Request;
 
 class CustomerController extends Controller
 {
-    // [ADMIN] Ambil Semua Pelanggan
-    public function index()
+    // [ADMIN] Ambil Semua Pelanggan dengan Filter & Pencarian
+    public function index(Request $request)
     {
-        $customers = Pelanggan::withCount('transaksi')
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
-            
-        return response()->json(['success' => true, 'data' => $customers]);
+        $query = Pelanggan::withCount('transaksi')
+            ->with(['transaksi' => function ($q) {
+                $q->orderBy('created_at', 'desc')->take(5);
+            }, 'alamat']);
+
+        // Search by name, phone, or email
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function ($q) use ($search) {
+                $q->where('nama_pelanggan', 'like', "%{$search}%")
+                  ->orWhere('no_hp', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        // Filter by status
+        if ($request->filled('status') && $request->status !== 'all') {
+            $query->where('status_pelanggan', $request->status);
+        }
+
+        $perPage = (int) ($request->per_page ?? 10);
+        $customers = $query->orderBy('created_at', 'desc')->paginate($perPage);
+
+        // Summary stats untuk cards metric
+        $totalCustomers = Pelanggan::count();
+        $activeCustomers = Pelanggan::where('status_pelanggan', 'Aktif')->count();
+        $blacklistedCustomers = Pelanggan::where('status_pelanggan', 'Blacklist')->count();
+        $totalOrders = \App\Models\Transaksi::count();
+
+        return response()->json([
+            'success' => true,
+            'data' => $customers,
+            'stats' => [
+                'total' => $totalCustomers,
+                'active' => $activeCustomers,
+                'blacklisted' => $blacklistedCustomers,
+                'total_orders' => $totalOrders,
+            ]
+        ]);
     }
 
     // [ADMIN] Ubah Status Pelanggan (Blacklist / Aktif)

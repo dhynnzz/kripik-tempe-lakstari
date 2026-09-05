@@ -434,16 +434,19 @@ export const apiService = {
 
   // ================= CUSTOMERS API =================
 
-  getCustomers: async (page: number = 1): Promise<any> => {
+  getCustomers: async (page: number = 1, search: string = '', status: string = 'all'): Promise<any> => {
     try {
-      const response = await apiFetch(`/admin/customers?page=${page}`, {
-        
-      });
+      const params = new URLSearchParams();
+      params.append('page', page.toString());
+      if (search) params.append('search', search);
+      if (status && status !== 'all') params.append('status', status);
+
+      const response = await apiFetch(`/admin/customers?${params.toString()}`);
       const json = await response.json();
-      return json.success ? json.data : [];
+      return json.success ? json : { success: false, data: [] };
     } catch (error) {
       console.error('Error get customers:', error);
-      return [];
+      return { success: false, data: [] };
     }
   },
 
